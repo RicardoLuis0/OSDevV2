@@ -1,0 +1,17 @@
+*.save
+obj/
+doxygen/
+*.depend
+*.layout
+*.bak
+.vscode/
+*.cscope_file_list
+*.dll
+*.obj
+*.exe
+.vs/
+obj/
+bin/
+Debug/
+Release/
+*.vcxproj.user
