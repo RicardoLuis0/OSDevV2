@@ -5,18 +5,21 @@
     mov si, hello_world
                 ; move address of 'hello_world' message to the si register
     cld         ; clear direction flag for string
-
-ch_loop:
-    lodsb       ; load byte from string at si into al
-    or al, al   ; check for null terminator (if al is 0)
-    jz hang     ; if yes, jump to hang
-    mov ah, 0x0E; set video interruptor function to teletype
-    xor bh, bh  ; clear bh
-    int 0x10    ; call video interruptor teletype function
-    jmp ch_loop ; loop
+    call print  ;print 'hello_world' message
 
 hang:
     jmp hang    ;hang system
+
+print:
+    lodsb       ; load byte from string at si into al
+    or al, al   ; check for null terminator (if al is 0)
+    jz return   ; if finished printing, return
+    mov ah, 0x0E; set video interruptor function to teletype
+    xor bh, bh  ; clear bh
+    int 0x10    ; call video interruptor teletype function
+    jmp print   ; loop
+return:
+    ret         ; return from procedure
 
 hello_world:    ;'hello world' followed by 'CRLF' and null terminator
     db 'Hello World', 13, 10, 0
