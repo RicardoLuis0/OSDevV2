@@ -1,5 +1,6 @@
 ;boot.asm
 [ORG 0x7c00]    ; hint that program is loaded at the 0x7c00 location in memory
+[BITS 16]       ; 16 bits hint
     xor ax, ax  ; zero out ax register
     mov ds, ax  ; set code segment register
     mov al, 0   ; scroll clear screen
