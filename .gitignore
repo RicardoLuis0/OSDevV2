@@ -15,3 +15,4 @@ bin/
 Debug/
 Release/
 *.vcxproj.user
+*.bat
