@@ -16,3 +16,4 @@ Debug/
 Release/
 *.vcxproj.user
 *.bat
+*.lnk
