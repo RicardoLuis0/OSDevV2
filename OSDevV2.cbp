@@ -4,30 +4,31 @@
 	<Project>
 		<Option title="OSDevV2" />
 		<Option pch_mode="2" />
-		<Option compiler="clang" />
+		<Option compiler="llvm_clang_compiler_osdev" />
 		<Build>
-			<Target title="Debug">
-				<Option output="bin/Debug/OSDevV2" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
+			<Target title="Boot">
+				<Option output="bin/Boot/boot.bin" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj/Boot/" />
 				<Option type="1" />
-				<Option compiler="clang" />
-			</Target>
-			<Target title="Release">
-				<Option output="bin/Release/OSDevV2" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
-				<Option type="1" />
-				<Option compiler="clang" />
+				<Option compiler="llvm_clang_compiler_osdev" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-m16" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-T boot.ld" />
+				</Linker>
 			</Target>
 		</Build>
-		<VirtualTargets>
-			<Add alias="All" targets="Debug;Release;" />
-		</VirtualTargets>
 		<Compiler>
-			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-builtin -nostdlib -nostdinc -nostdinc++" />
+			<Add option="--target=i686-pc-none -march=i686 -ffreestanding -fno-builtin -nostdlib -nostdinc -nostdinc++" />
 		</Compiler>
+		<Linker>
+			<Add option="--oformat binary" />
+		</Linker>
 		<Unit filename="src/boot/boot.asm">
-			<Option link="0" />
-			<Option compiler="clang" use="1" buildCommand="nasm $file -f bin -o bin/boot.bin" />
+			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
 		<Extensions>
 			<code_completion />

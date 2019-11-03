@@ -1,15 +1,14 @@
 ;boot.asm
-[ORG 0x7c00]    ; hint that program is loaded at the 0x7c00 location in memory
 [BITS 16]       ; 16 bits hint
-    xor ax, ax  ; zero out ax register
-    mov ds, ax  ; set code segment register
+    xor ax, ax  ; clear ax register
+    mov ds, ax  ; set code segment register to 0
     mov al, 0   ; scroll clear screen
     call scroll_up
     mov cx, 0xc ; move string length to cx
     mov dh, 0x0 ; y:0
     mov dl, 0x0 ; x:0
     mov bp, hello_world
-                ; move address of 'hello_world' message to the si register
+                ; move address of 'hello_world' message to the bp register
     cld         ; clear direction flag for string
     call print_strnxy
                 ; print 'hello_world' message
