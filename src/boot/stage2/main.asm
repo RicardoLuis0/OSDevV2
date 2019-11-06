@@ -1,3 +1,5 @@
+;stage2/main
+
 section .asm_stage2
 asm_stage2_start:
     push test

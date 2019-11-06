@@ -27,10 +27,18 @@
 		<Linker>
 			<Add option="--oformat binary" />
 		</Linker>
-		<Unit filename="src/boot/stage1.asm">
+		<Unit filename="src/boot/stage1/hdd.asm">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="src/boot/stage1/main.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
-		<Unit filename="src/boot/stage2.asm">
+		<Unit filename="src/boot/stage1/print.asm">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="src/boot/stage2/main.asm">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
