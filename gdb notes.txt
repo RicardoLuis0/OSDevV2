@@ -1,0 +1,4 @@
+launch qemu with -S and -s
+connect gdb with
+
+	gdb -ex "target remote localhost:1234" -ex "set architecture i8086" -ex "set disassembly-flavor intel" -ex "hbreak *0x7c00" -"c"
