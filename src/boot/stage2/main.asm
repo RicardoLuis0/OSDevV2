@@ -1,9 +1,11 @@
 ;stage2/main
-
+extern cmain
+global print
 section .asm_stage2
 asm_stage2_start:
-    push test
-    call print
+    push msg3
+    call asm_print
+    call cmain
     jmp hang
-test:
-    db "It Works!",13,10,0
+msg3:
+    db "Calling CMain...",13,10,0

@@ -13,7 +13,7 @@
 				<Option compiler="llvm_clang_compiler_osdev" />
 				<Compiler>
 					<Add option="-Os" />
-					<Add option="-m16 -masm=intel" />
+					<Add option="-m16" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -22,7 +22,7 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="--target=i686-pc-none -march=i686 -ffreestanding -fno-builtin -nostdlib -nostdinc -nostdinc++" />
+			<Add option="--target=i686-pc-none -march=i686 -ffreestanding -fno-builtin -nostdlib -nostdinc" />
 		</Compiler>
 		<Linker>
 			<Add option="--oformat binary" />
@@ -37,6 +37,9 @@
 		<Unit filename="src/boot/stage1/print.asm">
 			<Option compile="0" />
 			<Option link="0" />
+		</Unit>
+		<Unit filename="src/boot/stage2/cmain.c">
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/boot/stage2/main.asm">
 			<Option compile="0" />

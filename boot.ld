@@ -15,6 +15,7 @@ SECTIONS {
 		*(.asm_stage2)
 		*(.text)
 		*(.data)
+		*(.rodata)
 		*(.bss)
 	} > stage2
 }

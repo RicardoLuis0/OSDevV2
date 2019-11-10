@@ -1,6 +1,6 @@
 ;stage1/print
-
-print:  ;string to print is passed as stack parameter
+global asm_print
+asm_print:  ;string to print is passed as stack parameter
     pop ax  ;pop return address
     pop si  ;pop parameter
     push ax ;preserve return address
