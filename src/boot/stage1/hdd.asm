@@ -3,7 +3,7 @@
 load_stage2_hdd_reset:
     mov ah, 0x0
     mov dl, [boot_drive]
-    int 0x13
+    int 13h
     jc load_stage2_hdd_reset;can hang
     ret
 
@@ -18,6 +18,6 @@ load_stage2:
     mov dh, 0x0
     mov dl, [boot_drive]
     mov bx, asm_stage2_start
-    int 0x13
+    int 13h
     jc load_stage2
     ret

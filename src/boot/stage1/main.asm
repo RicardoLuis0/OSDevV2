@@ -1,5 +1,5 @@
 ;stage1/main
-;http://vitaly_filatov.tripod.com/ng/asm/
+;http://vitaly_filatov.tripod.com/ng/asm/asm_001.html
 [BITS 16]       ; 16 bits hint
 ;stage 1,512b stack,stage 2
 section .asm_stage1
@@ -13,6 +13,9 @@ asm_stage1_start:
     mov ss, ax  ; setup stack
     mov sp, stack_end+512
     cld         ; clear direction flag for string
+    mov ah,5
+    mov al,0
+    int 10h     ; set page number to 0
     push msg1
     call asm_print
     call load_stage2

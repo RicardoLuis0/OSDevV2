@@ -1,12 +1,7 @@
-void print(const char * c){
-    asm(
-        "push %%ax\ncall asm_print"
-        :
-        :"a" (c)
-    );
-}
+#include "print.h"
 
 void cmain(){
-    print("C is working!\r\n");
+    cls();
+    print("Entering cmain...\r\n");
 }
 

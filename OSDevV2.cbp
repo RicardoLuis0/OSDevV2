@@ -14,6 +14,7 @@
 				<Compiler>
 					<Add option="-Os" />
 					<Add option="-m16" />
+					<Add directory="include/boot" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -27,6 +28,7 @@
 		<Linker>
 			<Add option="--oformat binary" />
 		</Linker>
+		<Unit filename="include/boot/print.h" />
 		<Unit filename="src/boot/stage1/hdd.asm">
 			<Option compile="0" />
 			<Option link="0" />
@@ -44,6 +46,10 @@
 		<Unit filename="src/boot/stage2/main.asm">
 			<Option compile="0" />
 			<Option link="0" />
+			<Option compiler="llvm_clang_compiler_osdev" use="0" buildCommand="nasm $file -f elf -o $object" />
+		</Unit>
+		<Unit filename="src/boot/stage2/print.c">
+			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>
 			<code_completion />
