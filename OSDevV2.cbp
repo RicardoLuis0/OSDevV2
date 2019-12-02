@@ -6,20 +6,11 @@
 		<Option pch_mode="2" />
 		<Option compiler="llvm_clang_compiler_osdev" />
 		<Build>
-			<Target title="Boot">
-				<Option output="bin/Boot/boot.bin" prefix_auto="1" extension_auto="0" />
-				<Option object_output="obj/Boot/" />
+			<Target title="Kernel">
+				<Option output="kernel.bin" prefix_auto="1" extension_auto="0" />
 				<Option type="1" />
 				<Option compiler="llvm_clang_compiler_osdev" />
-				<Compiler>
-					<Add option="-Os" />
-					<Add option="-m16" />
-					<Add directory="include/boot" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-					<Add option="-T boot.ld" />
-				</Linker>
+				<Option use_console_runner="0" />
 			</Target>
 		</Build>
 		<Compiler>
@@ -28,29 +19,7 @@
 		<Linker>
 			<Add option="--oformat binary" />
 		</Linker>
-		<Unit filename="include/boot/print.h" />
-		<Unit filename="src/boot/stage1/hdd.asm">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="src/boot/stage1/main.asm">
-			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
-		</Unit>
-		<Unit filename="src/boot/stage1/print.asm">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="src/boot/stage2/cmain.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/boot/stage2/main.asm">
-			<Option compile="0" />
-			<Option link="0" />
-			<Option compiler="llvm_clang_compiler_osdev" use="0" buildCommand="nasm $file -f elf -o $object" />
-		</Unit>
-		<Unit filename="src/boot/stage2/print.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="src/kmain.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
