@@ -6,7 +6,6 @@ FLAGS    equ  MBALIGN | MEMINFO ; this is the Multiboot 'flag' field
 MAGIC    equ  0x1BADB002        ; 'magic number' lets bootloader find the header
 CHECKSUM equ -(MAGIC + FLAGS)   ; checksum of above, to prove we are multiboot
 
-
 section .multiboot
 align 4
     dd MAGIC
@@ -26,6 +25,7 @@ start:;entrypoint
     mov esp, stack_top;setup the stack
     call kmain
     jmp hang
+
 hang:
     cli
     hlt
