@@ -1,18 +1,16 @@
-#include "screen.h"
+#include "print.h"
 
 void abort(){
-    Screen::write_s("\nKernel Aborted, halting execution...");
+    print("\nKernel Aborted, halting execution...");
     asm volatile("jmp hang");
 }
 
 void abort(int code){
-    Screen::write_s("\nKernel Aborted with code '");
-    Screen::write_i(code);
-    Screen::write_s("', halting execution...");
+    print("\nKernel Aborted with code '",code,"', halting execution...");
     asm volatile("jmp hang");
 }
 
 extern "C" void kmain(){
     Screen::init();
-    Screen::write_s("Hello, World!");
+    print("Hello, World!\nThis is a Test!");
 }
