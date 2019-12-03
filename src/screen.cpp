@@ -79,10 +79,10 @@ void Screen::write(const char * str){
 
 static void write_rec(unsigned int i,int &pos){
     if(i<10){
-        vga[pos++]=i+'0';
+        vga[pos++]=vga_entry(i+'0');
     }else{
         write_rec(i/10,pos);
-        vga[pos++]=(i%10)+'0';
+        vga[pos++]=vga_entry((i%10)+'0');
     }
 }
 
