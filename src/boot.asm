@@ -20,6 +20,7 @@ stack_top:
 
 extern kmain
 global start
+global hang
 section .text
 start:;entrypoint
     mov esp, stack_top;setup the stack

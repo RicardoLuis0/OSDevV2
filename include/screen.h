@@ -21,9 +21,13 @@ namespace Screen {
         WHITE = 15,
     };
     void init();
+    void newline();
     void move(int x,int y);
+    void move(int pos);
     void setchar(char c);
     void typechar(char c);
+    void write(const char * str);
+    void write(unsigned int i);
     void setbgcolor(color c);
     void setfgcolor(color c);
     void clear();
