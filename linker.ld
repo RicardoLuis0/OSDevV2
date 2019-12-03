@@ -3,6 +3,8 @@
 ENTRY(start)
 
 SECTIONS {
+	. = 1M;
+
 	.rodata : ALIGN(4K) {
 		*(.multiboot)
 	}
