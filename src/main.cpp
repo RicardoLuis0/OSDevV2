@@ -24,5 +24,4 @@ extern "C" void k_abort_s(const char * msg){
 extern "C" void k_main(multiboot_info_t* mbd, unsigned int magic){
     Screen::init();
     Memory::init(mbd);
-    void * ptr=k_malloc(100);
 }
