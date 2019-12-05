@@ -172,6 +172,48 @@ void Screen::write_h(unsigned int h){
     move(pos);
 }
 
+void write_mem_rec(uint64_t mem,int depth){
+    char id;
+    switch(depth){
+    case 0:
+        id='B';
+        break;
+    case 1:
+        id='K';
+        break;
+    case 2:
+        id='M';
+        break;
+    case 3:
+        id='G';
+        break;
+    case 4:
+        id='T';
+        break;
+    default:
+        id='?';
+        break;
+    }
+    bool last=false;
+    if(mem>1024ULL){
+        write_mem_rec(mem/1024ULL,depth+1);
+    }else{
+        last=true;
+    }
+    mem%=1024ULL;
+    if(mem!=0){
+        if(!last){
+            write_c(' ');//whitespace between numbers
+        }
+        write_i(mem%1024ULL);
+        write_c(id);
+    }
+}
+
+void Screen::write_mem(uint64_t mem){
+    write_mem_rec(mem,0);
+}
+
 void Screen::setchar(char c){
     vga[vga_xy(xpos,ypos)]=vga_entry(c);
 }
