@@ -43,7 +43,7 @@ extern "C" void loadgdt(uint32_t base,uint16_t limit);
 extern "C" void * k_malloc(uint32_t size){
     return NULL;
 }
-
+constexpr uint64_t MM=(1024ULL*1024ULL);
 void Memory::init(multiboot_info_t * mbd){
     print(" -Initializing Memory...\n  -Loading GDT...\n");
     GDT[0]=encodeGdtEntry(0,0,0);
@@ -62,14 +62,8 @@ void Memory::init(multiboot_info_t * mbd){
         print(",mmap_length: ");
         Screen::write_h(mbd->mmap_length);
         print("\n");
-        multiboot_memory_map_t * mmap=(multiboot_memory_map_t *)mbd->mmap_addr;
         void * mmap_max=(void*)(mbd->mmap_addr+mbd->mmap_length);
-        print("\nmmap: ");
-        Screen::write_h((unsigned int)mmap);
-        print(",mmap_max: ");
-        Screen::write_h((unsigned int)mmap_max);
-        print("\n");
-        while(mmap<mmap_max){
+        for(multiboot_memory_map_t * mmap=(multiboot_memory_map_t *)mbd->mmap_addr;mmap<mmap_max;mmap=(multiboot_memory_map_t *)(((uint32_t)mmap)+mmap->size+sizeof(mmap->size))){
             print("Address: ");
             Screen::write_h(mmap->addr);
             print(" ,Length: ");
@@ -95,7 +89,13 @@ void Memory::init(multiboot_info_t * mbd){
                 print("Unknown\n");
                 break;
             }
-            mmap=(multiboot_memory_map_t *)(((uint32_t)mmap)+mmap->size+sizeof(mmap->size));
+            if(mmap->type!=MULTIBOOT_MEMORY_AVAILABLE){//ignore non-available memory
+                continue;
+            }else if(mmap->addr<MM){//don't bother with lower memory
+                continue;
+            }else{
+                //TODO save memory maps
+            }
         }
     }else{
         print(" > Memory initialization ");

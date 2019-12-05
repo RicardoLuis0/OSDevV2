@@ -32,6 +32,7 @@ namespace Screen {
     void write_i(unsigned int i);
     void write_h(uint64_t h);//write int as hex
     void write_mem(uint64_t mem,int offset=0);//write as memory size
+    void scroll(int len);
     void setcolor(color bg,color fg);
     void setbgcolor(color c);
     void setfgcolor(color c);

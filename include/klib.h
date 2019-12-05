@@ -20,6 +20,7 @@ void k_abort_s(const char * msg);
 void k_putc(char c);
 void k_puts(const char * s);
 char k_getchar();
+void * memmove(void * dst,const void * src,uint32_t n);
 
 #ifdef __cplusplus
 }

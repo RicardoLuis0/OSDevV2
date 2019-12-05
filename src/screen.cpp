@@ -41,6 +41,17 @@ void Screen::newline(){
     xpos=0;
     if(ypos!=YLEN){
         ypos++;
+    }else{
+        scroll(1);
+    }
+}
+
+void Screen::scroll(int len){
+    if(len>0){
+        uint32_t scr=len*XLEN;
+        memmove((void*)vga,(void*)(vga+scr),POSLEN-scr);
+    }else{
+        //TODO scroll down
     }
 }
 
@@ -92,10 +103,7 @@ void Screen::write_c(char c){
         xpos=0;
         break;
     case '\n'://newline
-        xpos=0;
-        if(ypos!=YLEN){
-            ypos++;
-        }
+        newline();
         break;
     case '\b'://back
         if(xpos>0){
@@ -129,8 +137,11 @@ void Screen::write_s(const char * str){
             pos=((pos/XLEN)+1);
             break;
         case '\n'://newline
+            xpos=pos%XLEN;
+            ypos=pos/XLEN;
+            newline();
+            pos=vga_xy(xpos,ypos);
             str++;
-            pos=((pos/XLEN)+1)*XLEN;
             break;
         case '\b'://back
             str++;
