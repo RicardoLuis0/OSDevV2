@@ -158,7 +158,7 @@ void Screen::write_i(unsigned int i){
     move(pos);
 }
 
-static void write_h_rec(unsigned int i,int &pos){
+static void write_h_rec(uint64_t i,int &pos){
     if(i>15){
         write_h_rec(i/16,pos);
         i%=16;
@@ -166,13 +166,14 @@ static void write_h_rec(unsigned int i,int &pos){
     vga[pos++]=vga_entry((i<10)?(i+'0'):((i-10)+'A'));
 }
 
-void Screen::write_h(unsigned int h){
+void Screen::write_h(uint64_t h){
+    write_s("0x");
     int pos=vga_xy(xpos,ypos);
     write_h_rec(h,pos);
     move(pos);
 }
 
-void write_mem_rec(uint64_t mem,int depth){
+void Screen::write_mem(uint64_t mem,int depth){
     char id;
     switch(depth){
     case 0:
@@ -195,23 +196,19 @@ void write_mem_rec(uint64_t mem,int depth){
         break;
     }
     bool last=false;
-    if(mem>1024ULL){
-        write_mem_rec(mem/1024ULL,depth+1);
+    if(mem>=1024ULL){
+        write_mem(mem/1024ULL,depth+1);
     }else{
         last=true;
     }
     mem%=1024ULL;
-    if(mem!=0){
+    if(mem!=0||last){
         if(!last){
             write_c(' ');//whitespace between numbers
         }
         write_i(mem%1024ULL);
         write_c(id);
     }
-}
-
-void Screen::write_mem(uint64_t mem){
-    write_mem_rec(mem,0);
 }
 
 void Screen::setchar(char c){

@@ -53,7 +53,50 @@ void Memory::init(multiboot_info_t * mbd){
     loadgdt((uint32_t)GDT,sizeof(GDT));//load flat 4GB GDT
     print("  -Parsing Memory Map...\n");
     if(mbd->flags&MULTIBOOT_INFO_MEM_MAP){
-        //TODO read memory map
+        print("mem_lower: ");
+        Screen::write_mem(mbd->mem_lower,1);
+        print(",mem_upper: ");
+        Screen::write_mem(mbd->mem_upper,1);
+        print("\nmmap_addr: ");
+        Screen::write_h(mbd->mmap_addr);
+        print(",mmap_length: ");
+        Screen::write_h(mbd->mmap_length);
+        print("\n");
+        multiboot_memory_map_t * mmap=(multiboot_memory_map_t *)mbd->mmap_addr;
+        void * mmap_max=(void*)(mbd->mmap_addr+mbd->mmap_length);
+        print("\nmmap: ");
+        Screen::write_h((unsigned int)mmap);
+        print(",mmap_max: ");
+        Screen::write_h((unsigned int)mmap_max);
+        print("\n");
+        while(mmap<mmap_max){
+            print("Address: ");
+            Screen::write_h(mmap->addr);
+            print(" ,Length: ");
+            Screen::write_mem(mmap->len);
+            print(" ,Type: ");
+            switch(mmap->type){
+            case MULTIBOOT_MEMORY_AVAILABLE:
+                print("AVAILABLE\n");
+                break;
+            case MULTIBOOT_MEMORY_RESERVED:
+                print("RESERVED\n");
+                break;
+            case MULTIBOOT_MEMORY_ACPI_RECLAIMABLE:
+                print("ACPI_RECLAIMABLE\n");
+                break;
+            case MULTIBOOT_MEMORY_NVS:
+                print("NVS\n");
+                break;
+            case MULTIBOOT_MEMORY_BADRAM:
+                print("BADRAM\n");
+                break;
+            default:
+                print("Unknown\n");
+                break;
+            }
+            mmap=(multiboot_memory_map_t *)(((uint32_t)mmap)+mmap->size+sizeof(mmap->size));
+        }
     }else{
         print(" > Memory initialization ");
         Screen::setfgcolor(Screen::RED);
