@@ -28,6 +28,8 @@ namespace Screen {
     void write_c(char c);
     void write_s(const char * str);
     void write_i(unsigned int i);
+    void write_h(unsigned int h);//write string as hex
+    void setcolor(color bg,color fg);
     void setbgcolor(color c);
     void setfgcolor(color c);
     void clear();

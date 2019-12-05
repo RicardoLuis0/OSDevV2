@@ -1,25 +1,28 @@
+#include "extern/multiboot.h"
 #include "klib.h"
 #include "print.h"
 #include "mem.h"
 
 extern "C" void k_abort(){
-    print("\nKernel Aborted, halting execution...");
+    Screen::setcolor(Screen::RED,Screen::WHITE);
+    print("Kernel Aborted!");
     asm volatile("jmp hang");
 }
 
 extern "C" void k_abort_i(int code){
-    print("\nKernel Aborted with code '",code,"', halting execution...");
+    Screen::setcolor(Screen::RED,Screen::WHITE);
+    print("Kernel Aborted! Error code '",code,"'");
     asm volatile("jmp hang");
 }
 
 extern "C" void k_abort_s(const char * msg){
-    print("\nKernel Aborted with message '",msg,"', halting execution...");
+    Screen::setcolor(Screen::RED,Screen::WHITE);
+    print("Kernel Aborted! ",msg,"");
     asm volatile("jmp hang");
 }
 
-extern "C" void k_main(){
+extern "C" void k_main(multiboot_info_t* mbd, unsigned int magic){
     Screen::init();
-    Memory::init();
-    print("Hello, World!\nThis is a Test!");
+    Memory::init(mbd);
     void * ptr=k_malloc(100);
 }

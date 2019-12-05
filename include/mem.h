@@ -2,7 +2,7 @@
 #define KMEM_H_INCLUDED
 
 namespace Memory{
-    void init();
+    void init(struct multiboot_info * mbd);
 }
 
 #endif // KMEM_H_INCLUDED

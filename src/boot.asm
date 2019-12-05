@@ -24,6 +24,8 @@ global hang
 section .text
 start:;entrypoint
     mov esp, stack_top;setup the stack
+    push eax
+    push ebx
     call k_main
     jmp hang
 

@@ -1,6 +1,15 @@
 #include "screen.h"
 #include "util.h"
 #include "default/stdint.h"
+#include "klib.h"
+
+extern "C" void k_putc(char c){
+    Screen::write_c(c);
+}
+
+extern "C" void k_puts(const char * s){
+    Screen::write_s(s);
+}
 
 using namespace Screen;
 
@@ -37,9 +46,13 @@ void Screen::newline(){
 
 void Screen::init(){
     vga=(uint16_t*) 0xB8000;
+    clear();
     bg=BLACK;
     fg=WHITE;
-    clear();
+    Screen::write_s("Loading Kernel...\n -Initializing Screen...\n > Screen initialization ");
+    fg=LIGHT_GREEN;
+    Screen::write_s("OK\n");
+    fg=WHITE;
 }
 
 void Screen::clear(){
@@ -131,18 +144,31 @@ void Screen::write_s(const char * str){
     move(pos);
 }
 
-static void write_rec(unsigned int i,int &pos){
-    if(i<10){
-        vga[pos++]=vga_entry(i+'0');
-    }else{
-        write_rec(i/10,pos);
-        vga[pos++]=vga_entry((i%10)+'0');
+static void write_i_rec(unsigned int i,int &pos){
+    if(i>9){
+        write_i_rec(i/10,pos);
+        i%=10;
     }
+    vga[pos++]=vga_entry(i+'0');
 }
 
 void Screen::write_i(unsigned int i){
     int pos=vga_xy(xpos,ypos);
-    write_rec(i,pos);
+    write_i_rec(i,pos);
+    move(pos);
+}
+
+static void write_h_rec(unsigned int i,int &pos){
+    if(i>15){
+        write_h_rec(i/16,pos);
+        i%=16;
+    }
+    vga[pos++]=vga_entry((i<10)?(i+'0'):((i-10)+'A'));
+}
+
+void Screen::write_h(unsigned int h){
+    int pos=vga_xy(xpos,ypos);
+    write_h_rec(h,pos);
     move(pos);
 }
 
@@ -156,4 +182,9 @@ void Screen::setbgcolor(color c){
 
 void Screen::setfgcolor(color c){
     fg=c;
+}
+
+void Screen::setcolor(color bg_c,color fg_c){
+    bg=bg_c;
+    fg=fg_c;
 }
