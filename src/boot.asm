@@ -18,13 +18,13 @@ stack_bottom:
     resb 1048576;1MB stack
 stack_top:
 
-extern kmain
+extern k_main
 global start
 global hang
 section .text
 start:;entrypoint
     mov esp, stack_top;setup the stack
-    call kmain
+    call k_main
     jmp hang
 
 hang:

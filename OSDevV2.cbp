@@ -26,13 +26,16 @@
 			<Add option="-std=c++17 --target=i686-pc-none-elf -march=i686 -ffreestanding -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-rtti -fno-exceptions -Wno-c++17-extensions" />
 		</Compiler>
 		<Unit filename="include/default/stdint.h" />
+		<Unit filename="include/klib.h" />
+		<Unit filename="include/mem.h" />
 		<Unit filename="include/print.h" />
 		<Unit filename="include/screen.h" />
 		<Unit filename="include/util.h" />
 		<Unit filename="src/boot.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
-		<Unit filename="src/kmain.cpp" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/mem.cpp" />
 		<Unit filename="src/screen.cpp" />
 		<Extensions>
 			<code_completion />
