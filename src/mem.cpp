@@ -52,7 +52,10 @@ void Memory::init(multiboot_info_t * mbd){
     //GDT[3]=encodeGdtEntry(???,sizeof(???),0x89), //???=TSS location, 0x18
     loadgdt((uint32_t)GDT,sizeof(GDT));//load flat 4GB GDT
     print("  -Parsing Memory Map...\n");
+    uint64_t total=0;
+    uint64_t usable=0;
     if(mbd->flags&MULTIBOOT_INFO_MEM_MAP){
+        #ifdef VERBOSE_MEM
         print("mem_lower: ");
         Screen::write_mem(mbd->mem_lower,1);
         print(",mem_upper: ");
@@ -62,8 +65,10 @@ void Memory::init(multiboot_info_t * mbd){
         print(",mmap_length: ");
         Screen::write_h(mbd->mmap_length);
         print("\n");
+        #endif // VERBOSE_MEM
         void * mmap_max=(void*)(mbd->mmap_addr+mbd->mmap_length);
         for(multiboot_memory_map_t * mmap=(multiboot_memory_map_t *)mbd->mmap_addr;mmap<mmap_max;mmap=(multiboot_memory_map_t *)(((uint32_t)mmap)+mmap->size+sizeof(mmap->size))){
+            #ifdef VERBOSE_MEM
             print("Address: ");
             Screen::write_h(mmap->addr);
             print(" ,Length: ");
@@ -89,14 +94,24 @@ void Memory::init(multiboot_info_t * mbd){
                 print("Unknown\n");
                 break;
             }
+            #endif // VERBOSE_MEM
+            total+=mmap->len;
             if(mmap->type!=MULTIBOOT_MEMORY_AVAILABLE){//ignore non-available memory
                 continue;
             }else if(mmap->addr<MM){//don't bother with lower memory
                 continue;
             }else{
+                usable+=mmap->len;
                 //TODO save memory maps
             }
         }
+        print("    Total Memory: ");
+        Screen::write_mem(total);
+        print("\n        Unusable: ");
+        Screen::write_mem(total-usable);
+        print("\n          Usable: ");
+        Screen::write_mem(usable);
+        print("\n");
     }else{
         print(" > Memory initialization ");
         Screen::setfgcolor(Screen::RED);
@@ -107,5 +122,5 @@ void Memory::init(multiboot_info_t * mbd){
     Screen::setfgcolor(Screen::GREEN);
     print("OK\n");
     Screen::setfgcolor(Screen::WHITE);
-    k_abort_s("Memory not implemented yet");
+    k_abort_s("Memory Allocation not implemented yet");
 }
