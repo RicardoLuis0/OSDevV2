@@ -91,6 +91,11 @@ memory_block * get_unused_block(){
 }
 
 memory_block * get_block(uint8_t * start,uint32_t size,memory_block * prev=nullptr,memory_block * next=nullptr){
+    if(((uint32_t)start)%16!=0){
+        uint8_t* start_bak=start;
+        start=(uint8_t *)((((uint32_t)start) + 15) & ~15);
+        size-=start-start_bak;
+    }
     memory_block * temp=get_unused_block();
     temp->start=start;
     temp->size=size;
@@ -198,6 +203,9 @@ memory_block * merge(memory_block * first,memory_block * second){
 }
 
 memory_block * Memory::alloc_block(uint32_t size){//first fit
+    if(size%16!=0){
+        size=(size + 15) & ~15;
+    }
     SpinlockGuard guard(memory_lock);
     memory_block * block;
     for(block=block_root;block!=nullptr&&(block->size<size||block->type!=memory_block::MEMORY_BLOCK_FREE);block=block->next);
