@@ -60,7 +60,7 @@ void Screen::init(){
     clear();
     bg=BLACK;
     fg=WHITE;
-    Screen::write_s("Loading Kernel...\n -Initializing Screen...\n > Screen initialization ");
+    Screen::write_s(" -Initializing Console...\n> Console ");
     fg=LIGHT_GREEN;
     Screen::write_s("OK\n");
     fg=WHITE;

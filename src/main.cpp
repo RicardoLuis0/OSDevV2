@@ -1,4 +1,3 @@
-#include "extern/multiboot.h"
 #include "klib.h"
 #include "print.h"
 #include "mem.h"
@@ -21,7 +20,22 @@ extern "C" void k_abort_s(const char * msg){
     asm volatile("jmp hang");
 }
 
-extern "C" void k_main(multiboot_info_t* mbd, unsigned int magic){
+extern uint32_t kernel_start;
+
+extern uint32_t kernel_end;
+
+constexpr uint64_t MM=(1024ULL*1024ULL);
+
+extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::init();
+    Screen::write_s(" -Loading Kernel...\n -Kernel Size: ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_mem((((uint32_t)&kernel_end)-((uint32_t)&kernel_start))-MM);//size of kernel in memory minus stack size
+    Screen::setfgcolor(Screen::WHITE);
+    Screen::write_s("\n -Stack Size:  ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_mem(1,2);//1M
+    Screen::setfgcolor(Screen::WHITE);
+    Screen::write_s("\n");
     Memory::init(mbd);
 }

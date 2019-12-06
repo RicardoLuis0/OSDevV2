@@ -6,9 +6,9 @@
 		<Option pch_mode="2" />
 		<Option compiler="llvm_clang_compiler_osdev" />
 		<Build>
-			<Target title="Kernel">
-				<Option output="bin/kernel.bin" prefix_auto="1" extension_auto="0" />
-				<Option object_output="obj/" />
+			<Target title="KernelDebug">
+				<Option output="bin/Debug/kernel.bin" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="llvm_clang_compiler_osdev" />
 				<Option use_console_runner="0" />
@@ -16,15 +16,32 @@
 					<Add option="-g" />
 					<Add directory="include" />
 				</Compiler>
+			</Target>
+			<Target title="KernelRelease">
+				<Option output="bin/Release/kernel.bin" prefix_auto="1" extension_auto="0" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="llvm_clang_compiler_osdev" />
+				<Option use_console_runner="0" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="include" />
+				</Compiler>
 				<Linker>
-					<Add option="-T linker.ld" />
+					<Add option="-s" />
 				</Linker>
 			</Target>
 		</Build>
+		<VirtualTargets>
+			<Add alias="All" targets="KernelDebug;KernelRelease;" />
+		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-std=c++17 --target=i686-pc-none-elf -march=i686 -ffreestanding -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-rtti -fno-exceptions -Wno-c++17-extensions" />
 		</Compiler>
+		<Linker>
+			<Add option="-T linker.ld" />
+		</Linker>
 		<Unit filename="include/default/stdint.h" />
 		<Unit filename="include/extern/multiboot.h" />
 		<Unit filename="include/keyboard.h" />
@@ -33,6 +50,7 @@
 		<Unit filename="include/print.h" />
 		<Unit filename="include/screen.h" />
 		<Unit filename="include/util.h" />
+		<Unit filename="linker.ld" />
 		<Unit filename="src/boot.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
