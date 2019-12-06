@@ -49,6 +49,7 @@
 		<Unit filename="include/mem.h" />
 		<Unit filename="include/print.h" />
 		<Unit filename="include/screen.h" />
+		<Unit filename="include/spinlock.h" />
 		<Unit filename="include/util.h" />
 		<Unit filename="linker.ld" />
 		<Unit filename="src/boot.asm">
@@ -63,6 +64,7 @@
 		<Unit filename="src/mem.cpp" />
 		<Unit filename="src/print.cpp" />
 		<Unit filename="src/screen.cpp" />
+		<Unit filename="src/spinlock.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

@@ -3,8 +3,11 @@
 #include "mem.h"
 #include "screen.h"
 #include "print.h"
+#include "spinlock.h"
 
 using namespace Memory;
+
+Spinlock memory_lock;
 
 struct gdt_entry{
     uint8_t arr[8];
@@ -56,29 +59,6 @@ memory_block * block_root=nullptr;
 
 memory_block * block_unused=nullptr;//unused memory blocks, start, end and type are garbage, but next and prev are guaranteed to be either a valid unused block or nullptr
 
-memory_block * get_unused_block(){
-    if(block_unused!=nullptr){
-        memory_block * temp=block_unused;
-        block_unused=block_unused->next;
-        if(block_unused){
-            block_unused->prev=nullptr;
-        }
-        return temp;
-    }else{
-        k_abort_s("Out of memory blocks");
-        return nullptr;
-    }
-}
-
-memory_block * get_block(uint8_t * start,uint32_t size,memory_block * prev=nullptr,memory_block * next=nullptr){
-    memory_block * temp=get_unused_block();
-    temp->start=start;
-    temp->size=size;
-    temp->prev=prev;
-    temp->next=next;
-    return temp;
-}
-
 void build_unused(uint8_t * data,uint32_t count){//count>0
     memory_block * temp=(memory_block *)data;
     temp->next=block_unused;
@@ -91,6 +71,32 @@ void build_unused(uint8_t * data,uint32_t count){//count>0
         temp=temp->prev;
     }
     block_unused=temp;
+}
+
+memory_block * get_unused_block(){
+    if(block_unused==nullptr){
+        uint8_t * tmp=(uint8_t*)kmalloc(sizeof(memory_block)*100);
+        if(!tmp){
+            k_abort_s("Kernel Out of Memory!");
+        }else{
+            build_unused(tmp,100);
+        }
+    }
+    memory_block * temp=block_unused;
+    block_unused=block_unused->next;
+    if(block_unused){
+        block_unused->prev=nullptr;
+    }
+    return temp;
+}
+
+memory_block * get_block(uint8_t * start,uint32_t size,memory_block * prev=nullptr,memory_block * next=nullptr){
+    memory_block * temp=get_unused_block();
+    temp->start=start;
+    temp->size=size;
+    temp->prev=prev;
+    temp->next=next;
+    return temp;
 }
 
 void build_first(multiboot_memory_map_t * mmap){
@@ -163,6 +169,7 @@ void Memory::init(struct multiboot_info * mbd){
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem(usable);
     Screen::setfgcolor(Screen::WHITE);
+    print("\n");
 }
 
 memory_block * split(memory_block * block,uint32_t size){
@@ -191,6 +198,7 @@ memory_block * merge(memory_block * first,memory_block * second){
 }
 
 memory_block * Memory::alloc_block(uint32_t size){//first fit
+    SpinlockGuard guard(memory_lock);
     memory_block * block;
     for(block=block_root;block!=nullptr&&(block->size<size||block->type!=memory_block::MEMORY_BLOCK_FREE);block=block->next);
     if(block==nullptr){
@@ -201,6 +209,7 @@ memory_block * Memory::alloc_block(uint32_t size){//first fit
 }
 
 void Memory::free_block(memory_block * ptr){
+    SpinlockGuard guard(memory_lock);
     if(ptr->type==memory_block::MEMORY_BLOCK_USED){
         ptr->type=memory_block::MEMORY_BLOCK_FREE;
         if(ptr->prev){

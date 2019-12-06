@@ -39,7 +39,7 @@ constexpr int vga_xy(int x,int y){
 
 void Screen::newline(){
     xpos=0;
-    if(ypos!=YLEN){
+    if(ypos!=YMAX){
         ypos++;
     }else{
         scroll(1);
