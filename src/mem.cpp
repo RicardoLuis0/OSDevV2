@@ -123,46 +123,8 @@ void Memory::init(struct multiboot_info * mbd){
     uint64_t usable=0;
     memory_block * temp=nullptr;
     if(mbd->flags&MULTIBOOT_INFO_MEM_MAP){
-        #ifdef VERBOSE_MEM
-        print("mem_lower: ");
-        Screen::write_mem(mbd->mem_lower,1);
-        print(",mem_upper: ");
-        Screen::write_mem(mbd->mem_upper,1);
-        print("\nmmap_addr: ");
-        Screen::write_h(mbd->mmap_addr);
-        print(",mmap_length: ");
-        Screen::write_h(mbd->mmap_length);
-        print("\n");
-        #endif // VERBOSE_MEM
         void * mmap_max=(void*)(mbd->mmap_addr+mbd->mmap_length);
         for(multiboot_memory_map_t * mmap=(multiboot_memory_map_t *)mbd->mmap_addr;mmap<mmap_max;mmap=(multiboot_memory_map_t *)(((uint32_t)mmap)+mmap->size+sizeof(mmap->size))){
-            #ifdef VERBOSE_MEM
-            print("Address: ");
-            Screen::write_h(mmap->addr);
-            print(" ,Length: ");
-            Screen::write_mem(mmap->len);
-            print(" ,Type: ");
-            switch(mmap->type){
-            case MULTIBOOT_MEMORY_AVAILABLE:
-                print("AVAILABLE\n");
-                break;
-            case MULTIBOOT_MEMORY_RESERVED:
-                print("RESERVED\n");
-                break;
-            case MULTIBOOT_MEMORY_ACPI_RECLAIMABLE:
-                print("ACPI_RECLAIMABLE\n");
-                break;
-            case MULTIBOOT_MEMORY_NVS:
-                print("NVS\n");
-                break;
-            case MULTIBOOT_MEMORY_BADRAM:
-                print("BADRAM\n");
-                break;
-            default:
-                print("Unknown\n");
-                break;
-            }
-            #endif // VERBOSE_MEM
             total+=mmap->len;
             if(mmap->type!=MULTIBOOT_MEMORY_AVAILABLE){//ignore non-available memory
                 continue;
@@ -207,7 +169,7 @@ memory_block * split(memory_block * block,uint32_t size){
     if(size==block->size){
         block->type=memory_block::MEMORY_BLOCK_USED;
         return block;
-    }else if(size<block->size){
+    }else if(size>block->size){
         k_abort_s("Memory::split size too large");
     }
     memory_block * temp=get_block(block->start+size,block->size-size,block,block->next);

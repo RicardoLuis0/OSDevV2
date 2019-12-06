@@ -38,4 +38,5 @@ extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::setfgcolor(Screen::WHITE);
     Screen::write_s("\n");
     Memory::init(mbd);
+    Memory::alloc_block(100);
 }
