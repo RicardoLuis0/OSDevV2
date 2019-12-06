@@ -17,6 +17,7 @@ void k_free(void * ptr,uint32_t size);
 void k_abort();
 void k_abort_i(int code);
 void k_abort_s(const char * msg);
+void k_abort_assert(const char * msg,const char * filename,uint32_t line);
 void k_putc(char c);
 void k_puts(const char * s);
 char k_getchar();
