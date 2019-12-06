@@ -238,6 +238,7 @@ void Memory::kfree(void * ptr){
     while(block!=nullptr){
         if(block->start==ptr)break;//ptr found
         else if(ptr<block->start)return;//ptr not valid
+        block=block->next;
     }
     if(block!=nullptr){
         free_block(block);
