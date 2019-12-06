@@ -101,6 +101,7 @@ memory_block * get_block(uint8_t * start,uint32_t size,memory_block * prev=nullp
     temp->size=size;
     temp->prev=prev;
     temp->next=next;
+    temp->type=memory_block::MEMORY_BLOCK_FREE;
     return temp;
 }
 
@@ -141,6 +142,8 @@ void Memory::init(struct multiboot_info * mbd){
                 continue;
             }else if(mmap->addr<MM){//don't bother with lower memory
                 continue;
+            }else if(mmap->addr>0xFFFFFFFFULL){//out of 32-bit addressing range
+				continue;
             }else{
                 usable+=mmap->len;
                 if(temp==nullptr){
@@ -170,7 +173,11 @@ void Memory::init(struct multiboot_info * mbd){
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     print("OK\n");
     Screen::setfgcolor(Screen::WHITE);
-    print(" -Usable Memory: ");
+    print(" -Total Memory:  ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_mem(total);
+    Screen::setfgcolor(Screen::WHITE);
+    print("\n -Usable Memory: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem(usable);
     Screen::setfgcolor(Screen::WHITE);
@@ -187,6 +194,7 @@ memory_block * split(memory_block * block,uint32_t size){
     memory_block * temp=get_block(block->start+size,block->size-size,block,block->next);
     block->next=temp;
     block->size=size;
+    block->type=memory_block::MEMORY_BLOCK_USED;
     return block;
 }
 
