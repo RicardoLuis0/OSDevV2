@@ -139,7 +139,7 @@ void Memory::init(struct multiboot_info * mbd){
             }else if(mmap->addr<MM){//don't bother with lower memory
                 continue;
             }else if(mmap->addr>0xFFFFFFFFULL){//out of 32-bit addressing range
-				continue;
+                continue;
             }else{
                 usable+=mmap->len;
                 if(temp==nullptr){
