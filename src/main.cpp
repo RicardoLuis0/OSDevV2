@@ -2,6 +2,7 @@
 #include "print.h"
 #include "mem.h"
 #include "default/assert.h"
+#include "kui.h"
 
 extern "C" void k_abort(){
     Screen::setcolor(Screen::RED,Screen::WHITE);
@@ -46,4 +47,5 @@ extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::setfgcolor(Screen::WHITE);
     Screen::write_s("\n");
     Memory::init(mbd);
+    KUI::kui();
 }

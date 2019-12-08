@@ -47,10 +47,12 @@
 		<Unit filename="include/extern/multiboot.h" />
 		<Unit filename="include/keyboard.h" />
 		<Unit filename="include/klib.h" />
+		<Unit filename="include/kui.h" />
 		<Unit filename="include/mem.h" />
 		<Unit filename="include/print.h" />
 		<Unit filename="include/screen.h" />
 		<Unit filename="include/spinlock.h" />
+		<Unit filename="include/tdraw.h" />
 		<Unit filename="include/util.h" />
 		<Unit filename="linker.ld" />
 		<Unit filename="src/boot.asm">
@@ -61,11 +63,13 @@
 		</Unit>
 		<Unit filename="src/keyboard.cpp" />
 		<Unit filename="src/klib.cpp" />
+		<Unit filename="src/kui.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/mem.cpp" />
 		<Unit filename="src/print.cpp" />
 		<Unit filename="src/screen.cpp" />
 		<Unit filename="src/spinlock.cpp" />
+		<Unit filename="src/tdraw.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

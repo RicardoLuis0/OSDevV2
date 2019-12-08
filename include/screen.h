@@ -29,6 +29,7 @@ namespace Screen {
     void setchar(char c);
     void write_c(char c);
     void write_s(const char * str);
+    void write_s_skip_space(const char * str);
     void write_i(unsigned int i);
     void write_h(uint64_t h);//write int as hex
     void write_mem(uint64_t mem,int offset=0);//write as memory size
@@ -36,6 +37,8 @@ namespace Screen {
     void setcolor(color bg,color fg);
     void setbgcolor(color c);
     void setfgcolor(color c);
+    color getbgcolor();
+    color getfgcolor();
     void clear();
 }
 

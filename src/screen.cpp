@@ -155,6 +155,37 @@ void Screen::write_s(const char * str){
     move(pos);
 }
 
+void Screen::write_s_skip_space(const char * str){
+    int pos=vga_xy(xpos,ypos);
+    while(*str!='\0'&&pos<POSLEN){
+        switch(*str){
+        case '\r'://carriage return
+            str++;
+            pos=((pos/XLEN)+1);
+            break;
+        case '\n'://newline
+            xpos=pos%XLEN;
+            ypos=pos/XLEN;
+            newline();
+            pos=vga_xy(xpos,ypos);
+            str++;
+            break;
+        case '\b'://back
+            str++;
+            if(pos>0)pos--;
+            break;
+        case ' ':
+            pos++;
+            str++;
+            break;
+        default:
+            vga[pos++]=vga_entry(*str++);
+            break;
+        }
+    }
+    move(pos);
+}
+
 static void write_i_rec(unsigned int i,int &pos){
     if(i>9){
         write_i_rec(i/10,pos);
@@ -237,4 +268,12 @@ void Screen::setfgcolor(color c){
 void Screen::setcolor(color bg_c,color fg_c){
     bg=bg_c;
     fg=fg_c;
+}
+
+color Screen::getbgcolor(){
+    return bg;
+}
+
+color Screen::getfgcolor(){
+    return fg;
 }
