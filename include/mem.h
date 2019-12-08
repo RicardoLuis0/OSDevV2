@@ -18,8 +18,6 @@ namespace Memory{
     void init(struct multiboot_info * mbd);
     memory_block * alloc_block(uint32_t size);
     void free_block(memory_block * ptr);
-    void * kmalloc(uint32_t size);
-    void kfree(void * ptr);
 }
 
 #endif // KMEM_H_INCLUDED

@@ -45,10 +45,6 @@ gdt_entry GDT[3];
 
 extern "C" void loadgdt(uint32_t base,uint16_t limit);
 
-extern "C" void * k_malloc(uint32_t size){
-    return NULL;
-}
-
 extern uint8_t kernel_start;
 
 extern uint8_t kernel_end;
@@ -75,7 +71,7 @@ void build_unused(uint8_t * data,uint32_t count){//count>0
 
 memory_block * get_unused_block(){
     if(block_unused==nullptr){
-        uint8_t * tmp=(uint8_t*)kmalloc(sizeof(memory_block)*100);
+        uint8_t * tmp=(uint8_t*)k_malloc(sizeof(memory_block)*100);
         if(!tmp){
             k_abort_s("Kernel Out of Memory!");
         }else{
@@ -241,22 +237,22 @@ void Memory::free_block(memory_block * ptr){
     }
 }
 
-void * Memory::kmalloc(uint32_t size){
-    if(memory_block * b=alloc_block(size)){
+extern "C" void * k_malloc(uint32_t size){
+    if(Memory::memory_block * b=Memory::alloc_block(size)){
         return b->start;
     }else{
         return nullptr;
     }
 }
 
-void Memory::kfree(void * ptr){
-    memory_block * block=block_root;
+extern "C" void k_free(void * ptr){
+    Memory::memory_block * block=block_root;
     while(block!=nullptr){
         if(block->start==ptr)break;//ptr found
         else if(ptr<block->start)return;//ptr not valid
         block=block->next;
     }
     if(block!=nullptr){
-        free_block(block);
+        Memory::free_block(block);
     }
 }

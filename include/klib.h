@@ -13,7 +13,7 @@ extern "C" {
 #endif // __cplusplus
 
 void * k_malloc(uint32_t size);
-void k_free(void * ptr,uint32_t size);
+void k_free(void * ptr);
 void k_abort();
 void k_abort_i(int code);
 void k_abort_s(const char * msg);
