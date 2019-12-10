@@ -20,8 +20,12 @@ void k_abort_s(const char * msg);
 void k_abort_assert(const char * msg,const char * filename,uint32_t line);
 void k_putc(char c);
 void k_puts(const char * s);
-char k_getchar();
+char k_getch();
 void * memmove(void * dst,const void * src,uint32_t n);
+
+void outb(uint16_t port, uint8_t val);
+
+uint8_t inb(uint16_t port);
 
 #ifdef __cplusplus
 }

@@ -3,6 +3,17 @@
 #include "mem.h"
 #include "default/assert.h"
 #include "kui.h"
+#include "drivers/ps2/keyboard.h"
+
+extern "C" void outb(uint16_t port, uint8_t val) {
+    asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) );
+}
+
+extern "C" uint8_t inb(uint16_t port) {
+    uint8_t ret;
+    asm volatile ( "inb %1, %0" : "=a"(ret) : "Nd"(port) );
+    return ret;
+}
 
 extern "C" void k_abort(){
     Screen::setcolor(Screen::RED,Screen::WHITE);
@@ -45,7 +56,11 @@ extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem(1,2);//1M
     Screen::setfgcolor(Screen::WHITE);
-    Screen::write_s("\n -Initializing Drivers...\n");
     Memory::init(mbd);
+    Screen::write_s("\n -Initializing Drivers...\n");
+    Drivers::PS2::Keyboard::init();
+    while(true){
+        Screen::write_c(k_getch());//TEMP
+    }
     //KUI::kui();
 }

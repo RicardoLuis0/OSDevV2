@@ -17,6 +17,7 @@ int xpos;
 int ypos;
 color bg;
 color fg;
+uint8_t color_value;
 
 constexpr int XMAX=79;
 constexpr int YMAX=24;
@@ -29,8 +30,12 @@ constexpr int POSMAX=(XLEN*YLEN)-1;
 
 volatile uint16_t * vga;
 
+static inline void update_color() {
+    color_value=(fg|(bg<<4));
+}
+
 static inline uint16_t vga_entry(uint8_t uc) {
-    return (((uint16_t) uc) | ((uint16_t) (fg | (bg << 4)) << 8));
+    return (((uint16_t) uc) | ((uint16_t) (color_value << 8)));
 }
 
 constexpr int vga_xy(int x,int y){
@@ -57,9 +62,8 @@ void Screen::scroll(int len){
 
 void Screen::init(){
     vga=(uint16_t*) 0xB8000;
+    setcolor(BLACK,WHITE);//white on black color by default
     clear();
-    bg=BLACK;
-    fg=WHITE;
 }
 
 void Screen::clear(){
@@ -255,15 +259,18 @@ void Screen::setchar(char c){
 
 void Screen::setbgcolor(color c){
     bg=c;
+    update_color();
 }
 
 void Screen::setfgcolor(color c){
     fg=c;
+    update_color();
 }
 
 void Screen::setcolor(color bg_c,color fg_c){
     bg=bg_c;
     fg=fg_c;
+    update_color();
 }
 
 color Screen::getbgcolor(){

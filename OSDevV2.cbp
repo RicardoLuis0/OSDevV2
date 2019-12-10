@@ -37,15 +37,15 @@
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="-std=c++17 --target=i686-pc-none-elf -march=i686 -ffreestanding -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-rtti -fno-exceptions -Wno-c++17-extensions" />
+			<Add option="-std=c++17 --target=i686-pc-none-elf -march=i686 -ffreestanding -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-rtti -fno-exceptions -Wno-c++17-extensions -Werror=return-type" />
 		</Compiler>
 		<Linker>
 			<Add option="-T linker.ld" />
 		</Linker>
 		<Unit filename="include/default/assert.h" />
 		<Unit filename="include/default/stdint.h" />
+		<Unit filename="include/drivers/ps2/keyboard.h" />
 		<Unit filename="include/extern/multiboot.h" />
-		<Unit filename="include/keyboard.h" />
 		<Unit filename="include/klib.h" />
 		<Unit filename="include/kui.h" />
 		<Unit filename="include/mem.h" />
@@ -58,10 +58,10 @@
 		<Unit filename="src/boot.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
+		<Unit filename="src/drivers/ps2/keyboard.cpp" />
 		<Unit filename="src/gdt.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
-		<Unit filename="src/keyboard.cpp" />
 		<Unit filename="src/klib.cpp" />
 		<Unit filename="src/kui.cpp" />
 		<Unit filename="src/main.cpp" />
