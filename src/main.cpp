@@ -60,7 +60,10 @@ extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::write_s("\n -Initializing Drivers...\n");
     Drivers::PS2::Keyboard::init();
     while(true){
-        Screen::write_c(k_getch());//TEMP
+        using namespace Drivers::PS2::Keyboard;
+        keycode k=getKey();
+        Screen::write_h(k);
+        print(":",keycode_name(k),"\n");
     }
     //KUI::kui();
 }

@@ -1,6 +1,6 @@
 #include "klib.h"
 
-constexpr uint32_t sz=sizeof(uint32_t);
+constexpr uint32_t sz=sizeof(size_t);
 
 /*
 from musl (https://github.com/esmil/musl/blob/master/src/string/memmove.c)
@@ -30,12 +30,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------
 */
 
-extern "C" void * memmove(void * dst,const void * src,uint32_t n) {
+extern "C" void * k_memmove(void * dst,const void * src,size_t n) {
     char *d = (char*)dst;
     const char *s = (const char *)src;
 
     if (d==s) return d;
-    //if (s+n <= d || d+n <= s) return memcpy(d, s, n);
+    if (s+n <= d || d+n <= s) return k_memcpy(d, s, n);
 
     if (d<s) {
         if ((uintptr_t)s % sz == (uintptr_t)d % sz) {
@@ -43,7 +43,7 @@ extern "C" void * memmove(void * dst,const void * src,uint32_t n) {
                 if (!n--) return dst;
                 *d++ = *s++;
             }
-            for (; n>=sz; n-=sz, d+=sz, s+=sz) *(uint32_t *)d = *(uint32_t *)s;
+            for (; n>=sz; n-=sz, d+=sz, s+=sz) *(size_t *)d = *(size_t *)s;
         }
         for (; n; n--) *d++ = *s++;
     } else {
@@ -52,10 +52,19 @@ extern "C" void * memmove(void * dst,const void * src,uint32_t n) {
                 if (!n--) return dst;
                 d[n] = s[n];
             }
-            while (n>=sz) n-=sz, *(uint32_t *)(d+n) = *(uint32_t *)(s+n);
+            while (n>=sz) n-=sz, *(size_t *)(d+n) = *(size_t *)(s+n);
         }
         while (n) n--, d[n] = s[n];
     }
 
     return dst;
 }
+
+extern "C" void * k_memcpy(void *dst, const void *src, size_t n) {//copy
+    uint8_t *d=(uint8_t*)dst; 
+    const uint8_t *s=(const uint8_t*)src;
+    for(;n>0;n--,d++,s++){
+        *d=*s;
+    }
+    return dst;
+} 
