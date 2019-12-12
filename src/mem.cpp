@@ -159,21 +159,21 @@ void Memory::init(struct multiboot_info * mbd){
             return;
         }
     }else{
-        print("> Memory ");
+        print(":Memory ");
         Screen::setfgcolor(Screen::RED);
         print("FAIL\n");
         k_abort_s("Memory Map not available");
         print("\n");
     }
-    print("> Memory ");
+    print(" -Memory ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
-    print("OK\n");
+    print("OK");
     Screen::setfgcolor(Screen::WHITE);
-    print(" -Total Memory:  ");
+    print(", Total/Usable: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem(total);
     Screen::setfgcolor(Screen::WHITE);
-    print("\n -Usable Memory: ");
+    print("/");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem(usable);
     Screen::setfgcolor(Screen::WHITE);

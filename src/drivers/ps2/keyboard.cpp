@@ -487,7 +487,7 @@ using namespace Drivers::PS2::Keyboard;
 using Drivers::PS2::Keyboard::keycode;
 
 void Drivers::PS2::Keyboard::init(){//TODO change to interrupts when enabled
-    print(" -Initializing PS2 Keyboard Driver...\n");
+    print(" -Initializing PS/2 Keyboard Driver...\n");
 }
 
 static inline bool has_scancode(){

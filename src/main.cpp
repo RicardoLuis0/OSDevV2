@@ -2,8 +2,8 @@
 #include "print.h"
 #include "mem.h"
 #include "default/assert.h"
-#include "kui.h"
 #include "drivers/ps2/keyboard.h"
+#include "drivers/ahci.h"
 
 extern "C" void outb(uint16_t port, uint8_t val) {
     asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) );
@@ -48,7 +48,7 @@ constexpr uint64_t MM=(1024ULL*1024ULL);
 extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::init();
     fassert(magic==0x2BADB002U);
-    Screen::write_s(" -Starting Kernel...\n -Kernel Size: ");
+    Screen::write_s(">Starting Kernel\n -Kernel Size: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem((((uint32_t)&kernel_end)-((uint32_t)&kernel_start))-MM);//size of kernel in memory minus stack size
     Screen::setfgcolor(Screen::WHITE);
@@ -57,13 +57,7 @@ extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::write_mem(1,2);//1M
     Screen::setfgcolor(Screen::WHITE);
     Memory::init(mbd);
-    Screen::write_s("\n -Initializing Drivers...\n");
+    Screen::write_s(">Initializing Drivers\n");
     Drivers::PS2::Keyboard::init();
-    while(true){
-        using namespace Drivers::PS2::Keyboard;
-        keycode k=getKey();
-        Screen::write_h(k);
-        print(":",keycode_name(k),"\n");
-    }
-    //KUI::kui();
+    Drivers::AHCI::init();
 }
