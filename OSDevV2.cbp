@@ -48,6 +48,7 @@
 		<Unit filename="include/drivers/ahci.h" />
 		<Unit filename="include/drivers/ps2/keyboard.h" />
 		<Unit filename="include/extern/multiboot.h" />
+		<Unit filename="include/gdt.h" />
 		<Unit filename="include/idt.h" />
 		<Unit filename="include/klib.h" />
 		<Unit filename="include/mem.h" />
@@ -60,16 +61,20 @@
 		<Unit filename="src/boot.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
-		<Unit filename="src/cpuid.asm">
+		<Unit filename="src/cpuid.cpp" />
+		<Unit filename="src/cpuid_s.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
-		<Unit filename="src/cpuid_cpp.cpp" />
 		<Unit filename="src/drivers/ahci.cpp" />
 		<Unit filename="src/drivers/ps2/keyboard.cpp" />
-		<Unit filename="src/gdt.asm">
+		<Unit filename="src/gdt.cpp" />
+		<Unit filename="src/gdt_s.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
 		<Unit filename="src/idt.cpp" />
+		<Unit filename="src/idt_s.asm">
+			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
+		</Unit>
 		<Unit filename="src/klib.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/mem.cpp" />
