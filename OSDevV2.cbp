@@ -42,11 +42,13 @@
 		<Linker>
 			<Add option="-T linker.ld" />
 		</Linker>
+		<Unit filename="include/cpuid.h" />
 		<Unit filename="include/default/assert.h" />
 		<Unit filename="include/default/stdint.h" />
 		<Unit filename="include/drivers/ahci.h" />
 		<Unit filename="include/drivers/ps2/keyboard.h" />
 		<Unit filename="include/extern/multiboot.h" />
+		<Unit filename="include/idt.h" />
 		<Unit filename="include/klib.h" />
 		<Unit filename="include/mem.h" />
 		<Unit filename="include/print.h" />
@@ -58,11 +60,16 @@
 		<Unit filename="src/boot.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
+		<Unit filename="src/cpuid.asm">
+			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
+		</Unit>
+		<Unit filename="src/cpuid_cpp.cpp" />
 		<Unit filename="src/drivers/ahci.cpp" />
 		<Unit filename="src/drivers/ps2/keyboard.cpp" />
 		<Unit filename="src/gdt.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
+		<Unit filename="src/idt.cpp" />
 		<Unit filename="src/klib.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/mem.cpp" />

@@ -8,17 +8,19 @@
 #ifdef __cplusplus
 constexpr void * NULL=0;
 extern "C" {
+#define NORETURN [[noreturn]]
 #else
 #define NULL ((void*)0)
+#define NORETURN
 #endif // __cplusplus
 typedef uint32_t size_t;
 
 void * k_malloc(uint32_t size);
 void k_free(void * ptr);
-void k_abort();
-void k_abort_i(int code);
-void k_abort_s(const char * msg);
-void k_abort_assert(const char * msg,const char * filename,uint32_t line);
+NORETURN void k_abort();
+NORETURN void k_abort_i(int code);
+NORETURN void k_abort_s(const char * msg);
+NORETURN void k_abort_assert(const char * msg,const char * filename,uint32_t line);
 void k_putc(char c);
 void k_puts(const char * s);
 char k_getch();
@@ -31,5 +33,7 @@ uint8_t inb(uint16_t port);
 #ifdef __cplusplus
 }
 #endif
+
+#undef NORETURN
 
 #endif // KLIB_H_INCLUDED
