@@ -239,6 +239,9 @@ void CPUID::check(){
     uint32_t ecx=0,edx=0;
     asm volatile("push %0\npush %1\ncall cpuid_features"::"r"(&ecx),"r"(&edx));
     //print_features(ecx,edx);
+    if(!(edx&CPUID_FEAT_EDX_MSR)){
+        k_abort_s("MSR not supported");
+    }
     if(!(edx&CPUID_FEAT_EDX_APIC)){
         k_abort_s("APIC not supported");
     }
