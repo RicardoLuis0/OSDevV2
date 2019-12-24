@@ -1,5 +1,6 @@
 #include "idt.h"
 #include "default/stdint.h"
+#include "klib.h"
 
 #define IDTX(n) extern "C" void _idtx##n();
 #define IDTXi() IDTX(0) IDTX(1) IDTX(2) IDTX(3) IDTX(4) IDTX(5) IDTX(6) IDTX(7) IDTX(8) IDTX(9)
@@ -24,19 +25,6 @@ using namespace IDT;
 namespace IDT {
     //https://wiki.osdev.org/Interrupt_Descriptor_Table
     union IDT_type_attributes {
-        enum gate_type {
-            G_32_INT=0b1110,
-            G_32_TASK=0b0101,
-            G_32_TRAP=0b1111,
-            //G_16_INT=0b0110,
-            //G_16_TRAP=0b0111,
-        };
-        enum ring_type {
-            RING_0,
-            RING_1,
-            RING_2,
-            RING_3,
-        };
         uint8_t raw;
         struct{
             uint8_t type:4;
@@ -45,7 +33,7 @@ namespace IDT {
             uint8_t present:1;
         };
         IDT_type_attributes(){
-            type=0;
+            type=G_32_INT;
             segment=0;
             dpl=0;
             present=0;
@@ -72,13 +60,15 @@ namespace IDT {
         }
     };
     IDT_entry IDT[256];
-    void (*idt_callback[256])(void);
+    void (*idt_callback[256])(int);
 }
 
-extern "C" void call_idt(int num){
+extern "C" void call_idt(int num,int code){
     if(num<0||num>255)return;//too large/small
     if(idt_callback[num]){
-        idt_callback[num]();
+        idt_callback[num](code);
+    }else{
+        //unimplemented interrupt
     }
 }
 
@@ -89,10 +79,31 @@ constexpr void(*idtx[256])(){//array of asm idt entrypoints
 };
 
 void IDT::init(){
+    int cr0;
+    asm volatile ("movl %%cr0,%0":"=r"(cr0));
+    cr0|=1<<5;
+    asm volatile ("movl %0,%%cr0"::"r"(cr0));
+    for(uint32_t i=0;i<256;i++){
+        IDT_type_attributes ta;
+        if(i<32){
+            if(i==15||(i>=21&&i<=29)||i==31){//if is reserved do nothing
+                ta=IDT_type_attributes();
+            }else if(i==1||i==3||i==4){
+                ta=IDT_type_attributes(G_32_TRAP,RING_0);
+            }else{
+                ta=IDT_type_attributes(G_32_INT,RING_0);
+            }
+        }else{
+            ta=IDT_type_attributes();
+        }
+        IDT[i].encode((uint32_t)idtx[i],ta);//encode address
+    }
     //TODO
+    k_abort_s("IDT not implemented yet");
 }
 
-void IDT::set_handler(uint8_t num,void(*c)(void)){
+void IDT::set_handler(uint8_t num,void(*c)(int),gate_type g,ring_type t){
     if(num<32)return;
     idt_callback[num]=c;
+    IDT[num].type_attr=IDT_type_attributes(g,t);
 }

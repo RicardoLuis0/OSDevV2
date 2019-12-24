@@ -6,6 +6,7 @@
 #include "drivers/ahci.h"
 #include "cpuid.h"
 #include "gdt.h"
+#include "idt.h"
 
 extern "C" void outb(uint16_t port, uint8_t val) {
     asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) );
@@ -68,6 +69,7 @@ extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::write_mem(1,2);//1M
     Screen::setfgcolor(Screen::WHITE);
     GDT::init();
+    IDT::init();
     Memory::init(mbd);
     Screen::write_s(">Initializing Drivers\n");
     Drivers::PS2::Keyboard::init();
