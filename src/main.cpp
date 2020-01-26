@@ -41,9 +41,23 @@ extern "C" void k_abort_s(const char * msg){
     while(true);
 }
 
-extern "C" void k_abort_assert(const char * msg,const char * filename,uint32_t line){
+extern "C" void k_abort_s_i_s(const char * s1,int i,const char * s2){
     Screen::setcolor(Screen::RED,Screen::WHITE);
-    print("Kernel Aborted! In ",filename,":",line,", Assertion ",msg," failed.");
+    print("Kernel Aborted! ",s1,i,s2,"");
+    asm volatile("jmp hang");
+    while(true);
+}
+
+extern "C" void k_abort_assert(const char * condition,const char * name,uint32_t line){
+    Screen::setcolor(Screen::RED,Screen::WHITE);
+    print("Kernel Aborted! In ",name,":",line,", Assertion ",condition," failed.");
+    asm volatile("jmp hang");
+    while(true);
+}
+
+extern "C" void k_abort_massert(const char * condition,const char * msg,const char * name,uint32_t line){
+    Screen::setcolor(Screen::RED,Screen::WHITE);
+    print("Kernel Aborted! In ",name,":",line,", Assertion ",condition," failed.\n",msg);
     asm volatile("jmp hang");
     while(true);
 }

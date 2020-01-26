@@ -3,29 +3,42 @@ section .text
 extern call_idt
 extern hang
 
-%macro IDTES 1 ;all general-purpose interrupts take an 'int' parameter on the stack, and pops it
+idtr DW 0 ;limit
+     DD 0 ;base
+
+global loadidt
+loadidt:
+    mov   eax, [esp + 4]
+    mov   [idtr + 2], eax
+    mov   ax, [esp + 8]
+    mov   [idtr], ax
+    lidt  [idtr]
+    sti
+    ret
+
+%macro IDTES 1 ;exception handler irq no parameter
 global _idtx%1
 _idtx%1:
-    pushad ;save registers
+    pushad;save registers
     push 0
     push %1 ;push irq number to stack
     call call_idt ;call c++ irq handler
-    add esp,8 ;decrement stack
-    popad ;restore registers
+    add esp,8;pop 2 bytes (function arguments)
+    popad;restore registers
     iret
 %endmacro
 
-%macro IDTEP 1 ;all general-purpose interrupts take an 'int' parameter on the stack, and pops it
+%macro IDTEP 1 ;exception handler irq with parameter
 global _idtx%1
 _idtx%1:
     pushad ;save registers
-    mov eax,[esp-32]
+    mov eax,[esp+0x20]
     push eax
     push %1 ;push irq number to stack
     call call_idt ;call c++ irq handler
-    add esp,8 ;decrement stack
+    add esp,8;pop 2 bytes (function arguments)
     popad ;restore registers
-    add esp,4
+    add esp,4;pop 1 byte (parameter)
     iret
 %endmacro
 
@@ -33,15 +46,12 @@ _idtx%1:
 global _idtx%1
 _idtx%1:
     pushad ;save registers
-    mov eax,[esp-36]
+    mov eax,[esp+0x24];get parameter
     push eax
-    mov eax,[esp-32]
-    mov [esp-40],eax
     push %1 ;push irq number to stack
     call call_idt ;call c++ irq handler
-    add esp,8 ;decrement stack
+    add esp,8;pop 2 bytes (function arguments)
     popad ;restore registers
-    add esp,4
     iret
 %endmacro
 

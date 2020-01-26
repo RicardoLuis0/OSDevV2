@@ -18,7 +18,12 @@ namespace IDT{
         RING_3,
     };
     void init();
-    void set_handler(uint8_t num,void(*)(int),gate_type,ring_type);
+    void set_irq_handler(uint8_t num,void(*)(void),gate_type,ring_type);
+    void set_irq_handler(uint8_t num,void(*)(int),gate_type,ring_type);
+    void set_irq_handler(uint8_t num,void(*)(int,int),gate_type,ring_type);
+    void set_exception_handler(uint8_t num,void(*)(void),gate_type,ring_type);
+    void set_exception_handler(uint8_t num,void(*)(int),gate_type,ring_type);
+    void set_exception_handler(uint8_t num,void(*)(int,int),gate_type,ring_type);
 }
 
 #endif // IDT_H_INCLUDED
