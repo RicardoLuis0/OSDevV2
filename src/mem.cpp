@@ -84,7 +84,7 @@ void build_first(multiboot_memory_map_t * mmap){
 }
 
 void Memory::init(struct multiboot_info * mbd){
-    print(" -Initializing Memory...\n");
+    print(" -Loading Kernel Memory Manager...\n");
     print(" -Parsing Memory Map...\n");
     uint64_t total=0;
     uint64_t usable=0;

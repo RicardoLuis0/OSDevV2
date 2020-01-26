@@ -2,6 +2,7 @@
 #include "stdc/stdint.h"
 #include "stdc/assert.h"
 #include "klib.h"
+#include "screen.h"
 
 #define IDTX(n) extern "C" void _idtx##n();
 #define IDTXi() IDTX(0) IDTX(1) IDTX(2) IDTX(3) IDTX(4) IDTX(5) IDTX(6) IDTX(7) IDTX(8) IDTX(9)
@@ -105,6 +106,7 @@ constexpr void(*idtx[256])(){//array of asm idt entrypoints
 extern "C" void loadidt(uint32_t base,uint16_t limit);
 
 void IDT::init(){
+    Screen::write_s(" -Loading IDT...\n");
     int cr0;
     asm volatile ("movl %%cr0,%0":"=r"(cr0));
     cr0|=1<<5;

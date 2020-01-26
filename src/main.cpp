@@ -71,7 +71,7 @@ constexpr uint64_t MM=(1024ULL*1024ULL);
 extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::init();
     fassert(magic==0x2BADB002U);
-    Screen::write_s(">Starting Kernel\n -Kernel Size: ");
+    Screen::write_s(">Initializing Kernel\n -Kernel Size: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem((((uint32_t)&kernel_end)-((uint32_t)&kernel_start))-MM);//size of kernel in memory minus stack size
     Screen::setfgcolor(Screen::WHITE);
@@ -84,6 +84,7 @@ extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem(1,2);//1M
     Screen::setfgcolor(Screen::WHITE);
+    Screen::write_s("\n");
     GDT::init();
     IDT::init();
     Memory::init(mbd);

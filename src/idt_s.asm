@@ -42,11 +42,10 @@ _idtx%1:
     iret
 %endmacro
 
-%macro IDTX 1 ;all general-purpose interrupts take an 'int' parameter on the stack, and pops it
+%macro IDTX 1 ;general-purpose interrupt, takes parameter in eax
 global _idtx%1
 _idtx%1:
     pushad ;save registers
-    mov eax,[esp+0x24];get parameter
     push eax
     push %1 ;push irq number to stack
     call call_idt ;call c++ irq handler
