@@ -986,19 +986,19 @@ extern "C" char k_getch(){//next ascii key
     return 0;
 }
 
-static void kbdown(void){
+static void kbint(){
     outb(0x20, 0x20);
     if(has_scancode()){
-        //print("KBINT:",keycode_name(get_keycode()),"\n");
         last_key=get_keycode();
         wait_for_key=false;
     }
 }
 
 void init(){
-    print(" -Initializing PS/2 Keyboard Driver...\n");
+    print(" -Initializing PS/2 Keyboard...\n");
     outb(0x21 , 0xFD);
-    IDT::set_irq_handler(0x21,kbdown,IDT::G_32_INT,IDT::RING_0);
+    print("  .Registering IRQ Handler...\n");
+    IDT::set_irq_handler(0x21,kbint,IDT::G_32_INT,IDT::RING_0);
 }
 
 }}}

@@ -85,7 +85,7 @@ void build_first(multiboot_memory_map_t * mmap){
 
 void Memory::init(struct multiboot_info * mbd){
     print(" -Loading Kernel Memory Manager...\n");
-    print(" -Parsing Memory Map...\n");
+    print("  .Parsing Memory Map...\n");
     uint64_t total=0;
     uint64_t usable=0;
     memory_block * temp=nullptr;
@@ -111,20 +111,20 @@ void Memory::init(struct multiboot_info * mbd){
             }
         }
         if(!block_root){
-            print("> Memory ");
+            print("  .Memory ");
             Screen::setfgcolor(Screen::RED);
             print("FAIL\n");
             k_abort_s("Not Enough Memory");
             return;
         }
     }else{
-        print(":Memory ");
+        print("  .Memory ");
         Screen::setfgcolor(Screen::RED);
         print("FAIL\n");
         k_abort_s("Memory Map not available");
         print("\n");
     }
-    print(" -Memory ");
+    print("  .Memory ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     print("OK");
     Screen::setfgcolor(Screen::WHITE);
