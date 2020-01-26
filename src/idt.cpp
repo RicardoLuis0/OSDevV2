@@ -115,7 +115,7 @@ void IDT::init(){
         IDT_type_attributes ta;
         if(i<32){
             if(i==15||(i>=21&&i<=29)||i==31){//if is reserved do nothing
-                ta=IDT_type_attributes(G_32_INT,RING_0);
+                ta=IDT_type_attributes();
             }else if(i==1||i==3||i==4){
                 ta=IDT_type_attributes(G_32_TRAP,RING_0);
             }else{

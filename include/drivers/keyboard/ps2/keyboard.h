@@ -4,8 +4,8 @@
 #include "stdc/stdint.h"
 
 namespace Drivers{
-namespace PS2{
 namespace Keyboard {
+namespace PS2{
     enum keycode{
         KEY_INVALID=0,
         KEY_0_PRESSED='0',
@@ -95,6 +95,30 @@ namespace Keyboard {
         KEY_KP_8_PRESSED,
         KEY_KP_9_PRESSED,
         //
+        KEY_KP_ENTER_PRESSED,
+        KEY_RIGHT_CONTROL_PRESSED,
+        KEY_KP_SLASH_PRESSED,
+        KEY_RIGHT_ALT_PRESSED,
+        KEY_HOME_PRESSED,
+        KEY_UP_PRESSED,
+        KEY_PGUP_PRESSED,
+        KEY_LEFT_PRESSED,
+        KEY_RIGHT_PRESSED,
+        KEY_END_PRESSED,
+        KEY_DOWN_PRESSED,
+        KEY_PGDOWN_PRESSED,
+        KEY_INSERT_PRESSED,
+        KEY_DELETE_PRESSED,
+        KEY_LEFT_CMD_PRESSED,
+        KEY_RIGHT_CMD_PRESSED,
+        KEY_APPS_PRESSED,//???
+        KEY_ACPI_POWER_PRESSED,
+        KEY_ACPI_SLEEP_PRESSED,
+        KEY_ACPI_WAKE_PRESSED,
+        //
+        KEY_PAUSE,
+        KEY_PRINTSCR_PRESSED,
+        //
         KEY_0_RELEASED,
         KEY_1_RELEASED,
         KEY_2_RELEASED,
@@ -181,27 +205,6 @@ namespace Keyboard {
         KEY_KP_8_RELEASED,
         KEY_KP_9_RELEASED,
         //
-        KEY_KP_ENTER_PRESSED,
-        KEY_RIGHT_CONTROL_PRESSED,
-        KEY_KP_SLASH_PRESSED,
-        KEY_RIGHT_ALT_PRESSED,
-        KEY_HOME_PRESSED,
-        KEY_UP_PRESSED,
-        KEY_PGUP_PRESSED,
-        KEY_LEFT_PRESSED,
-        KEY_RIGHT_PRESSED,
-        KEY_END_PRESSED,
-        KEY_DOWN_PRESSED,
-        KEY_PGDOWN_PRESSED,
-        KEY_INSERT_PRESSED,
-        KEY_DELETE_PRESSED,
-        KEY_LEFT_CMD_PRESSED,
-        KEY_RIGHT_CMD_PRESSED,
-        KEY_APPS_PRESSED,//???
-        KEY_ACPI_POWER_PRESSED,
-        KEY_ACPI_SLEEP_PRESSED,
-        KEY_ACPI_WAKE_PRESSED,
-        //
         KEY_KP_ENTER_RELEASED,
         KEY_RIGHT_CONTROL_RELEASED,
         KEY_KP_SLASH_RELEASED,
@@ -223,12 +226,9 @@ namespace Keyboard {
         KEY_ACPI_SLEEP_RELEASED,
         KEY_ACPI_WAKE_RELEASED,
         //
-        KEY_PAUSE,
-        KEY_PRINTSCR_PRESSED,
         KEY_PRINTSCR_RELEASED,
     };
     void init();
-    bool hasKey();
     keycode getKey();
     const char * keycode_name(keycode c);
 }}}

@@ -2,7 +2,7 @@
 #include "print.h"
 #include "mem.h"
 #include "stdc/assert.h"
-#include "drivers/ps2/keyboard.h"
+#include "drivers/keyboard/ps2/keyboard.h"
 #include "drivers/ahci.h"
 #include "cpuid.h"
 #include "gdt.h"
@@ -88,7 +88,12 @@ extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     GDT::init();
     IDT::init();
     Memory::init(mbd);
+    asm volatile("divl 0");
     Screen::write_s(">Initializing Drivers\n");
-    Drivers::PS2::Keyboard::init();
+    Drivers::Keyboard::PS2::init();
+    for(;;){
+        int k=k_getch();
+        Screen::write_c(k);
+    }
     Drivers::AHCI::init();
 }

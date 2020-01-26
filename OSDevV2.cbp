@@ -47,7 +47,7 @@
 		</Linker>
 		<Unit filename="include/cpuid.h" />
 		<Unit filename="include/drivers/ahci.h" />
-		<Unit filename="include/drivers/ps2/keyboard.h" />
+		<Unit filename="include/drivers/keyboard/ps2/keyboard.h" />
 		<Unit filename="include/extern/multiboot.h" />
 		<Unit filename="include/gdt.h" />
 		<Unit filename="include/idt.h" />
@@ -74,7 +74,7 @@
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
 		<Unit filename="src/drivers/ahci.cpp" />
-		<Unit filename="src/drivers/ps2/keyboard.cpp" />
+		<Unit filename="src/drivers/keyboard/ps2/keyboard.cpp" />
 		<Unit filename="src/gdt.cpp" />
 		<Unit filename="src/gdt_s.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
