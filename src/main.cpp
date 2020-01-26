@@ -88,7 +88,6 @@ extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     GDT::init();
     IDT::init();
     Memory::init(mbd);
-    asm volatile("divl 0");
     Screen::write_s(">Initializing Drivers\n");
     Drivers::Keyboard::PS2::init();
     for(;;){
