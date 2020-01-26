@@ -1,5 +1,5 @@
 #include "idt.h"
-#include "default/stdint.h"
+#include "stdc/stdint.h"
 #include "klib.h"
 
 #define IDTX(n) extern "C" void _idtx##n();

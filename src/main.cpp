@@ -1,12 +1,14 @@
 #include "klib.h"
 #include "print.h"
 #include "mem.h"
-#include "default/assert.h"
+#include "stdc/assert.h"
 #include "drivers/ps2/keyboard.h"
 #include "drivers/ahci.h"
 #include "cpuid.h"
 #include "gdt.h"
 #include "idt.h"
+
+#include "util/shared_ptr.h"
 
 extern "C" void outb(uint16_t port, uint8_t val) {
     asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) );

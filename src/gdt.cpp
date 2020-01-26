@@ -1,5 +1,5 @@
 #include "gdt.h"
-#include "default/stdint.h"
+#include "stdc/stdint.h"
 #include "klib.h"
 #include "screen.h"
 

@@ -1,6 +1,6 @@
 #include "screen.h"
 #include "util.h"
-#include "default/stdint.h"
+#include "stdc/stdint.h"
 #include "klib.h"
 
 extern "C" void k_putc(char c){

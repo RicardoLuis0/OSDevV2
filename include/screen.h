@@ -1,7 +1,7 @@
 #ifndef SCREEN_H_INCLUDED
 #define SCREEN_H_INCLUDED
 
-#include "default/stdint.h"
+#include "stdc/stdint.h"
 
 namespace Screen {
     enum color {

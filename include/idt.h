@@ -1,7 +1,7 @@
 #ifndef IDT_H_INCLUDED
 #define IDT_H_INCLUDED
 
-#include "default/stdint.h"
+#include "stdc/stdint.h"
 
 namespace IDT{
     enum gate_type {

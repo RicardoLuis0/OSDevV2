@@ -1,7 +1,7 @@
 #ifndef KEYBOARD_H_INCLUDED
 #define KEYBOARD_H_INCLUDED
 
-#include "default/stdint.h"
+#include "stdc/stdint.h"
 
 namespace Drivers{
 namespace PS2{

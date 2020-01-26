@@ -3,11 +3,11 @@
 #include "mem.h"
 #include "screen.h"
 #include "print.h"
-#include "spinlock.h"
+#include "util/spinlock.h"
 
 using namespace Memory;
 
-Spinlock memory_lock;
+Util::Spinlock memory_lock;
 
 extern uint8_t kernel_start;
 
@@ -169,7 +169,7 @@ memory_block * Memory::alloc_block(uint32_t size){//first fit
     if(size%16!=0){
         size=(size + 15) & ~15;
     }
-    SpinlockGuard guard(memory_lock);
+    Util::SpinlockGuard guard(memory_lock);
     memory_block * block;
     for(block=block_root;block!=nullptr&&(block->size<size||block->type!=memory_block::MEMORY_BLOCK_FREE);block=block->next);
     if(block==nullptr){
@@ -180,7 +180,7 @@ memory_block * Memory::alloc_block(uint32_t size){//first fit
 }
 
 void Memory::free_block(memory_block * ptr){
-    SpinlockGuard guard(memory_lock);
+    Util::SpinlockGuard guard(memory_lock);
     if(ptr->type==memory_block::MEMORY_BLOCK_USED){
         ptr->type=memory_block::MEMORY_BLOCK_FREE;
         if(ptr->prev){

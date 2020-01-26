@@ -1,19 +1,19 @@
 #ifndef KLIB_H_INCLUDED
 #define KLIB_H_INCLUDED
 
-#include "default/stdint.h"
+#include "stdc/stdint.h"
+#include "stdc/stddef.h"
 
 //C-compatible header for internal kernel library
 
 #ifdef __cplusplus
-constexpr void * NULL=0;
+#include "new.h"
+#include "util.h"
 extern "C" {
 #define NORETURN [[noreturn]]
 #else
-#define NULL ((void*)0)
 #define NORETURN
 #endif // __cplusplus
-typedef uint32_t size_t;
 
 void * k_malloc(uint32_t size);
 void k_free(void * ptr);
