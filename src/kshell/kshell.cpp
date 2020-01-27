@@ -57,7 +57,6 @@ void kshell(){
             break;
         }
     }
-    //k_abort_s("Kernel Shell Unimplemented");
 }
 
 void kshell_execute(char * cmd){
