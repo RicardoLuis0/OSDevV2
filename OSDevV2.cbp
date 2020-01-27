@@ -52,6 +52,7 @@
 		<Unit filename="include/gdt.h" />
 		<Unit filename="include/idt.h" />
 		<Unit filename="include/klib.h" />
+		<Unit filename="include/kshell/kshell.h" />
 		<Unit filename="include/mem.h" />
 		<Unit filename="include/new.h" />
 		<Unit filename="include/print.h" />
@@ -86,6 +87,7 @@
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
 		<Unit filename="src/klib.cpp" />
+		<Unit filename="src/kshell/kshell.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/mem.cpp" />
 		<Unit filename="src/new.cpp" />

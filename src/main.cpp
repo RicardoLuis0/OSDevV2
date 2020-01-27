@@ -8,6 +8,8 @@
 #include "gdt.h"
 #include "idt.h"
 
+#include "kshell/kshell.h"
+
 #include "util/shared_ptr.h"
 #include "util/hash_table.h"
 
@@ -90,6 +92,20 @@ extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     GDT::init();
     IDT::init();
     Memory::init(mbd);
-    Screen::write_s(">Initializing Drivers\n");
+    Screen::write_s(">Kernel ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_s("OK");
+    Screen::setfgcolor(Screen::WHITE);
+    Screen::write_s("\n>Initializing Drivers\n");
     Drivers::Keyboard::PS2::init();
+    //TODO ATA/IDE driver
+    //TODO AHCI driver
+    //TODO VGA driver
+    Screen::write_s(">Drivers ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_s("OK");
+    Screen::setfgcolor(Screen::WHITE);
+    Screen::write_s("\n>Loading Kernel Shell\n");
+    kshell();
+    k_abort_s("Kernel Shell Returned!");
 }
