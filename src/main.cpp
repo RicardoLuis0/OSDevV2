@@ -92,5 +92,4 @@ extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Memory::init(mbd);
     Screen::write_s(">Initializing Drivers\n");
     Drivers::Keyboard::PS2::init();
-    Drivers::AHCI::init();
 }
