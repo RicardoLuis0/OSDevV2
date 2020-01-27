@@ -13,20 +13,20 @@ extern "C" void k_puts(const char * s){
 
 using namespace Screen;
 
-int xpos;
-int ypos;
+size_t xpos;
+size_t ypos;
 color bg;
 color fg;
 uint8_t color_value;
 
-constexpr int XMAX=79;
-constexpr int YMAX=24;
+constexpr size_t XMAX=79;
+constexpr size_t YMAX=24;
 
-constexpr int XLEN=80;
-constexpr int YLEN=25;
+constexpr size_t XLEN=80;
+constexpr size_t YLEN=25;
 
-constexpr int POSLEN=XLEN*YLEN;
-constexpr int POSMAX=(XLEN*YLEN)-1;
+constexpr size_t POSLEN=XLEN*YLEN;
+constexpr size_t POSMAX=(XLEN*YLEN)-1;
 
 volatile uint16_t * vga;
 
@@ -38,7 +38,7 @@ static inline uint16_t vga_entry(uint8_t uc) {
     return (((uint16_t) uc) | ((uint16_t) (color_value << 8)));
 }
 
-constexpr int vga_xy(int x,int y){
+constexpr size_t vga_xy(size_t x,size_t y){
     return y * XLEN + x;
 }
 
@@ -67,10 +67,19 @@ void Screen::init(){
 }
 
 void Screen::clear(){
-    for(int pos=0;pos<POSLEN;pos++){
+    for(size_t pos=0;pos<POSLEN;pos++){
         vga[pos]=vga_entry(' ');
     }
     move(0,0);
+}
+
+void Screen::clear_line(size_t line){
+    size_t start_pos=line*XLEN;
+    size_t end_pos=(line+1)*XLEN;
+    for(size_t pos=start_pos;pos<end_pos;pos++){
+        vga[pos]=vga_entry(' ');
+    }
+    move(start_pos);
 }
 
 static void update_cursor(){
@@ -81,13 +90,13 @@ static void update_cursor(){
     outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
 }
 
-void Screen::move(int x,int y){
-    xpos=clamp(0,x,XMAX);
-    ypos=clamp(0,y,YMAX);
+void Screen::move(size_t x,size_t y){
+    xpos=clamp(0u,x,XMAX);
+    ypos=clamp(0u,y,YMAX);
     update_cursor();
 }
 
-void Screen::move(int pos){
+void Screen::move(size_t pos){
     if(pos>POSMAX)pos=POSMAX;
     xpos=pos%XLEN;
     ypos=pos/XLEN;
@@ -279,4 +288,12 @@ color Screen::getbgcolor(){
 
 color Screen::getfgcolor(){
     return fg;
+}
+
+size_t Screen::getX(){
+    return xpos;
+}
+
+size_t Screen::getY(){
+    return ypos;
 }

@@ -2,6 +2,7 @@
 #define SCREEN_H_INCLUDED
 
 #include "stdc/stdint.h"
+#include "stdc/stddef.h"
 
 namespace Screen {
     enum color {
@@ -24,8 +25,8 @@ namespace Screen {
     };
     void init();
     void newline();
-    void move(int x,int y);
-    void move(int pos);
+    void move(size_t x,size_t y);
+    void move(size_t pos);
     void setchar(char c);
     void write_c(char c);
     void write_s(const char * str);
@@ -40,6 +41,9 @@ namespace Screen {
     color getbgcolor();
     color getfgcolor();
     void clear();
+    void clear_line(size_t line);
+    size_t getX();
+    size_t getY();
 }
 
 #endif // SCREEN_H_INCLUDED

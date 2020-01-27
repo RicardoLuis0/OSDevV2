@@ -7,7 +7,6 @@ namespace Drivers{
 namespace Keyboard {
 namespace PS2{
     enum keycode{
-        KEY_INVALID=0,
         KEY_0_PRESSED='0',
         KEY_1_PRESSED,
         KEY_2_PRESSED,
@@ -60,7 +59,8 @@ namespace PS2{
         KEY_COMMA_PRESSED=',',
         KEY_DOT_PRESSED='.',
         KEY_SLASH_PRESSED='/',
-        SCANCODE_SPECIAL=256,//after this only non-ascii
+        KEY_INVALID=256,
+        SCANCODE_SPECIAL,//after this only non-ascii
         KEY_LEFT_SHIFT_PRESSED,
         KEY_RIGHT_SHIFT_PRESSED,
         KEY_LEFT_CONTROL_PRESSED,

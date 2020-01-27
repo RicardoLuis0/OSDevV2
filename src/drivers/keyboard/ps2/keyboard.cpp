@@ -962,25 +962,52 @@ const char * keycode_name(keycode c){
     }
 }
 
-extern "C" char k_getch(){//next ascii key
-    uint16_t keycode;
-    static bool left_shift=false;
-    static bool right_shift=false;
-    while((keycode=getKey())){
-        if(keycode==KEY_LEFT_SHIFT_PRESSED){
-            left_shift=true;
-        }else if(keycode==KEY_RIGHT_SHIFT_PRESSED){
-            right_shift=true;
-        }else if(keycode==KEY_LEFT_SHIFT_RELEASED){
-            left_shift=false;
-        }else if(keycode==KEY_RIGHT_SHIFT_RELEASED){
-            right_shift=false;
-        }else if(keycode<=255&&keycode!=KEY_INVALID){//if is ascii
-            if(keycode>='a'&&keycode<='z'&&(left_shift||right_shift)){//if is letter, uppercase
-                return keycode+('A'-'a');
-            }else{
-                return keycode;
+static bool left_shift_down=false;
+static bool right_shift_down=false;
+
+static bool left_ctrl_down=false;
+static bool right_ctrl_down=false;
+
+static bool left_alt_down=false;
+static bool right_alt_down=false;
+
+int convert_ascii(int keycode){
+    if(keycode>='a'&&keycode<='z'&&(left_shift_down||right_shift_down)){//handle shift/uppercase
+        return keycode+('A'-'a');
+    }else{
+        return keycode;
+    }
+}
+
+extern "C" int k_getch(){//next ascii key
+    while(uint16_t keycode=getKey()){//read next key until ascii
+        if(keycode<128){//if is ascii, return
+            return convert_ascii(keycode);
+        }
+    }
+    return 0;
+}
+
+extern "C" int k_getch_extended(){
+    while(uint16_t keycode=getKey()){//read next key until ascii
+        switch(keycode){
+        case KEY_UP_PRESSED:
+            return K_GETCH_EXT_UP;
+        case KEY_DOWN_PRESSED:
+            return K_GETCH_EXT_DOWN;
+        case KEY_LEFT_PRESSED:
+            return K_GETCH_EXT_LEFT;
+        case KEY_RIGHT_PRESSED:
+            return K_GETCH_EXT_RIGHT;
+        case KEY_LEFT_CONTROL_PRESSED:
+            return K_GETCH_EXT_CTRL;
+        case KEY_RIGHT_CONTROL_PRESSED:
+            return K_GETCH_EXT_CTRL;
+        default:
+            if(keycode<128){//if is ascii, return
+                return convert_ascii(keycode);
             }
+            break;
         }
     }
     return 0;
@@ -990,6 +1017,46 @@ static void kbint(){
     outb(0x20, 0x20);
     if(has_scancode()){
         last_key=get_keycode();
+        switch(last_key){
+        case KEY_LEFT_SHIFT_PRESSED:
+            left_shift_down=true;
+            break;
+        case KEY_RIGHT_SHIFT_PRESSED:
+            right_shift_down=true;
+            break;
+        case KEY_LEFT_SHIFT_RELEASED:
+            left_shift_down=false;
+            break;
+        case KEY_RIGHT_SHIFT_RELEASED:
+            right_shift_down=false;
+            break;
+        case KEY_LEFT_CONTROL_PRESSED:
+            left_ctrl_down=true;
+            break;
+        case KEY_RIGHT_CONTROL_PRESSED:
+            right_ctrl_down=true;
+            break;
+        case KEY_LEFT_CONTROL_RELEASED:
+            left_ctrl_down=false;
+            break;
+        case KEY_RIGHT_CONTROL_RELEASED:
+            right_ctrl_down=false;
+            break;
+        case KEY_LEFT_ALT_PRESSED:
+            left_alt_down=true;
+            break;
+        case KEY_RIGHT_ALT_PRESSED:
+            right_alt_down=true;
+            break;
+        case KEY_LEFT_ALT_RELEASED:
+            left_alt_down=false;
+            break;
+        case KEY_RIGHT_ALT_RELEASED:
+            right_alt_down=false;
+            break;
+        default:
+            break;
+        }
         wait_for_key=false;
     }
 }

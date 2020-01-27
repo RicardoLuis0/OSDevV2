@@ -27,7 +27,15 @@ NORETURN void k_abort_assert(const char * condition,const char * name,uint32_t l
 NORETURN void k_abort_massert(const char * condition,const char * msg,const char * name,uint32_t line);
 void k_putc(char c);
 void k_puts(const char * s);
-char k_getch();
+int k_getch();
+enum k_getch_ext_keys{
+    K_GETCH_EXT_UP=256,
+    K_GETCH_EXT_DOWN,
+    K_GETCH_EXT_LEFT,
+    K_GETCH_EXT_RIGHT,
+    K_GETCH_EXT_CTRL,
+};
+int k_getch_extended();
 void * k_memmove(void * dst,const void * src,size_t n);
 void * k_memcpy(void *dst,const void *src,size_t n);
 void * k_memset(void *dst,int data,size_t n);
