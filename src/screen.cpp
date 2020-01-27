@@ -54,8 +54,8 @@ void Screen::newline(){
 void Screen::scroll(int len){
     if(len>0){
         uint32_t scr=len*XLEN;
-        k_memmove((void*)vga,(void*)(vga+scr),POSLEN-scr);
-    }else{
+        k_memcpy((void*)vga,(void*)(vga+scr),(POSLEN-scr)*2);
+    }else if(len<0){
         //TODO scroll down
     }
 }
