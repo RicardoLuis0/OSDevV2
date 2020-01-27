@@ -67,8 +67,8 @@ extern uint32_t kernel_start;
 
 extern uint32_t kernel_end;
 
-constexpr uint64_t STACK_SIZE=32*(1024ULL);
-//constexpr uint64_t MM=(1024ULL*1024ULL);
+constexpr uint32_t STACK_SIZE=32*(1024ULL);
+//constexpr uint32_t STACK_SIZE=(1024ULL*1024ULL);
 
 extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::init();
