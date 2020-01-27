@@ -119,6 +119,12 @@ namespace PS2{
         KEY_PAUSE,
         KEY_PRINTSCR_PRESSED,
         //
+        
+        
+        //    RELEASED
+        
+        
+        //
         KEY_0_RELEASED,
         KEY_1_RELEASED,
         KEY_2_RELEASED,
