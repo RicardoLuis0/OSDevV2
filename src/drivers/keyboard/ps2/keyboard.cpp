@@ -972,16 +972,17 @@ static bool left_alt_down=false;
 static bool right_alt_down=false;
 
 int convert_ascii(int keycode){
-    if(keycode>='a'&&keycode<='z'&&(left_shift_down||right_shift_down)){//handle shift/uppercase
-        return keycode+('A'-'a');
-    }else{
-        return keycode;
+    if(left_shift_down||right_shift_down){
+        if(keycode>='a'&&keycode<='z'){//handle uppercase
+            return keycode+('A'-'a');
+        }//TODO handle other shift uses
     }
+    return keycode;
 }
 
 extern "C" int k_getch(){//next ascii key
     while(uint16_t keycode=getKey()){//read next key until ascii
-        if(keycode<128){//if is ascii, return
+        if(keycode<128){//if is in ascii range, return converted keycode
             return convert_ascii(keycode);
         }
     }
