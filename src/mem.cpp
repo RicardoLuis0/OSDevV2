@@ -196,7 +196,20 @@ void Memory::free_block(memory_block * ptr){
     }
 }
 
-extern "C" void * k_malloc(uint32_t size){
+Memory::memory_block * find_block(void * ptr){
+    Memory::memory_block * block=block_root;
+    while(block!=nullptr){
+        if(block->start==ptr){//ptr found
+            return block->type==Memory::memory_block::MEMORY_BLOCK_USED?block:nullptr;
+        }else if(ptr<block->start){
+            return nullptr;//ptr not valid
+        }
+        block=block->next;
+    }
+    return nullptr;
+}
+
+extern "C" void * k_malloc(size_t size){
     if(Memory::memory_block * b=Memory::alloc_block(size)){
         return b->start;
     }else{
@@ -204,13 +217,35 @@ extern "C" void * k_malloc(uint32_t size){
     }
 }
 
-extern "C" void k_free(void * ptr){
-    Memory::memory_block * block=block_root;
-    while(block!=nullptr){
-        if(block->start==ptr)break;//ptr found
-        else if(ptr<block->start)return;//ptr not valid
-        block=block->next;
+void * zero_alloc(size_t size){
+    void * p=k_malloc(size);
+    if(p){
+        k_memset(p,0,size);
     }
+    return p;
+}
+
+extern "C" void * k_calloc(size_t num,size_t size){
+    return zero_alloc(size*num);
+}
+
+extern "C" void * k_realloc(void * ptr,size_t size){
+    void * p2=nullptr;
+    Memory::memory_block * block;
+    if((block=find_block(ptr))&&block->type==Memory::memory_block::MEMORY_BLOCK_USED){
+        p2=zero_alloc(size);
+        if(p2){
+            k_memcpy(p2,ptr,min(size,block->size));
+            free_block(block);
+        }
+    }else{
+        p2=zero_alloc(size);
+    }
+    return p2;
+}
+
+extern "C" void k_free(void * ptr){
+    Memory::memory_block * block=find_block(ptr);
     if(block!=nullptr){
         Memory::free_block(block);
     }

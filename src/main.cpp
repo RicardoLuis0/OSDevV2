@@ -9,6 +9,7 @@
 #include "idt.h"
 
 #include "util/shared_ptr.h"
+#include "util/hash_table.h"
 
 extern "C" void outb(uint16_t port, uint8_t val) {
     asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) );

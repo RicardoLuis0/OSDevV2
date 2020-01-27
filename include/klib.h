@@ -15,7 +15,9 @@ extern "C" {
 #define NORETURN
 #endif // __cplusplus
 
-void * k_malloc(uint32_t size);
+void * k_malloc(size_t size);
+void * k_calloc(size_t num,size_t size);
+void * k_realloc(void * ptr,size_t size);
 void k_free(void * ptr);
 NORETURN void k_abort();
 NORETURN void k_abort_i(int code);
@@ -28,6 +30,12 @@ void k_puts(const char * s);
 char k_getch();
 void * k_memmove(void * dst,const void * src,size_t n);
 void * k_memcpy(void *dst,const void *src,size_t n);
+void * k_memset(void *dst,int data,size_t n);
+size_t k_hash_s(const char * s);
+int k_strcmp_bool(const char * s1,const char * s2);//returns true/false whether strings are equal, not same as c stdlib strcmp
+char * k_strdup(const char * s);
+char * k_strndup(const char * s,size_t n);
+size_t k_strlen(const char * s);
 void outb(uint16_t port, uint8_t val);
 
 uint8_t inb(uint16_t port);

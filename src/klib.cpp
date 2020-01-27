@@ -3,7 +3,7 @@
 constexpr uint32_t sz=sizeof(size_t);
 
 /*
-from musl (https://github.com/esmil/musl/blob/master/src/string/memmove.c)
+memmove from musl (https://github.com/esmil/musl/blob/master/src/string/memmove.c)
 
 musl as a whole is licensed under the following standard MIT license:
 ----------------------------------------------------------------------
@@ -67,4 +67,48 @@ extern "C" void * k_memcpy(void *dst, const void *src, size_t n) {//copy
         *d=*s;
     }
     return dst;
-} 
+}
+
+extern "C" void * k_memset(void *src, int data, size_t n) {
+    unsigned char * p=(unsigned char *)src;
+    while(n-->0)*(p++)=(unsigned char)data;
+    return src;
+}
+
+//source http://www.cse.yorku.ca/~oz/hash.html
+size_t k_hash_s(const char * s){
+    size_t hash = 5381;
+    while(*s++)hash = ((hash << 5) + hash) + ((size_t)*s); /* hash * 33 + c */
+    return hash;
+}
+
+int k_strcmp_bool(const char * s1,const char * s2){
+    while(*s1||*s2){
+        if(*s1++!=*s2++)return false;
+    }
+    return true;
+}
+
+char * k_strdup(const char * s){
+    size_t l=k_strlen(s)+1;
+    char * d=(char*)k_calloc(l,sizeof(char));
+    for(size_t i=0;i<l;i++){
+        d[i]=s[i];
+    }
+    return d;
+}
+
+char * k_strndup(const char * s,size_t n){
+    char * d=(char*)k_calloc(n+1,sizeof(char));
+    for(size_t i=0;i<n;i++){
+        d[i]=s[i];
+    }
+    d[n]='\0';
+    return d;
+}
+
+size_t k_strlen(const char * s){
+    size_t count=0;
+    while(*s++)count++;
+    return count;
+}

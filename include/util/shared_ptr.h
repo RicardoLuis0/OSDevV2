@@ -44,7 +44,7 @@ public:
 
         SharedPtr(T * t){//new shared pointer
             ptr=t;
-            ptrData=new(k_malloc(sizeof(PtrData)))PtrData;
+            ptrData=new PtrData;
         }
 
         SharedPtr(const SharedPtr<T> &p){
@@ -66,14 +66,13 @@ public:
                 SpinlockGuard guard(ptrData->lock);
                 ptrData->strong_ptr_count--;
                 if(ptrData->strong_ptr_count==0){
-                    k_free(ptr);
+                    delete ptr;
                     if(ptrData->weak_ptr_count==0){
-                        k_free(ptrData);
+                        delete ptrData;
                     }
                 }
             }
         }
-
     };
 
     template<typename T>
@@ -109,11 +108,10 @@ public:
                 SpinlockGuard guard(ptrData->lock);
                 ptrData->weak_ptr_count--;
                 if(ptrData->strong_ptr_count==0&&ptrData->weak_ptr_count==0){
-                    k_free(ptrData);
+                    delete ptrData;
                 }
             }
         }
-
     };
 
     template<typename T,typename... U>
