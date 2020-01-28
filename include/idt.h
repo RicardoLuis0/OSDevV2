@@ -24,6 +24,8 @@ namespace IDT{
     void set_exception_handler(uint8_t num,void(*)(void),gate_type,ring_type);
     void set_exception_handler(uint8_t num,void(*)(int),gate_type,ring_type);
     void set_exception_handler(uint8_t num,void(*)(int,int),gate_type,ring_type);
+    void pic_enable(uint8_t irq);
+    void pic_disable(uint8_t irq);
 
     template<uint32_t irq>
     void call_interrupt(uint32_t data){//call user-defined interrupt

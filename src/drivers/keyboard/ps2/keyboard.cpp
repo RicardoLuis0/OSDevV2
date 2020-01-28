@@ -111,7 +111,6 @@ extern "C" int k_getch_extended(){
 }
 
 static void kbint(){
-    outb(0x20, 0x20);
     if(has_scancode()){
         last_key=get_keycode();
         switch(last_key){
@@ -160,17 +159,44 @@ static void kbint(){
 
 void init(){
     print(" -Initializing PS/2 Keyboard...\n");
-    outb(0x21 , 0xFD);
     print("  .Registering IRQ Handler...\n");
     IDT::set_irq_handler(0x21,kbint,IDT::G_32_INT,IDT::RING_0);
+    print("  .Enabling Keyboard Interrupts...\n");
+    IDT::pic_enable(1);
+}
+
+static uint8_t get_scancode_dump(){
+    uint8_t scancode=get_scancode();
+    print("\nKBD:");
+    Screen::write_h(scancode);
+    return scancode;
+}
+
+static inline keycode get_keycode_dump(){
+    uint8_t scancode=get_scancode_dump();
+    if(scancode==0xE0){
+        scancode=get_scancode_dump();
+        if(scancode==0x2A){
+            if(get_scancode_dump()==0xE0&&get_scancode_dump()==0x37)return KEY_PRINTSCR_PRESSED;
+        }else if(scancode==0xB7){
+            if(get_scancode_dump()==0xE0&&get_scancode_dump()==0xAA)return KEY_PRINTSCR_RELEASED;
+        }else if(scancode<KEYCODES_US_QWERTY_SET1_EXTRA_LEN){
+            return (keycode)keycodes_extra1[scancode];
+        }
+    }else if(scancode==0xE1){
+        if(get_scancode_dump()==0x1D&&get_scancode_dump()==0x45&&get_scancode_dump()==0xE1&&get_scancode_dump()==0x9D&&get_scancode_dump()==0xC5)return KEY_PAUSE;
+    }else if(scancode<KEYCODES_US_QWERTY_SET1_LEN){
+        return (keycode)keycodes[scancode];
+    }
+    return KEY_INVALID;//fallback to invalid
 }
 
 void kbint_dump(){
-    outb(0x20, 0x20);
     if(has_scancode()){
-        auto scancode=get_scancode();
-        print("\nKBD:");
-        Screen::write_h(scancode);
+        keycode k=get_keycode_dump();
+        print("(");
+        print(keycode_name(k));
+        print(")");
     }
 }
 
