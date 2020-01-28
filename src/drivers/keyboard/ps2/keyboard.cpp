@@ -158,10 +158,10 @@ static void kbint(){
 }
 
 void init(){
-    print(" -Initializing PS/2 Keyboard...\n");
-    print("  .Registering IRQ Handler...\n");
+    print("\n -Initializing PS/2 Keyboard...");
+    print("\n  .Registering IRQ Handler...");
     IDT::set_irq_handler(0x21,kbint,IDT::G_32_INT,IDT::RING_0);
-    print("  .Enabling Keyboard Interrupts...\n");
+    print("\n  .Enabling Keyboard Interrupts...");
     IDT::pic_enable(1);
 }
 

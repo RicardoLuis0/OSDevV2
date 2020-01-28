@@ -89,7 +89,7 @@ void Memory::init(struct multiboot_info * mbd){
     uint64_t total=0;
     uint64_t usable=0;
     memory_block * temp=nullptr;
-    if(mbd->flags&MULTIBOOT_INFO_MEM_MAP){
+    if(mbd&&mbd->flags&MULTIBOOT_INFO_MEM_MAP){
         void * mmap_max=(void*)(mbd->mmap_addr+mbd->mmap_length);
         for(multiboot_memory_map_t * mmap=(multiboot_memory_map_t *)mbd->mmap_addr;mmap<mmap_max;mmap=(multiboot_memory_map_t *)(((uint32_t)mmap)+mmap->size+sizeof(mmap->size))){
             total+=mmap->len;
@@ -113,16 +113,17 @@ void Memory::init(struct multiboot_info * mbd){
         if(!block_root){
             print("  .Memory ");
             Screen::setfgcolor(Screen::RED);
-            print("FAIL\n");
+            print("FAIL");
+            Screen::setfgcolor(Screen::WHITE);
             k_abort_s("Not Enough Memory");
             return;
         }
     }else{
         print("  .Memory ");
         Screen::setfgcolor(Screen::RED);
-        print("FAIL\n");
+        print("FAIL");
+        Screen::setfgcolor(Screen::WHITE);
         k_abort_s("Memory Map not available");
-        print("\n");
     }
     print("  .Memory ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
@@ -136,7 +137,6 @@ void Memory::init(struct multiboot_info * mbd){
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem(usable);
     Screen::setfgcolor(Screen::WHITE);
-    print("\n");
 }
 
 memory_block * split(memory_block * block,uint32_t size){

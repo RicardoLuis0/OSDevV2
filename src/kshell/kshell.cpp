@@ -6,6 +6,7 @@
 void kshell_execute(char * cmd);
 
 void kshell(){
+    Screen::write_c('\n');
     constexpr char ptr_marker='#';
     char cmdbuf[80];
     uint8_t cmdsize=0;//0-77
@@ -66,12 +67,13 @@ void kshell_execute(char * cmd){
     }else if(k_strcmp_bool(cmd,"cls")){
         Screen::clear();
     }else{
-        Screen::setfgcolor(Screen::LIGHT_RED);
-        Screen::write_s("\nUnknown Command '");
-        Screen::setfgcolor(Screen::WHITE);
+        Screen::write_c('\n');
+        Screen::setcolor(Screen::RED,Screen::WHITE);
+        Screen::clear_line(Screen::getY());
+        Screen::write_s("Unknown Command '");
         Screen::write_s(cmd);
-        Screen::setfgcolor(Screen::LIGHT_RED);
-        Screen::write_s("'\n");
-        Screen::setfgcolor(Screen::WHITE);
+        Screen::write_s("'");
+        Screen::setcolor(Screen::BLACK,Screen::WHITE);
     }
+    Screen::write_c('\n');
 }
