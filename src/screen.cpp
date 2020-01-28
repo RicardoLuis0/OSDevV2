@@ -51,10 +51,19 @@ void Screen::newline(){
     }
 }
 
+void Screen::clear_line_multi(size_t linestart,size_t lineend){
+    size_t start_pos=linestart*XLEN;
+    size_t end_pos=lineend*XLEN;
+    for(size_t pos=start_pos;pos<end_pos;pos++){
+        vga[pos]=vga_entry(' ');
+    }
+}
+
 void Screen::scroll(int len){
     if(len>0){
         uint32_t scr=len*XLEN;
         k_memcpy((void*)vga,(void*)(vga+scr),(POSLEN-scr)*2);
+        clear_line_multi(25-len,25);
     }else if(len<0){
         //TODO scroll down
     }

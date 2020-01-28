@@ -1,6 +1,7 @@
 #include "kshell/kshell.h"
 #include "klib.h"
 #include "screen.h"
+#include "drivers/keyboard/ps2/keyboard.h"
 
 void kshell_execute(char * cmd);
 
@@ -60,7 +61,9 @@ void kshell(){
 }
 
 void kshell_execute(char * cmd){
-    if(k_strcmp_bool(cmd,"cls")){
+    if(k_strcmp_bool(cmd,"kbddump")){
+        Drivers::Keyboard::PS2::kbddump();
+    }else if(k_strcmp_bool(cmd,"cls")){
         Screen::clear();
     }else{
         Screen::setfgcolor(Screen::LIGHT_RED);
