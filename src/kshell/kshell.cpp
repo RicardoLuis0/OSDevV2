@@ -6,6 +6,7 @@
 void kshell_execute(char * cmd);
 
 void kshell(){
+    Screen::enable_cursor(14,15);
     Screen::write_c('\n');
     constexpr char ptr_marker='#';
     char cmdbuf[80];

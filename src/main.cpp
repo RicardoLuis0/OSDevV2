@@ -88,18 +88,10 @@ extern uint32_t kernel_start;
 extern uint32_t kernel_end;
 
 constexpr uint32_t STACK_SIZE=32*(1024ULL);
-//constexpr uint32_t STACK_SIZE=(1024ULL*1024ULL);
-
-#include "stdc/setjmp.h"
-
-jmp_buf buf;
-
-void longjmp_test(){
-    longjmp(buf,1);
-}
 
 extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::init();
+    Screen::disable_cursor();
     fassert(magic==0x2BADB002U);
     Screen::write_s(">Initializing Kernel\n -Kernel Size: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
@@ -130,9 +122,6 @@ extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::write_s("OK");
     Screen::setfgcolor(Screen::WHITE);
     Screen::write_s("\n>Loading Kernel Shell");
-    if(!setjmp(buf)){
-        longjmp_test();
-    }
     kshell();
     k_abort_s("Kernel Shell Returned!");
 }
