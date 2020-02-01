@@ -51,6 +51,18 @@ void Screen::newline(){
     }
 }
 
+void Screen::enable_cursor(uint8_t cursor_start, uint8_t cursor_end) {
+    outb(0x3D4, 0x0A);
+    outb(0x3D5, (inb(0x3D5) & 0xC0) | cursor_start);
+    outb(0x3D4, 0x0B);
+    outb(0x3D5, (inb(0x3D5) & 0xE0) | cursor_end);
+}
+
+void Screen::disable_cursor(){
+    outb(0x3D4, 0x0A);
+    outb(0x3D5, 0x20);
+}
+
 void Screen::clear_line_multi(size_t linestart,size_t lineend){
     size_t start_pos=linestart*XLEN;
     size_t end_pos=lineend*XLEN;

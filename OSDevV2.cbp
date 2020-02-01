@@ -40,7 +40,10 @@
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-rtti -fno-exceptions -std=c++17" />
+			<Add option="-std=c11" />
+			<Add option="-std=c++17" />
+			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-rtti -fno-exceptions -Werror=implicit-function-declaration" />
+			<Add directory="tinycc/include" />
 		</Compiler>
 		<Linker>
 			<Add option="-T linker.ld" />
@@ -59,9 +62,17 @@
 		<Unit filename="include/print.h" />
 		<Unit filename="include/screen.h" />
 		<Unit filename="include/stdc/assert.h" />
+		<Unit filename="include/stdc/errno.h" />
+		<Unit filename="include/stdc/inttypes.h" />
+		<Unit filename="include/stdc/math.h" />
+		<Unit filename="include/stdc/setjmp.h" />
+		<Unit filename="include/stdc/stdarg.h" />
 		<Unit filename="include/stdc/stdatomic.h" />
 		<Unit filename="include/stdc/stddef.h" />
 		<Unit filename="include/stdc/stdint.h" />
+		<Unit filename="include/stdc/stdio.h" />
+		<Unit filename="include/stdc/stdlib.h" />
+		<Unit filename="include/stdc/string.h" />
 		<Unit filename="include/tdraw.h" />
 		<Unit filename="include/util.h" />
 		<Unit filename="include/util/hash_table.h" />

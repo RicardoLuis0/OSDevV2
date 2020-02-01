@@ -1,0 +1,6 @@
+#ifndef MATH_H_INCLUDED
+#define MATH_H_INCLUDED
+
+//TODO
+
+#endif // MATH_H_INCLUDED

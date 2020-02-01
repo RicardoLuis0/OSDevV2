@@ -62,8 +62,10 @@ void kshell(){
 }
 
 void kshell_execute(char * cmd){
-    if(k_strcmp_bool(cmd,"kbddump")){
-        Drivers::Keyboard::PS2::kbddump();
+    if(k_strcmp_bool(cmd,"abort")){
+        k_abort_fullscreen();
+    }else if(k_strcmp_bool(cmd,"kbdump")){
+        Drivers::Keyboard::PS2::kbdump();
     }else if(k_strcmp_bool(cmd,"cls")){
         Screen::clear();
     }else{

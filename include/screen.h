@@ -38,6 +38,8 @@ namespace Screen {
     void setcolor(color bg,color fg);
     void setbgcolor(color c);
     void setfgcolor(color c);
+    void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
+    void disable_cursor();
     color getbgcolor();
     color getfgcolor();
     void clear();

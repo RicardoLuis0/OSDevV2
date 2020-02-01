@@ -200,7 +200,7 @@ void kbint_dump(){
     }
 }
 
-void kbddump(){
+void kbdump(){
     IDT::set_irq_handler(0x21,kbint_dump,IDT::G_32_INT,IDT::RING_0);
     for(;;){
         asm("pause");

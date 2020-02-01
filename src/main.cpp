@@ -26,6 +26,19 @@ extern "C" uint8_t inb(uint16_t port) {
 extern "C" void k_abort(){
     Screen::setcolor(Screen::RED,Screen::WHITE);
     print("\nKernel Aborted!");
+    Screen::disable_cursor();
+    asm volatile("jmp hang");
+    while(true);
+}
+
+extern "C" void k_abort_fullscreen(){
+    Screen::setcolor(Screen::BLACK,Screen::WHITE);
+    Screen::clear();
+    Screen::setcolor(Screen::RED,Screen::WHITE);
+    Screen::clear_line(0);
+    Screen::move(32,0);
+    print("Kernel Aborted!");
+    Screen::disable_cursor();
     asm volatile("jmp hang");
     while(true);
 }
@@ -33,6 +46,7 @@ extern "C" void k_abort(){
 extern "C" void k_abort_i(int code){
     Screen::setcolor(Screen::RED,Screen::WHITE);
     print("\nKernel Aborted! Error code '",code,"'");
+    Screen::disable_cursor();
     asm volatile("jmp hang");
     while(true);
 }
@@ -40,6 +54,7 @@ extern "C" void k_abort_i(int code){
 extern "C" void k_abort_s(const char * msg){
     Screen::setcolor(Screen::RED,Screen::WHITE);
     print("\nKernel Aborted! ",msg,"");
+    Screen::disable_cursor();
     asm volatile("jmp hang");
     while(true);
 }
@@ -47,6 +62,7 @@ extern "C" void k_abort_s(const char * msg){
 extern "C" void k_abort_s_i_s(const char * s1,int i,const char * s2){
     Screen::setcolor(Screen::RED,Screen::WHITE);
     print("\nKernel Aborted! ",s1,i,s2,"");
+    Screen::disable_cursor();
     asm volatile("jmp hang");
     while(true);
 }
@@ -54,6 +70,7 @@ extern "C" void k_abort_s_i_s(const char * s1,int i,const char * s2){
 extern "C" void k_abort_assert(const char * condition,const char * name,uint32_t line){
     Screen::setcolor(Screen::RED,Screen::WHITE);
     print("\nKernel Aborted! In ",name,":",line,", Assertion ",condition," failed.");
+    Screen::disable_cursor();
     asm volatile("jmp hang");
     while(true);
 }
@@ -61,6 +78,7 @@ extern "C" void k_abort_assert(const char * condition,const char * name,uint32_t
 extern "C" void k_abort_massert(const char * condition,const char * msg,const char * name,uint32_t line){
     Screen::setcolor(Screen::RED,Screen::WHITE);
     print("\nKernel Aborted! In ",name,":",line,", Assertion ",condition," failed.\n",msg);
+    Screen::disable_cursor();
     asm volatile("jmp hang");
     while(true);
 }
@@ -71,6 +89,14 @@ extern uint32_t kernel_end;
 
 constexpr uint32_t STACK_SIZE=32*(1024ULL);
 //constexpr uint32_t STACK_SIZE=(1024ULL*1024ULL);
+
+#include "stdc/setjmp.h"
+
+jmp_buf buf;
+
+void longjmp_test(){
+    longjmp(buf,1);
+}
 
 extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::init();
@@ -104,6 +130,9 @@ extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::write_s("OK");
     Screen::setfgcolor(Screen::WHITE);
     Screen::write_s("\n>Loading Kernel Shell");
+    if(!setjmp(buf)){
+        longjmp_test();
+    }
     kshell();
     k_abort_s("Kernel Shell Returned!");
 }
