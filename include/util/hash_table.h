@@ -67,6 +67,10 @@ namespace Util {
             }
 
             T& operator[](CK k){
+                return at(k);
+            }
+
+            T& at(CK k){
                 SpinlockGuard guard(lock);
                 size_t hash=KEY_HASH(k)%L;
                 for(Value &v:ht[hash]){
@@ -74,6 +78,8 @@ namespace Util {
                         return v.v;
                     }
                 }
+                ht[hash].push(Value(k,T()));
+                return ht[hash].back().v;
             }
 
             void set(CK k,T d){
@@ -86,6 +92,14 @@ namespace Util {
                     }
                 }
                 ht[hash].push(Value(k,d));
+            }
+
+            void foreach(void(*callback)(T&)){
+                for(uint32_t i=0;i<L;i++){
+                    for(Value &v:ht[i]){
+                        callback(v.v);
+                    }
+                }
             }
     };
 }

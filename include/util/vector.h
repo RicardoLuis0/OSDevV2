@@ -34,7 +34,7 @@ namespace Util {
                 for(size_t i=0;i<len;i++){
                     REMOVE<T,VALUE_REMOVE>::remove(vec[i]);
                 }
-                free(vec);
+                k_free(vec);
             }
 
             void push(T v){
@@ -77,6 +77,16 @@ namespace Util {
             T& at(size_t i){
                 SpinlockGuard guard(lock);
                 return vec[i];
+            }
+
+            T& front(){
+                SpinlockGuard guard(lock);
+                return vec[0];
+            }
+
+            T& back(){
+                SpinlockGuard guard(lock);
+                return vec[len-1];
             }
 
             T* begin(){
