@@ -4,7 +4,7 @@
 namespace Util {
 
     class Spinlock {
-        volatile int _lock;
+        volatile int _lock=0;
     public:
         void lock();
         void release();
