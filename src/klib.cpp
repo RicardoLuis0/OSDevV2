@@ -60,13 +60,17 @@ extern "C" void * k_memmove(void * dst,const void * src,size_t n) {
     return dst;
 }
 
-extern "C" void * k_memcpy(void *dst, const void *src, size_t n) {//copy
+extern "C" void * memcpy(void *dst, const void *src, size_t n) {//copy
     uint8_t *d=(uint8_t*)dst; 
     const uint8_t *s=(const uint8_t*)src;
     for(;n>0;n--,d++,s++){
         *d=*s;
     }
     return dst;
+}
+
+extern "C" void * k_memcpy(void *dst, const void *src, size_t n) {//copy
+    return memcpy(dst,src,n);
 }
 
 extern "C" void * k_memset(void *src, int data, size_t n) {

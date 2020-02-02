@@ -23,12 +23,16 @@ extern "C" uint8_t inb(uint16_t port) {
     return ret;
 }
 
-extern "C" void k_abort(){
-    Screen::setcolor(Screen::RED,Screen::WHITE);
-    print("\nKernel Aborted!");
+[[noreturn]] static void k_abort_main(){
     Screen::disable_cursor();
     asm volatile("jmp hang");
     while(true);
+}
+
+extern "C" void k_abort(){
+    Screen::setcolor(Screen::RED,Screen::WHITE);
+    print("\nKernel Aborted!");
+    k_abort_main();
 }
 
 extern "C" void k_abort_fullscreen(){
@@ -38,49 +42,37 @@ extern "C" void k_abort_fullscreen(){
     Screen::clear_line(0);
     Screen::move(32,0);
     print("Kernel Aborted!");
-    Screen::disable_cursor();
-    asm volatile("jmp hang");
-    while(true);
+    k_abort_main();
 }
 
 extern "C" void k_abort_i(int code){
     Screen::setcolor(Screen::RED,Screen::WHITE);
     print("\nKernel Aborted! Error code '",code,"'");
-    Screen::disable_cursor();
-    asm volatile("jmp hang");
-    while(true);
+    k_abort_main();
 }
 
 extern "C" void k_abort_s(const char * msg){
     Screen::setcolor(Screen::RED,Screen::WHITE);
     print("\nKernel Aborted! ",msg,"");
-    Screen::disable_cursor();
-    asm volatile("jmp hang");
-    while(true);
+    k_abort_main();
 }
 
 extern "C" void k_abort_s_i_s(const char * s1,int i,const char * s2){
     Screen::setcolor(Screen::RED,Screen::WHITE);
     print("\nKernel Aborted! ",s1,i,s2,"");
-    Screen::disable_cursor();
-    asm volatile("jmp hang");
-    while(true);
+    k_abort_main();
 }
 
 extern "C" void k_abort_assert(const char * condition,const char * name,uint32_t line){
     Screen::setcolor(Screen::RED,Screen::WHITE);
     print("\nKernel Aborted! In ",name,":",line,", Assertion ",condition," failed.");
-    Screen::disable_cursor();
-    asm volatile("jmp hang");
-    while(true);
+    k_abort_main();
 }
 
 extern "C" void k_abort_massert(const char * condition,const char * msg,const char * name,uint32_t line){
     Screen::setcolor(Screen::RED,Screen::WHITE);
     print("\nKernel Aborted! In ",name,":",line,", Assertion ",condition," failed.\n",msg);
-    Screen::disable_cursor();
-    asm volatile("jmp hang");
-    while(true);
+    k_abort_main();
 }
 
 extern uint32_t kernel_start;
