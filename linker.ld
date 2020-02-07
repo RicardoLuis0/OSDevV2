@@ -1,4 +1,4 @@
-ENTRY(start)
+ENTRY(_start)
 
 SECTIONS {
     . = 1M ;
@@ -9,6 +9,8 @@ SECTIONS {
     }
     .text : ALIGN(4K) {
         *(.text)
+        *(.init)
+        *(.fini)
     }
     .rodata : ALIGN(4K) {
         *(.rodata)

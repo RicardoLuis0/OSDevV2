@@ -21,15 +21,18 @@ stack_bottom:
 stack_top:
 
 extern k_main
-global start
+extern _fini
+global _start
 global hang
 section .text
-start:;entrypoint
+_start:;entrypoint
     mov esp, stack_top;setup the stack
     push eax
     push ebx
     cli
     call k_main
+    add esp,8
+    call _fini
     jmp hang
 
 hang:

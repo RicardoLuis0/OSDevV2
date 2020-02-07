@@ -5,6 +5,7 @@
 		<Option title="OSDevV2" />
 		<Option pch_mode="2" />
 		<Option compiler="llvm_clang_compiler_osdev" />
+		<Option extended_obj_names="1" />
 		<Build>
 			<Target title="KernelDebug">
 				<Option output="bin/Debug/kernel.bin" prefix_auto="1" extension_auto="0" />
@@ -82,7 +83,8 @@
 		<Unit filename="include/util/vector.h" />
 		<Unit filename="linker.ld" />
 		<Unit filename="src/boot.asm">
-			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
+			<Option link="0" />
+			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o obj/boot.o" />
 		</Unit>
 		<Unit filename="src/cpuid.cpp" />
 		<Unit filename="src/cpuid_s.asm">
@@ -98,6 +100,14 @@
 		<Unit filename="src/idt.cpp" />
 		<Unit filename="src/idt_s.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
+		</Unit>
+		<Unit filename="src/init/crti.asm">
+			<Option link="0" />
+			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o obj/crti.o" />
+		</Unit>
+		<Unit filename="src/init/crtn.asm">
+			<Option link="0" />
+			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o obj/crtn.o" />
 		</Unit>
 		<Unit filename="src/klib.cpp" />
 		<Unit filename="src/kshell/kshell.cpp" />
