@@ -13,6 +13,12 @@
 #include "util/shared_ptr.h"
 #include "util/hash_table.h"
 
+static volatile bool global_constructors_ran;
+
+static __attribute__ ((constructor)) void global_constructors_ok(void) {
+    global_constructors_ran=true;
+}
+
 extern "C" void outb(uint16_t port, uint8_t val) {
     asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) );
 }
@@ -81,6 +87,8 @@ extern uint32_t kernel_end;
 
 constexpr uint32_t STACK_SIZE=32*(1024ULL);
 
+extern "C" void _init();
+
 extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::init();
     Screen::disable_cursor();
@@ -103,6 +111,19 @@ extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::write_s("\n>Kernel ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_s("OK");
+    Screen::setfgcolor(Screen::WHITE);
+    Screen::write_s("\n>Calling Global Constructors");
+    global_constructors_ran=false;
+    _init();//only call global constructors after setting up screen and memory
+    Screen::write_s("\n -Global Constructors ");
+    if(global_constructors_ran){
+        Screen::setfgcolor(Screen::LIGHT_GREEN);
+        Screen::write_s("OK");
+    }else{
+        Screen::setfgcolor(Screen::RED);
+        Screen::write_s("FAIL");
+        k_abort_s("Global Constructors Failed to Run");
+    }
     Screen::setfgcolor(Screen::WHITE);
     Screen::write_s("\n>Initializing Drivers");
     Drivers::Keyboard::PS2::init();

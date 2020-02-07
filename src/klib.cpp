@@ -56,7 +56,6 @@ extern "C" void * k_memmove(void * dst,const void * src,size_t n) {
         }
         while (n) n--, d[n] = s[n];
     }
-
     return dst;
 }
 
