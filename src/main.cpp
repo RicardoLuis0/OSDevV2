@@ -127,8 +127,8 @@ extern "C" void k_main(struct multiboot_info * mbd, unsigned int magic){
     Screen::setfgcolor(Screen::WHITE);
     Screen::write_s("\n>Initializing Drivers");
     Drivers::Keyboard::PS2::init();
-    //TODO ATA/IDE driver
-    //TODO AHCI driver
+    //TODO PATA/IDE driver
+    //TODO SATA/AHCI driver
     //TODO VGA driver
     Screen::write_s("\n>Drivers ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
