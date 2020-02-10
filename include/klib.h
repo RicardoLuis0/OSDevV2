@@ -19,6 +19,7 @@ void * k_malloc(size_t size);
 void * k_calloc(size_t num,size_t size);
 void * k_realloc(void * ptr,size_t size);
 void k_free(void * ptr);
+NORETURN void k_halt();
 NORETURN void k_abort();
 NORETURN void k_abort_fullscreen();
 NORETURN void k_abort_i(int code);

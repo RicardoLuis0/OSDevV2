@@ -15,6 +15,15 @@
 
 static volatile bool global_constructors_ran;
 
+extern "C" [[noreturn]] void hang();
+
+
+
+extern "C" [[noreturn]] void k_halt(){
+    //TODO clean up system before hang
+    hang();
+}
+
 static __attribute__ ((constructor)) void global_constructors_ok(void) {
     global_constructors_ran=true;
 }
@@ -29,10 +38,9 @@ extern "C" uint8_t inb(uint16_t port) {
     return ret;
 }
 
-[[noreturn]] static void k_abort_main(){
+[[noreturn]] static inline void k_abort_main(){
     Screen::disable_cursor();
-    asm volatile("jmp hang");
-    while(true);
+    k_halt();
 }
 
 extern "C" void k_abort(){
