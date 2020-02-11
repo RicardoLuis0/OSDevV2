@@ -180,3 +180,29 @@ extern "C" void k_free(void * ptr){
         Memory::free_block(block);
     }
 }
+
+void Memory::cmd_meminfo(){
+    uint64_t free=0;
+    for(memory_block * b=block_root;b!=nullptr;b=b->next){
+        if(b->type==Memory::memory_block::MEMORY_BLOCK_FREE){
+            free+=b->size;
+        }
+    }
+    Screen::setfgcolor(Screen::WHITE);
+    print("\nFree: ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_mem(free);
+    Screen::setfgcolor(Screen::WHITE);
+    print("\nUsed: ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_mem(usable-free);
+    Screen::setfgcolor(Screen::WHITE);
+    print("\nAvailable: ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_mem(usable);
+    Screen::setfgcolor(Screen::WHITE);
+    print("\nTotal: ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_mem(total);
+    Screen::setfgcolor(Screen::WHITE);
+}

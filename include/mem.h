@@ -17,6 +17,7 @@ namespace Memory{
     };
     memory_block * alloc_block(uint32_t size);
     void free_block(memory_block * ptr);
+    void cmd_meminfo();
 }
 
 #endif // KMEM_H_INCLUDED

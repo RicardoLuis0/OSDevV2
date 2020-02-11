@@ -7,7 +7,7 @@ namespace Drivers{
 namespace Keyboard {
 namespace PS2{
     void init();
-    [[noreturn]] void kbdump();
+    [[noreturn]] void cmd_kbdump();
     keycode getKey();
     const char * keycode_name(keycode c);
 }}}

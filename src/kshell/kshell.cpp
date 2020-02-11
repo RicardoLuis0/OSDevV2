@@ -1,6 +1,7 @@
 #include "kshell/kshell.h"
 #include "klib.h"
 #include "screen.h"
+#include "mem.h"
 #include "drivers/keyboard/ps2/keyboard.h"
 #include "util/hash_table.h"
 
@@ -51,7 +52,11 @@ static void cmd_abort(char * cmd,Util::HashTable<kshell_cmd> * commands){
 }
 
 static void cmd_kbdump(char * cmd,Util::HashTable<kshell_cmd> * commands){
-    Drivers::Keyboard::PS2::kbdump();
+    Drivers::Keyboard::PS2::cmd_kbdump();
+}
+
+static void cmd_meminfo(char * cmd,Util::HashTable<kshell_cmd> * commands){
+    Memory::cmd_meminfo();
 }
 
 static void cmd_help(char * cmd,Util::HashTable<kshell_cmd> * commands){
@@ -90,6 +95,7 @@ void kshell(){
     commands["help"]={cmd_help,"help [command]","displays help","- help : list all commands\n- help [command] : show command usage"};
     commands["abort"]={cmd_abort,"abort","abort kernel","- abort"};
     commands["kbdump"]={cmd_kbdump,"kbdump","test keyboard mapping","- kbdump"};
+    commands["meminfo"]={cmd_meminfo,"meminfo","display memory information","- meminfo"};
     Screen::enable_cursor(14,15);
     Screen::write_c('\n');
     constexpr char ptr_marker='#';
