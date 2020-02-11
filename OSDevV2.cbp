@@ -49,13 +49,11 @@
 		<Linker>
 			<Add option="-T linker.ld" />
 		</Linker>
-		<Unit filename="include/cpuid.h" />
+		<Unit filename="include/arch/x86.h" />
 		<Unit filename="include/drivers/ahci.h" />
 		<Unit filename="include/drivers/keyboard/ps2/keyboard.h" />
 		<Unit filename="include/drivers/keyboard/ps2/keycodes.h" />
 		<Unit filename="include/extern/multiboot.h" />
-		<Unit filename="include/gdt.h" />
-		<Unit filename="include/idt.h" />
 		<Unit filename="include/klib.h" />
 		<Unit filename="include/kshell/kshell.h" />
 		<Unit filename="include/mem.h" />
@@ -82,41 +80,42 @@
 		<Unit filename="include/util/tmp.h" />
 		<Unit filename="include/util/vector.h" />
 		<Unit filename="linker.ld" />
-		<Unit filename="src/boot.asm">
+		<Unit filename="src/arch/x86/boot.asm">
 			<Option link="0" />
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o obj/boot.o" />
 		</Unit>
-		<Unit filename="src/cpuid.cpp" />
-		<Unit filename="src/cpuid_s.asm">
+		<Unit filename="src/arch/x86/cpuid.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
-		<Unit filename="src/drivers/ahci.cpp" />
-		<Unit filename="src/drivers/keyboard/ps2/keyboard.cpp" />
-		<Unit filename="src/drivers/keyboard/ps2/layout.cpp" />
-		<Unit filename="src/gdt.cpp" />
-		<Unit filename="src/gdt_s.asm">
-			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
-		</Unit>
-		<Unit filename="src/idt.cpp" />
-		<Unit filename="src/idt_s.asm">
-			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
-		</Unit>
-		<Unit filename="src/init/crti.asm">
+		<Unit filename="src/arch/x86/cpuid.cpp" />
+		<Unit filename="src/arch/x86/crti.asm">
 			<Option link="0" />
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o obj/crti.o" />
 		</Unit>
-		<Unit filename="src/init/crtn.asm">
+		<Unit filename="src/arch/x86/crtn.asm">
 			<Option link="0" />
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o obj/crtn.o" />
 		</Unit>
+		<Unit filename="src/arch/x86/drivers/keyboard/ps2/keyboard.cpp" />
+		<Unit filename="src/arch/x86/drivers/keyboard/ps2/layout.cpp" />
+		<Unit filename="src/arch/x86/gdt.asm">
+			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
+		</Unit>
+		<Unit filename="src/arch/x86/gdt.cpp" />
+		<Unit filename="src/arch/x86/idt.asm">
+			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
+		</Unit>
+		<Unit filename="src/arch/x86/idt.cpp" />
+		<Unit filename="src/arch/x86/spinlock.cpp" />
+		<Unit filename="src/arch/x86/x86.cpp" />
+		<Unit filename="src/arch/x86/x86_mem.cpp" />
+		<Unit filename="src/arch/x86/x86_screen.cpp" />
 		<Unit filename="src/klib.cpp" />
 		<Unit filename="src/kshell/kshell.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/mem.cpp" />
 		<Unit filename="src/new.cpp" />
 		<Unit filename="src/print.cpp" />
-		<Unit filename="src/screen.cpp" />
-		<Unit filename="src/spinlock.cpp" />
 		<Unit filename="src/tdraw.cpp" />
 		<Extensions>
 			<code_completion />

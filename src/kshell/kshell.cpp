@@ -41,10 +41,9 @@ static void cmd_cls(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Screen::clear();
 }
 
-static void cmd_halt(char * cmd,Util::HashTable<kshell_cmd> * commands){
+[[noreturn]] static void cmd_halt(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Screen::clear();
-    asm volatile("jmp hang");
-    while(true);
+    k_halt();
 }
 
 static void cmd_abort(char * cmd,Util::HashTable<kshell_cmd> * commands){

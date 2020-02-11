@@ -1,4 +1,4 @@
-#include "idt.h"
+#include "arch/x86.h"
 #include "stdc/stdint.h"
 #include "stdc/assert.h"
 #include "klib.h"
@@ -121,7 +121,7 @@ static void init_pic(){
 }
 
 void IDT::init(){
-    Screen::write_s(" -Loading IDT...\n");
+    Screen::write_s("\n -Loading IDT...");
     int cr0;
     asm volatile ("movl %%cr0,%0":"=r"(cr0));
     cr0|=1<<5;

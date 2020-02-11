@@ -1,4 +1,4 @@
-#include "gdt.h"
+#include "arch/x86.h"
 #include "stdc/stdint.h"
 #include "klib.h"
 #include "screen.h"
@@ -37,7 +37,7 @@ namespace GDT {
 extern "C" void loadgdt(uint32_t base,uint16_t limit);
 
 void GDT::init(){
-    Screen::write_s(" -Loading GDT...\n");
+    Screen::write_s("\n -Loading GDT...");
     GDT[0].encode(0,0,0);
     GDT[1].encode(0,0xFFFFFFFF,0x9A);
     GDT[2].encode(0,0xFFFFFFFF,0x92);

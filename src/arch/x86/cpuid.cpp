@@ -1,4 +1,4 @@
-#include "cpuid.h"
+#include "arch/x86.h"
 #include "klib.h"
 #include "screen.h"
 

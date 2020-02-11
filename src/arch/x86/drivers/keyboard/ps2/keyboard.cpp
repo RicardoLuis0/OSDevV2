@@ -1,7 +1,7 @@
 #include "drivers/keyboard/ps2/keyboard.h"
 #include "klib.h"
 #include "print.h"
-#include "idt.h"
+#include "arch/x86.h"
 #include "stdc/stdatomic.h"
 #include "util/spinlock.h"
 
@@ -158,10 +158,8 @@ static void kbint(){
 }
 
 void init(){
-    print("\n -Initializing PS/2 Keyboard...");
-    print("\n  .Registering IRQ Handler...");
+    print("\n  .PS/2 Keyboard");
     IDT::set_irq_handler(0x21,kbint,IDT::G_32_INT,IDT::RING_0);
-    print("\n  .Enabling Keyboard Interrupts...");
     IDT::pic_enable(1);
 }
 

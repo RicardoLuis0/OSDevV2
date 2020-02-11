@@ -7,6 +7,7 @@
     CHECKSUM    equ  -(MAGIC + FLAGS)  ; checksum of above, to prove we are multiboot
     STACK_SIZE  equ  32768             ; 32K stack
 ;   STACK_SIZE  equ  1048576           ; 1MB stack
+%define ARCH x86
 
 section .multiboot
 align 4
@@ -20,6 +21,7 @@ stack_bottom:
     resb STACK_SIZE
 stack_top:
 
+extern %[ARCH]_start
 extern k_main
 extern _fini
 global _start
@@ -30,8 +32,9 @@ _start:;entrypoint
     push eax
     push ebx
     cli
-    call k_main
+    call %[ARCH]_start
     add esp,8
+    call k_main
     call _fini
     jmp hang
 

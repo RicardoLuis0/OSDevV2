@@ -2,6 +2,7 @@
 #include "util.h"
 #include "stdc/stdint.h"
 #include "klib.h"
+#include "arch/x86.h"
 
 extern "C" void k_putc(char c){
     Screen::write_c(c);
@@ -81,10 +82,15 @@ void Screen::scroll(int len){
     }
 }
 
-void Screen::init(){
+void Screen::x86_init(){
     vga=(uint16_t*) 0xB8000;
     setcolor(BLACK,WHITE);//white on black color by default
-    clear();
+    uint16_t pos = 0;
+    outb(0x3D4, 0x0F);
+    pos |= inb(0x3D5);
+    outb(0x3D4, 0x0E);
+    pos |= ((uint16_t)inb(0x3D5)) << 8;
+    move(pos);
 }
 
 void Screen::clear(){

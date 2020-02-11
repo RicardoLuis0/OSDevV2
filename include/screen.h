@@ -23,7 +23,6 @@ namespace Screen {
         LIGHT_BROWN = 14,
         WHITE = 15,
     };
-    void init();
     void newline();
     void move(size_t x,size_t y);
     void move(size_t pos);

@@ -1,7 +1,7 @@
 #ifndef KMEM_H_INCLUDED
 #define KMEM_H_INCLUDED
 
-struct multiboot_info;
+#include "stdc/stdint.h"
 
 namespace Memory{
     struct memory_block{
@@ -15,7 +15,6 @@ namespace Memory{
             MEMORY_BLOCK_USED,
         } type;
     };
-    void init(struct multiboot_info * mbd);
     memory_block * alloc_block(uint32_t size);
     void free_block(memory_block * ptr);
 }

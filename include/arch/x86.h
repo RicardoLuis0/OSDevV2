@@ -1,7 +1,27 @@
-#ifndef IDT_H_INCLUDED
-#define IDT_H_INCLUDED
+#ifndef X86_H_INCLUDED
+#define X86_H_INCLUDED
 
 #include "stdc/stdint.h"
+#include "extern/multiboot.h"
+
+
+extern "C" uint32_t has_cpuid();
+
+namespace CPUID {
+    void check();
+}
+
+namespace Memory{
+    void x86_init(multiboot_info * mbd);
+}
+
+namespace Screen{
+    void x86_init();
+}
+
+namespace GDT {
+    void init();
+}
 
 namespace IDT{
     enum gate_type {
@@ -36,4 +56,4 @@ namespace IDT{
     }
 }
 
-#endif // IDT_H_INCLUDED
+#endif // X86_H_INCLUDED
