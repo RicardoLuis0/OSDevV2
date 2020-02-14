@@ -13,8 +13,18 @@ namespace Memory::Internal {
 }
 using namespace Memory::Internal;
 
+
+void * Memory::alloc_page(){
+    k_abort_s("Memory::alloc_page unimplemented");
+}
+
+void Memory::free_page(void*){
+    k_abort_s("Memory::free_page unimplemented");
+}
+
 extern "C" void * k_malloc(size_t size){
-    k_abort_s("k_mealloc unimplemented");
+    if(size<4096)return alloc_page();
+    else k_abort_s("k_malloc unimplemented");
 }
 
 static void * zero_alloc(size_t size){
@@ -34,7 +44,7 @@ extern "C" void * k_realloc(void * ptr,size_t size){
 }
 
 extern "C" void k_free(void * ptr){
-    k_abort_s("k_free unimplemented");
+    free_page(ptr);
 }
 
 void Memory::cmd_meminfo(){
