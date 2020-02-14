@@ -16,6 +16,39 @@ static char * first_char(char * s,char c){
     return s;
 }
 
+static bool is_int(char * s){
+    size_t len=0;
+    if(*s=='-')s++;
+    while(*s>='0'&&*s<='9'){
+        ++s;
+        ++len;
+    }
+    return len>0&&*s=='\0';
+}
+
+static int parse_int(char * s){
+    bool neg=false;
+    if(*s=='-'){
+        ++s;
+        neg=true;
+    }
+    int num=0;
+    while(*s>='0'&&*s<='9'){
+        num*=10;
+        num+=*s-'0';
+        ++s;
+    }
+    return neg?-num:num;
+}
+
+static void fail_msg(const char * msg){
+    Screen::write_c('\n');
+    Screen::setcolor(Screen::RED,Screen::WHITE);
+    Screen::clear_line(Screen::getY());
+    Screen::write_s(msg);
+    Screen::setcolor(Screen::BLACK,Screen::WHITE);
+}
+
 static void cmd_invalid(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Screen::write_c('\n');
     Screen::setcolor(Screen::RED,Screen::WHITE);

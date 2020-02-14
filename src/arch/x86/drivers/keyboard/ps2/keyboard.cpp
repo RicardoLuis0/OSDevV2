@@ -71,7 +71,10 @@ int convert_ascii(int keycode){
     if(left_shift_down||right_shift_down){
         if(keycode>='a'&&keycode<='z'){//handle uppercase
             return keycode+('A'-'a');
-        }//TODO handle other shift uses
+        }else if(keycode=='-'){
+            return '_';
+        }
+        //TODO handle other shift uses
     }
     return keycode;
 }

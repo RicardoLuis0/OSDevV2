@@ -10,39 +10,20 @@ extern uint8_t kernel_start;
 extern uint8_t kernel_end;
 
 namespace Memory::Internal{
-    extern memory_block * block_root;
-    extern memory_block * block_unused;
     extern uint64_t total;
     extern uint64_t usable;
-    void build_unused(uint8_t * data,uint32_t count);
-    memory_block * get_block(uint8_t * start,uint32_t size,memory_block * prev=nullptr,memory_block * next=nullptr);
 }
-using namespace Memory::Internal;
 
-static void build_first(multiboot_memory_map_t * mmap){
-    uint8_t * start=(uint8_t*)mmap->addr;
-    uint8_t * end=(uint8_t*)(mmap->addr+mmap->len);
-    if(start>=&kernel_start&&end<=&kernel_end){
-        return;//invalid, fully inside kernel
-    }else if(start>=&kernel_start&&start<&kernel_end&&end>&kernel_end){//partially inside kernel
-        start=&kernel_end;//recalculate start address, to be outside kernel space
-    }
-    if((end-start)<(sizeof(memory_block)*100)){
-        return;//invalid, too small
-    }else{
-        uint8_t * buffer=start;
-        start+=sizeof(memory_block)*100;
-        build_unused(buffer,100);//reserve amount for 100 memory management blocks
-    }
-    block_root=get_block(start,end-start);
-}
+using namespace Memory::Internal;
 
 constexpr uint64_t MM=(1024ULL*1024ULL);
 
 constexpr uint32_t STACK_SIZE=32*(1024ULL);
 
 void Memory::x86_init(struct multiboot_info * mbd){
+    k_abort_s("Memory::x86_init unimplemented");
     print("\n -Parsing Memory Map...\n");
+    /*
     memory_block * temp=nullptr;
     if(mbd&&mbd->flags&MULTIBOOT_INFO_MEM_MAP){
         void * mmap_max=(void*)(mbd->mmap_addr+mbd->mmap_length);
@@ -80,6 +61,7 @@ void Memory::x86_init(struct multiboot_info * mbd){
         Screen::setfgcolor(Screen::WHITE);
         k_abort_s("Memory Map not available");
     }
+    */
     print("  .Memory ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     print("OK");
