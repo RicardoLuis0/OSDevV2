@@ -21,10 +21,14 @@ constexpr uint64_t MM=(1024ULL*1024ULL);
 constexpr uint32_t STACK_SIZE=32*(1024ULL);
 
 void Memory::x86_init(struct multiboot_info * mbd){
-    k_abort_s("Memory::x86_init unimplemented");
     print("\n -Parsing Memory Map...\n");
-    /*
-    memory_block * temp=nullptr;
+    struct blockdata{
+        uint64_t start;
+        uint64_t end;
+    };
+    constexpr uint8_t BLOCK_MAX = 16;
+    blockdata blocks[BLOCK_MAX];
+    uint8_t next_block=0;
     if(mbd&&mbd->flags&MULTIBOOT_INFO_MEM_MAP){
         void * mmap_max=(void*)(mbd->mmap_addr+mbd->mmap_length);
         for(multiboot_memory_map_t * mmap=(multiboot_memory_map_t *)mbd->mmap_addr;mmap<mmap_max;mmap=(multiboot_memory_map_t *)(((uint32_t)mmap)+mmap->size+sizeof(mmap->size))){
@@ -36,18 +40,17 @@ void Memory::x86_init(struct multiboot_info * mbd){
             }else if(mmap->addr>0xFFFFFFFFULL){//out of 32-bit addressing range
                 continue;
             }else{
-                usable+=mmap->len;
-                if(temp==nullptr){
-                    build_first(mmap);
-                    temp=block_root;
-                }else{
-                    temp->next=get_block((uint8_t*)mmap->addr,mmap->len,temp);
-                    temp=temp->next;
+                if(next_block<BLOCK_MAX){
+                    //TODO map out kernel space in memory as not available
+                    usable+=mmap->len;
+                    blocks[next_block].start=mmap->addr;
+                    blocks[next_block].end=mmap->addr+mmap->len;
+                    next_block++;
                 }
             }
         }
-        if(!block_root){
-            print("  .Memory ");
+        if(usable==0){
+            print("  .Memory Map ");
             Screen::setfgcolor(Screen::RED);
             print("FAIL");
             Screen::setfgcolor(Screen::WHITE);
@@ -55,14 +58,13 @@ void Memory::x86_init(struct multiboot_info * mbd){
             return;
         }
     }else{
-        print("  .Memory ");
+        print("  .Memory Map ");
         Screen::setfgcolor(Screen::RED);
         print("FAIL");
         Screen::setfgcolor(Screen::WHITE);
         k_abort_s("Memory Map not available");
     }
-    */
-    print("  .Memory ");
+    print("  .Memory Map ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     print("OK");
     Screen::setfgcolor(Screen::WHITE);
@@ -82,5 +84,12 @@ void Memory::x86_init(struct multiboot_info * mbd){
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem((((uint32_t)&kernel_end)-((uint32_t)&kernel_start)));//??
     Screen::setfgcolor(Screen::WHITE);
+    print("\n -Initializing Paging...\n");
+    
+    print("  .Paging ");
+    Screen::setfgcolor(Screen::RED);
+    print("FAIL");
+    Screen::setfgcolor(Screen::WHITE);
+    k_abort_s("Paging unimplemented");
 }
 
