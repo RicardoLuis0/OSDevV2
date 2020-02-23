@@ -18,11 +18,11 @@ namespace Memory::Internal{
 
 using namespace Memory::Internal;
 
-static inline void mark(uint32_t page_id){
+static inline void mark_used(uint32_t page_id){//mark as used
     pages.usage[page_id/256]&=~(1<<page_id%256);
 }
 
-static inline void unmark(uint32_t page_id){
+static inline void mark_free(uint32_t page_id){//mark as free
     pages.usage[page_id/256]|=(1<<page_id%256);
 }
 
@@ -100,7 +100,7 @@ void Memory::x86_init(struct multiboot_info * mbd){
             start/=4096;
             end/=4096;
             for(;start<end;start++){
-                unmark(start);
+                mark_free(start);
             }
         }
         if(blocks[i].start<blocks[i].end){
@@ -116,7 +116,7 @@ void Memory::x86_init(struct multiboot_info * mbd){
                 uint32_t start=blocks[i].start/4096;
                 uint32_t end=blocks[i].end/4096;
                 for(;start<end;start++){
-                    unmark(start);
+                    mark_free(start);
                 }
             }
         }
@@ -126,7 +126,7 @@ void Memory::x86_init(struct multiboot_info * mbd){
     uint32_t k_start_page=k_start/4096;
     uint32_t k_end_page=(k_end/4096)+1;
     for(uint32_t i=k_start_page;i<=k_end_page;i++){
-        mark(i);
+        mark_used(i);
     }
     print("  .Memory Map ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
