@@ -4,6 +4,7 @@
 #include "print.h"
 #include "util/spinlock.h"
 #include "util/vector.h"
+#include "paging.h"
 
 using namespace Memory;
 
@@ -51,21 +52,31 @@ static inline void * to_ptr(uint16_t chunk,uint16_t offset){
     return reinterpret_cast<void*>(((chunk*256)+offset)*4096);
 }
 
+static inline void * to_ptr(uint32_t page){
+    return reinterpret_cast<void*>(page*4096);
+}
+
 static uint32_t to_page_id(void * ptr){
     if(((uint32_t)ptr)%4096)k_abort_s("Can't get page from misaligned pointer");
     return ((uint32_t)ptr)/4096;
 }
 
-static void * virt_to_phys(void * p){
-    return p;//TODO
+static void * virt_to_phys(void * v){
+    return to_ptr(get_mapping_virt(to_page_id(v)));
 }
 
-static void * map_virt_page(void * p,void * a,uint32_t range){
-    return p;//TODO
+/*unused
+static void * phys_to_virt(void * p){
+    return to_ptr(get_mapping_phys(to_page_id(p)));
+}
+*/
+
+static void * map_virt(void * p,uint32_t n){
+    return to_ptr(map_virtual_page(to_page_id(p),next_free_virt_page(),n));
 }
 
-static void unmap_virt_page(void * p){
-    //TODO
+static void unmap_virt(void * v,uint32_t n){
+    unmap_virtual_page(to_page_id(v),n);
 }
 
 static void * next_free_phys_page(){
@@ -93,11 +104,13 @@ static void * register_phys_page(void * p){
     }
 }
 
-void * Memory::alloc_phys_page(){
+void * Memory::alloc_phys_page(uint32_t n){
+    if(n!=1)k_abort_s("multi-page allocation unimplemented");
     return register_phys_page(next_free_phys_page());
 }
 
-void Memory::free_phys_page(void * p){
+void Memory::free_phys_page(void * p,uint32_t n){
+    if(n!=1)k_abort_s("multi-page de-allocation unimplemented");
     uint32_t id=to_page_id(p);
     if(is_used(id)){
         set_free(id,true);
@@ -106,17 +119,18 @@ void Memory::free_phys_page(void * p){
     }
 }
 
-void * Memory::alloc_virt_page(){
-    return map_virt_page(register_phys_page(next_free_phys_page()),nullptr,1);
+void * Memory::alloc_virt_page(uint32_t n){
+    if(n!=1)k_abort_s("multi-page allocation unimplemented");
+    return map_virt(register_phys_page(next_free_phys_page()),1);
 }
 
-void Memory::free_virt_page(void * p){
-    free_phys_page(virt_to_phys(p));
-    unmap_virt_page(p);
+void Memory::free_virt_page(void * p,uint32_t n){
+    free_phys_page(virt_to_phys(p),n);
+    unmap_virt(p,n);
 }
 
 extern "C" void * k_malloc(size_t size){
-    if(size<=page_size)return alloc_virt_page();
+    if(size<=page_size)return alloc_virt_page(1);
     else k_abort_s("k_malloc unimplemented");
 }
 
@@ -138,7 +152,7 @@ extern "C" void * k_realloc(void * ptr,size_t size){
 }
 
 extern "C" void k_free(void * ptr){
-    free_virt_page(ptr);
+    free_virt_page(ptr,1);
 }
 
 void Memory::cmd_meminfo(){

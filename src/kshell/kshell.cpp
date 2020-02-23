@@ -16,6 +16,7 @@ static char * first_char(char * s,char c){
     return s;
 }
 
+/*unused
 static bool is_int(char * s){
     size_t len=0;
     if(*s=='-')s++;
@@ -48,6 +49,7 @@ static void fail_msg(const char * msg){
     Screen::write_s(msg);
     Screen::setcolor(Screen::BLACK,Screen::WHITE);
 }
+*/
 
 static void cmd_invalid(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Screen::write_c('\n');

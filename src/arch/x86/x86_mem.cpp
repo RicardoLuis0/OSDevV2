@@ -2,6 +2,7 @@
 #include "mem.h"
 #include "print.h"
 #include "klib.h"
+#include "paging.h"
 
 using namespace Memory;
 
@@ -22,10 +23,7 @@ constexpr uint32_t STACK_SIZE=32*(1024ULL);
 
 void Memory::x86_init(struct multiboot_info * mbd){
     print("\n -Parsing Memory Map...\n");
-    struct blockdata{
-        uint64_t start;
-        uint64_t end;
-    };
+    
     constexpr uint8_t BLOCK_MAX = 16;
     blockdata blocks[BLOCK_MAX];
     uint8_t next_block=0;
@@ -41,7 +39,6 @@ void Memory::x86_init(struct multiboot_info * mbd){
                 continue;
             }else{
                 if(next_block<BLOCK_MAX){
-                    //TODO map out kernel space in memory as not available
                     usable+=mmap->len;
                     blocks[next_block].start=mmap->addr;
                     blocks[next_block].end=mmap->addr+mmap->len;
@@ -54,7 +51,7 @@ void Memory::x86_init(struct multiboot_info * mbd){
             Screen::setfgcolor(Screen::RED);
             print("FAIL");
             Screen::setfgcolor(Screen::WHITE);
-            k_abort_s("Not Enough Memory");
+            k_abort_s("No Usable Memory");
             return;
         }
     }else{
@@ -84,12 +81,6 @@ void Memory::x86_init(struct multiboot_info * mbd){
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem((((uint32_t)&kernel_end)-((uint32_t)&kernel_start)));//??
     Screen::setfgcolor(Screen::WHITE);
-    print("\n -Initializing Paging...\n");
-    
-    print("  .Paging ");
-    Screen::setfgcolor(Screen::RED);
-    print("FAIL");
-    Screen::setfgcolor(Screen::WHITE);
-    k_abort_s("Paging unimplemented");
+    paging_init(blocks,next_block);
 }
 

@@ -58,6 +58,7 @@
 		<Unit filename="include/kshell/kshell.h" />
 		<Unit filename="include/mem.h" />
 		<Unit filename="include/new.h" />
+		<Unit filename="include/paging.h" />
 		<Unit filename="include/print.h" />
 		<Unit filename="include/screen.h" />
 		<Unit filename="include/stdc/assert.h" />
@@ -115,6 +116,7 @@
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/mem.cpp" />
 		<Unit filename="src/new.cpp" />
+		<Unit filename="src/paging.cpp" />
 		<Unit filename="src/print.cpp" />
 		<Unit filename="src/tdraw.cpp" />
 		<Extensions>

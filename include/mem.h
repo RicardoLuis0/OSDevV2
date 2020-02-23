@@ -6,10 +6,10 @@
 namespace Memory{
     extern const uint32_t page_size;
     void cmd_meminfo();
-    void * alloc_phys_page();//get a new physical page (and mark it as used)
-    void free_phys_page(void*);//mark physical page as unused
-    void * alloc_virt_page();//get a new virtual page (and mark it as used)
-    void free_virt_page(void*);//mark virtual page as unused
+    void * alloc_phys_page(uint32_t n);//get 'n' new physical pages (and mark as used)
+    void free_phys_page(void*,uint32_t n);//mark 'n' physical pages as unused
+    void * alloc_virt_page(uint32_t n);//get 'n' new virtual pages (and mark as used)
+    void free_virt_page(void*,uint32_t n);//mark 'n' virtual pages as unused
 }
 
 #endif // KMEM_H_INCLUDED
