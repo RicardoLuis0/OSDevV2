@@ -4,7 +4,6 @@
 #include "stdc/stdint.h"
 
 namespace Memory{
-    extern const uint32_t page_size;
     void cmd_meminfo();
     void * alloc_phys_page(uint32_t n);//get 'n' new physical pages (and mark as used)
     void free_phys_page(void*,uint32_t n);//mark 'n' physical pages as unused

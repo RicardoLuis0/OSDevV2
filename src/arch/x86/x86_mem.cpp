@@ -13,17 +13,43 @@ extern uint8_t kernel_end;
 namespace Memory::Internal{
     extern uint64_t total;
     extern uint64_t usable;
+    extern page_t pages;
 }
 
 using namespace Memory::Internal;
+
+static inline void mark(uint32_t page_id){
+    pages.usage[page_id/256]&=~(1<<page_id%256);
+}
+
+static inline void unmark(uint32_t page_id){
+    pages.usage[page_id/256]|=(1<<page_id%256);
+}
 
 constexpr uint64_t MM=(1024ULL*1024ULL);
 
 constexpr uint32_t STACK_SIZE=32*(1024ULL);
 
+constexpr uint32_t large_align=4096*256;
+
+static inline constexpr bool is_large_aligned(uint32_t n){
+    return !(n%large_align);
+}
+
+static inline constexpr uint32_t prev_align(uint32_t n){
+    return n-(n%large_align);
+}
+
+static inline constexpr uint32_t next_align(uint32_t n){
+    return n+(large_align-(n%large_align));
+}
+
 void Memory::x86_init(struct multiboot_info * mbd){
     print("\n -Parsing Memory Map...\n");
-    
+    struct blockdata{
+        uint32_t start;
+        uint32_t end;
+    };
     constexpr uint8_t BLOCK_MAX = 16;
     blockdata blocks[BLOCK_MAX];
     uint8_t next_block=0;
@@ -40,8 +66,8 @@ void Memory::x86_init(struct multiboot_info * mbd){
             }else{
                 if(next_block<BLOCK_MAX){
                     usable+=mmap->len;
-                    blocks[next_block].start=mmap->addr;
-                    blocks[next_block].end=mmap->addr+mmap->len;
+                    blocks[next_block].start=(uint32_t)mmap->addr;
+                    blocks[next_block].end=(uint32_t)mmap->addr+mmap->len;
                     next_block++;
                 }
             }
@@ -60,6 +86,47 @@ void Memory::x86_init(struct multiboot_info * mbd){
         print("FAIL");
         Screen::setfgcolor(Screen::WHITE);
         k_abort_s("Memory Map not available");
+    }
+    /*
+    for(uint32_t i=0;i<4096;i++){
+        pages.usage[i]=0x0U;
+    }
+    */
+    for(uint32_t i=0;i<next_block;i++){
+        if(!is_large_aligned(blocks[i].start)){
+            uint32_t start=blocks[i].start;
+            uint32_t end=next_align(start);
+            blocks[i].start=end;
+            start/=4096;
+            end/=4096;
+            for(;start<end;start++){
+                unmark(start);
+            }
+        }
+        if(blocks[i].start<blocks[i].end){
+            uint32_t start=blocks[i].start;
+            uint32_t end=prev_align(blocks[i].end);
+            blocks[i].start=end;
+            start/=large_align;
+            end/=large_align;
+            for(;start<end;start++){
+                pages.usage[start]=0xFFFFFFFFU;
+            }
+            if(blocks[i].start<blocks[i].end){
+                uint32_t start=blocks[i].start/4096;
+                uint32_t end=blocks[i].end/4096;
+                for(;start<end;start++){
+                    unmark(start);
+                }
+            }
+        }
+    }
+    uint32_t k_start=((uint32_t)&kernel_start);
+    uint32_t k_end=((uint32_t)&kernel_end);
+    uint32_t k_start_page=k_start/4096;
+    uint32_t k_end_page=(k_end/4096)+1;
+    for(uint32_t i=k_start_page;i<=k_end_page;i++){
+        mark(i);
     }
     print("  .Memory Map ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
@@ -81,6 +148,6 @@ void Memory::x86_init(struct multiboot_info * mbd){
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem((((uint32_t)&kernel_end)-((uint32_t)&kernel_start)));//??
     Screen::setfgcolor(Screen::WHITE);
-    paging_init(blocks,next_block);
+    paging_init();
 }
 

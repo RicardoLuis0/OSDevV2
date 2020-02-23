@@ -8,19 +8,15 @@
 
 using namespace Memory;
 
-const uint32_t Memory::page_size=4096;//4K pages
-
 namespace Memory::Internal {
     uint64_t total;
     uint64_t usable;
-    struct {
-        uint32_t usage[4096];//4GB of page usage, each page is 1 bit
-    } pages;
+    page_t pages;
 }
 
 using namespace Memory::Internal;
 
-inline constexpr bool checkbit(uint32_t val,uint8_t offset){
+static inline constexpr bool checkbit(uint32_t val,uint8_t offset){
     return (val>>offset)&0x1;
 }
 
@@ -28,16 +24,12 @@ static inline bool has_free(uint16_t chunk){//check if chunk of 256 pages has an
     return (pages.usage[chunk]!=0x0);
 }
 
-static void set_free(uint32_t page_id,bool new_free){
+static inline void set_free(uint32_t page_id,bool new_free){
     if(new_free){
         pages.usage[page_id/256]|=(1<<page_id%256);
     }else{
         pages.usage[page_id/256]&=~(1<<page_id%256);
     }
-}
-
-static inline bool is_used(uint32_t page_id){
-    return !checkbit(pages.usage[page_id/256],page_id%256);
 }
 
 static inline bool is_free(uint32_t page_id){
@@ -56,30 +48,35 @@ static inline void * to_ptr(uint32_t page){
     return reinterpret_cast<void*>(page*4096);
 }
 
-static uint32_t to_page_id(void * ptr){
+static inline uint32_t to_page_id(void * ptr){
     if(((uint32_t)ptr)%4096)k_abort_s("Can't get page from misaligned pointer");
     return ((uint32_t)ptr)/4096;
 }
 
-static void * virt_to_phys(void * v){
+static inline void * virt_to_phys(void * v){
     return to_ptr(get_mapping_virt(to_page_id(v)));
 }
 
-/*unused
-static void * phys_to_virt(void * p){
-    return to_ptr(get_mapping_phys(to_page_id(p)));
+static inline void * register_phys_page(void * p){
+    uint32_t id=to_page_id(p);
+    if(is_free(id)){
+        set_free(id,false);
+        return p;
+    }else{
+        k_abort_s("Trying to register non-free page");
+        return nullptr;
+    }
 }
-*/
 
-static void * map_virt(void * p,uint32_t n){
+static inline void * map_virt(void * p,uint32_t n){
     return to_ptr(map_virtual_page(to_page_id(p),next_free_virt_page(),n));
 }
 
-static void unmap_virt(void * v,uint32_t n){
+static inline void unmap_virt(void * v,uint32_t n){
     unmap_virtual_page(to_page_id(v),n);
 }
 
-static void * next_free_phys_page(){
+static inline void * next_free_phys_page(){
     for(uint16_t i=0;i<4096;i++){
         if(has_free(i)){
             for(uint16_t j=0;j<256;j++){
@@ -93,17 +90,6 @@ static void * next_free_phys_page(){
     return nullptr;
 }
 
-static void * register_phys_page(void * p){
-    uint32_t id=to_page_id(p);
-    if(is_free(id)){
-        set_free(id,false);
-        return p;
-    }else{
-        k_abort_s("Trying to register non-free page");
-        return nullptr;
-    }
-}
-
 void * Memory::alloc_phys_page(uint32_t n){
     if(n!=1)k_abort_s("multi-page allocation unimplemented");
     return register_phys_page(next_free_phys_page());
@@ -112,10 +98,10 @@ void * Memory::alloc_phys_page(uint32_t n){
 void Memory::free_phys_page(void * p,uint32_t n){
     if(n!=1)k_abort_s("multi-page de-allocation unimplemented");
     uint32_t id=to_page_id(p);
-    if(is_used(id)){
-        set_free(id,true);
-    }else{
+    if(is_free(id)){
         k_abort_s("Can't free an unused page");
+    }else{
+        set_free(id,true);
     }
 }
 
@@ -130,11 +116,11 @@ void Memory::free_virt_page(void * p,uint32_t n){
 }
 
 extern "C" void * k_malloc(size_t size){
-    if(size<=page_size)return alloc_virt_page(1);
+    if(size<=4096)return alloc_virt_page(1);
     else k_abort_s("k_malloc unimplemented");
 }
 
-static void * zero_alloc(size_t size){
+static inline void * zero_alloc(size_t size){
     void * p=k_malloc(size);
     if(p){
         k_memset(p,0,size);
@@ -147,7 +133,7 @@ extern "C" void * k_calloc(size_t num,size_t size){
 }
 
 extern "C" void * k_realloc(void * ptr,size_t size){
-    if(size<=page_size)return ptr;
+    if(size<=4096)return ptr;
     k_abort_s("k_realloc unimplemented");
 }
 
