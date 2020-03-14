@@ -13,7 +13,6 @@ extern uint8_t kernel_end;
 namespace Memory::Internal{
     extern uint64_t total;
     extern uint64_t usable;
-    extern page_t pages;
 }
 
 using namespace Memory::Internal;

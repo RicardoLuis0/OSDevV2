@@ -11,7 +11,7 @@ using namespace Memory;
 namespace Memory::Internal {
     uint64_t total;
     uint64_t usable;
-    page_t pages;
+    physical_pages_t pages;
 }
 
 using namespace Memory::Internal;
@@ -38,6 +38,25 @@ static inline bool is_free(uint32_t page_id){
 
 static inline bool is_free(uint16_t chunk,uint16_t offset){
     return checkbit(pages.usage[chunk],offset);
+}
+
+static inline bool is_free(uint16_t chunk,uint16_t offset,size_t length,uint16_t &chunk_out,uint16_t &offset_out){
+    uint32_t free_pgs=0;
+    for(;chunk<4096;chunk++){
+        for(;offset<256;offset++){
+            if(is_free(chunk,offset)){
+                free_pgs++;
+            }else{
+                chunk_out=chunk;
+                offset_out=offset;
+                return false;
+            }
+            if(free_pgs==length)return true;
+        }
+    }
+    chunk_out=4096;
+    offset_out=256;
+    return false;
 }
 
 static inline void * to_ptr(uint16_t chunk,uint16_t offset){
@@ -90,24 +109,48 @@ static inline void * next_free_phys_page(){
     return nullptr;
 }
 
+static inline void * next_free_phys_pages(size_t n){
+    if(n==1)return next_free_phys_page();
+    for(uint16_t i=0;i<4096;i++){
+        if(has_free(i)){
+            for(uint16_t j=0;j<256;j++){
+                uint16_t i2,j2;
+                if(is_free(i,j,n,i2,j2)){
+                    return to_ptr(i,j);
+                }else{
+                    i=i2;
+                    j=j2;
+                    if(!has_free(i)){
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    k_abort_s("OUT OF MEMORY");
+    return nullptr;
+}
+
 void * Memory::alloc_phys_page(uint32_t n){
     if(n!=1)k_abort_s("multi-page allocation unimplemented");
     return register_phys_page(next_free_phys_page());
 }
 
 void Memory::free_phys_page(void * p,uint32_t n){
-    if(n!=1)k_abort_s("multi-page de-allocation unimplemented");
     uint32_t id=to_page_id(p);
-    if(is_free(id)){
-        k_abort_s("Can't free an unused page");
-    }else{
-        set_free(id,true);
+    while(n>0){
+        if(is_free(id)){
+            k_abort_s("Can't free an unused page");
+        }else{
+            set_free(id,true);
+        }
+        n--;
+        id++;
     }
 }
 
 void * Memory::alloc_virt_page(uint32_t n){
-    if(n!=1)k_abort_s("multi-page allocation unimplemented");
-    return map_virt(register_phys_page(next_free_phys_page()),1);
+    return map_virt(register_phys_page(next_free_phys_pages(n)),n);
 }
 
 void Memory::free_virt_page(void * p,uint32_t n){
@@ -116,8 +159,13 @@ void Memory::free_virt_page(void * p,uint32_t n){
 }
 
 extern "C" void * k_malloc(size_t size){
+    if(size==0)k_abort_s("cannot allocate 0 memory");
     if(size<=4096)return alloc_virt_page(1);
     else k_abort_s("k_malloc unimplemented");
+}
+
+extern "C" void * k_malloc_x(size_t size,size_t align){
+    k_abort_s("k_malloc_x unimplemented");
 }
 
 static inline void * zero_alloc(size_t size){

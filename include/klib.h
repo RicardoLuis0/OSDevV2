@@ -16,6 +16,7 @@ extern "C" {
 #endif // __cplusplus
 
 void * k_malloc(size_t size);
+void * k_malloc_x(size_t size,size_t align);
 void * k_calloc(size_t num,size_t size);
 void * k_realloc(void * ptr,size_t size);
 void k_free(void * ptr);
