@@ -208,4 +208,12 @@ void cmd_kbdump(){
     }
 }
 
+char simple_getch(){
+start:
+    while(!has_scancode());//wait for key
+    keycode k=get_keycode();
+    if(k<128) return k;
+    goto start;
+}
+
 }}}
