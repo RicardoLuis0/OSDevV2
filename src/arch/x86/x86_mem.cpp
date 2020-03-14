@@ -13,35 +13,22 @@ extern uint8_t kernel_end;
 namespace Memory::Internal{
     extern uint64_t total;
     extern uint64_t usable;
+    extern uint64_t free_mem;
 }
 
 using namespace Memory::Internal;
 
 static inline void mark_used(uint32_t page_id){//mark as used
-    pages.usage[page_id/256]&=~(1<<page_id%256);
+    pages.usage[page_id/32]&=~(1<<page_id%32);
 }
 
 static inline void mark_free(uint32_t page_id){//mark as free
-    pages.usage[page_id/256]|=(1<<page_id%256);
+    pages.usage[page_id/32]|=(1<<page_id%32);
 }
 
 constexpr uint64_t MM=(1024ULL*1024ULL);
 
 constexpr uint32_t STACK_SIZE=32*(1024ULL);
-
-constexpr uint32_t large_align=4096*256;
-
-static inline constexpr bool is_large_aligned(uint32_t n){
-    return !(n%large_align);
-}
-
-static inline constexpr uint32_t prev_align(uint32_t n){
-    return n-(n%large_align);
-}
-
-static inline constexpr uint32_t next_align(uint32_t n){
-    return n+(large_align-(n%large_align));
-}
 
 void Memory::x86_init(struct multiboot_info * mbd){
     print("\n -Parsing Memory Map...\n");
@@ -86,38 +73,12 @@ void Memory::x86_init(struct multiboot_info * mbd){
         Screen::setfgcolor(Screen::WHITE);
         k_abort_s("Memory Map not available");
     }
-    /*
-    for(uint32_t i=0;i<4096;i++){
-        pages.usage[i]=0x0U;
-    }
-    */
+    free_mem=usable;
     for(uint32_t i=0;i<next_block;i++){
-        if(!is_large_aligned(blocks[i].start)){
-            uint32_t start=blocks[i].start;
-            uint32_t end=next_align(start);
-            blocks[i].start=end;
-            start/=4096;
-            end/=4096;
-            for(;start<end;start++){
-                mark_free(start);
-            }
-        }
-        if(blocks[i].start<blocks[i].end){
-            uint32_t start=blocks[i].start;
-            uint32_t end=prev_align(blocks[i].end);
-            blocks[i].start=end;
-            start/=large_align;
-            end/=large_align;
-            for(;start<end;start++){
-                pages.usage[start]=0xFFFFFFFFU;
-            }
-            if(blocks[i].start<blocks[i].end){
-                uint32_t start=blocks[i].start/4096;
-                uint32_t end=blocks[i].end/4096;
-                for(;start<end;start++){
-                    mark_free(start);
-                }
-            }
+        uint32_t start=blocks[i].start/4096;
+        uint32_t end=blocks[i].end/4096;
+        for(;start<end;start++){
+            mark_free(start);
         }
     }
     uint32_t k_start=((uint32_t)&kernel_start);
