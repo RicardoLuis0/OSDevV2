@@ -19,18 +19,6 @@ namespace Memory::Internal{
 
 using namespace Memory::Internal;
 
-static inline void mark_used(uint32_t page_id){//mark as used
-    pages.usage[page_id/32]&=~(1<<page_id%32);
-}
-
-static inline void mark_free(uint32_t page_id){//mark as free
-    pages.usage[page_id/32]|=(1<<page_id%32);
-}
-
-static inline void mark_chunk_free(uint32_t page_id){//mark as free
-    pages.usage[page_id/32]=0xFFFFFFFFU;
-}
-
 constexpr uint64_t MM=(1024ULL*1024ULL);
 
 constexpr uint32_t STACK_SIZE=32*(1024ULL);
@@ -88,23 +76,7 @@ void Memory::x86_init(struct multiboot_info * mbd){
         #ifdef DEBUG
         page_count_expected+=(end-start)+1;
         #endif // DEBUG
-        if(!(start%32)){
-            int diff=32-start%32;
-            for(uint32_t i=0;i<diff;i++){
-                mark_free(start+i);
-            }
-            start+=diff;
-        }
-        if(!(end%32)){
-            int diff=end%32;
-            for(uint32_t i=end-diff;i<=end;i++){
-                mark_free(i);
-            }
-            end-=diff;
-        }
-        for(;start<end;start+=32){
-            mark_chunk_free(start);
-        }
+        set_phys_free(start,end,true);
     }
     #ifdef DEBUG
     uint32_t page_count=0;
@@ -120,9 +92,7 @@ void Memory::x86_init(struct multiboot_info * mbd){
     uint32_t k_end=((uint32_t)&kernel_end);
     uint32_t k_start_page=k_start/4096;
     uint32_t k_end_page=(k_end/4096)+1;
-    for(uint32_t i=k_start_page;i<=k_end_page;i++){
-        mark_used(i);
-    }
+    set_phys_free(k_start_page,k_end_page,false);
     print("  .Memory Map ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     print("OK");

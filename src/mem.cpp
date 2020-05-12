@@ -33,6 +33,38 @@ static inline void set_free(uint32_t page_id,bool new_free){
     }
 }
 
+void Memory::Internal::set_phys_free(uint32_t start,uint32_t end,bool new_free){
+    uint32_t start2=(start%32)?start:(start+(32-start%32));
+    uint32_t end2=end-end%32;
+    if(start2>end2){
+        if(start!=start2){
+            for(uint32_t i=start;i<start2;i++){
+                set_free(start+i,new_free);
+            }
+            start=start2;
+        }
+        if(end!=end2){
+            for(uint32_t i=end2;i<=end;i++){
+                set_free(i,new_free);
+            }
+            end=end2;
+        }
+        if(start>end){
+            for(;start<end;start+=32){
+                if(new_free){
+                    pages.usage[start/32]=0xFFFFFFFFU;
+                }else{
+                    pages.usage[start/32]=0;
+                }
+            }
+        }
+    }else{
+        for(;start<=end;start++){
+            set_free(start,new_free);
+        }
+    }
+}
+
 static inline bool is_free(uint32_t page_id){
     return checkbit(pages.usage[page_id/32],page_id%32);
 }
