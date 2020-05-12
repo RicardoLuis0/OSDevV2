@@ -27,6 +27,10 @@ static inline void mark_free(uint32_t page_id){//mark as free
     pages.usage[page_id/32]|=(1<<page_id%32);
 }
 
+static inline void mark_chunk_free(uint32_t page_id){//mark as free
+    pages.usage[page_id/32]=0xFFFFFFFFU;
+}
+
 constexpr uint64_t MM=(1024ULL*1024ULL);
 
 constexpr uint32_t STACK_SIZE=32*(1024ULL);
@@ -82,16 +86,33 @@ void Memory::x86_init(struct multiboot_info * mbd){
         uint32_t start=blocks[i].start/4096;
         uint32_t end=blocks[i].end/4096;
         #ifdef DEBUG
-        page_count_expected+=end-start;
+        page_count_expected+=(end-start)+1;
         #endif // DEBUG
-        for(;start<end;start++){//TODO optimize if whole section is free
-            mark_free(start);
+        if(!(start%32)){
+            int diff=32-start%32;
+            for(uint32_t i=0;i<diff;i++){
+                mark_free(start+i);
+            }
+            start+=diff;
+        }
+        if(!(end%32)){
+            int diff=end%32;
+            for(uint32_t i=end-diff;i<=end;i++){
+                mark_free(i);
+            }
+            end-=diff;
+        }
+        for(;start<end;start+=32){//TODO optimize if whole section is free
+            mark_chunk_free(start);
         }
     }
     #ifdef DEBUG
     uint32_t page_count=0;
     for(uint32_t i=0;i<1048576;i++){
         if((pages.usage[i/32]>>(i%32))&0x1)page_count++;
+    }
+    if(page_count_expected!=page_count){
+        print("Expected ",page_count_expected,"Pages, got ",page_count,"Pages\n");
     }
     assert(page_count_expected==page_count);
     #endif // DEBUG
