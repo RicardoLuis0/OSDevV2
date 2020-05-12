@@ -7,7 +7,7 @@ namespace Memory {
     constexpr uint16_t phys_page_segment=32768;
     struct physical_pages_t {
         uint32_t usage[phys_page_segment];//4GB of page usage, each page is 1 bit
-    };
+    };//THIS IS ~130KB!!!!!!!!!!!!!!!!!!
 
     namespace Internal {
         extern physical_pages_t pages;

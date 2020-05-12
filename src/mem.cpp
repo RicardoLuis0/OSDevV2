@@ -17,7 +17,7 @@ namespace Memory::Internal {
 
 using namespace Memory::Internal;
 
-static inline constexpr bool checkbit(uint16_t val,uint8_t offset){
+static inline constexpr bool checkbit(uint32_t val,uint8_t offset){
     return (val>>offset)&0x1;
 }
 

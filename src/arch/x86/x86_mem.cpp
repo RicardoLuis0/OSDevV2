@@ -3,6 +3,7 @@
 #include "print.h"
 #include "klib.h"
 #include "paging.h"
+#include "stdc/assert.h"
 
 using namespace Memory;
 
@@ -74,13 +75,26 @@ void Memory::x86_init(struct multiboot_info * mbd){
         k_abort_s("Memory Map not available");
     }
     free_mem=usable;
+    #ifdef DEBUG
+    uint32_t page_count_expected=0;
+    #endif // DEBUG
     for(uint32_t i=0;i<next_block;i++){
         uint32_t start=blocks[i].start/4096;
         uint32_t end=blocks[i].end/4096;
-        for(;start<end;start++){
+        #ifdef DEBUG
+        page_count_expected+=end-start;
+        #endif // DEBUG
+        for(;start<end;start++){//TODO optimize if whole section is free
             mark_free(start);
         }
     }
+    #ifdef DEBUG
+    uint32_t page_count=0;
+    for(uint32_t i=0;i<1048576;i++){
+        if((pages.usage[i/32]>>(i%32))&0x1)page_count++;
+    }
+    assert(page_count_expected==page_count);
+    #endif // DEBUG
     uint32_t k_start=((uint32_t)&kernel_start);
     uint32_t k_end=((uint32_t)&kernel_end);
     uint32_t k_start_page=k_start/4096;
