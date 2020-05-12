@@ -102,7 +102,7 @@ void Memory::x86_init(struct multiboot_info * mbd){
             }
             end-=diff;
         }
-        for(;start<end;start+=32){//TODO optimize if whole section is free
+        for(;start<end;start+=32){
             mark_chunk_free(start);
         }
     }
