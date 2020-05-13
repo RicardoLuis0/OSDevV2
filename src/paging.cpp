@@ -124,7 +124,7 @@ void Memory::paging_init(){
     for(i=0;!Internal::is_phys_page_free(i);i++){//map all non-free pages
         set_page_table_entry(id_to_page_entry(i,pd),{.present=true,.rw=true,.user=false},Internal::phys_id_to_ptr(i));
     }
-    print("Last Free Page:",i);
+    print("First Free Page:",i);
     
     print("  .Paging ");
     Screen::setfgcolor(Screen::RED);
