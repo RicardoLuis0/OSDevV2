@@ -109,6 +109,10 @@ extern uint8_t kernel_start;
 
 extern uint8_t kernel_end;
 
+void paging_enable(page_entry_t * pd){
+    asm("movl %0,%%eax\ncall ASM_paging_enable":"=r"(pd));
+}
+
 void Memory::paging_init(){
     print("\n -Initializing Paging...\n");
     page_entry_t * pd=reinterpret_cast<page_entry_t*>(Internal::alloc_phys_page(pages_to_fit(sizeof(page_entry_t)*1024)));
@@ -125,7 +129,7 @@ void Memory::paging_init(){
         set_page_table_entry(id_to_page_entry(i,pd),{.present=true,.rw=true,.user=false},Internal::phys_id_to_ptr(i));
     }
     print("First Free Page:",i);
-    
+    paging_enable(pd);
     print("  .Paging ");
     Screen::setfgcolor(Screen::RED);
     print("FAIL");
