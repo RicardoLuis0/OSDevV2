@@ -11,3 +11,4 @@ bin/
 *.bat
 *.lnk
 img/
+*.bxrc
