@@ -73,6 +73,7 @@ void Memory::x86_init(struct multiboot_info * mbd){
     for(uint32_t i=0;i<next_block;i++){
         uint32_t start=blocks[i].start/4096;
         uint32_t end=blocks[i].end/4096;
+        if(end>pages.last_usable)pages.last_usable=end;
         #ifdef DEBUG
         page_count_expected+=(end-start)+1;
         #endif // DEBUG

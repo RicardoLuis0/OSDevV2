@@ -197,7 +197,7 @@ void * Memory::Internal::alloc_phys_page(uint32_t n){
 void Memory::Internal::free_phys_page(void * p,uint32_t n){
     uint32_t id=to_page_id(p);
     while(n>0){
-        if(is_free(id)){
+        if(!is_phys_page_free(id)){
             k_abort_s("Can't free an unused page");
         }else{
             set_free(id,true);
@@ -205,6 +205,14 @@ void Memory::Internal::free_phys_page(void * p,uint32_t n){
         n--;
         id++;
     }
+}
+
+int Memory::Internal::last_used_page(){//highest index of used page
+    int last=0;
+    for(int i=0;i<pages.last_usable;i++){//TODO optimize
+        if(!is_free(i))last=i;
+    }
+    return last;
 }
 
 void * Memory::alloc_virt_page(uint32_t n){

@@ -7,7 +7,7 @@ using namespace Memory;
 
 namespace Memory{
     //assembled using information from https://wiki.osdev.org/Paging
-    struct page_entry_t {
+    struct entry_t {
         uint32_t present        :  1;//is entry present?
         uint32_t rw             :  1;//is entry writable? else is read-only
         uint32_t user           :  1;//does the entry belong to a user? else belongs to the system
@@ -39,16 +39,12 @@ namespace Memory{
     }
 }
 
-static inline page_entry_t * id_to_page_entry(uint32_t page_id,page_entry_t * pd_a){
-    return reinterpret_cast<page_entry_t *>(pd_a[page_id/1024].address<<12)+(page_id%1024);
+static inline entry_t * id_to_page_entry(uint32_t page_id,entry_t * pd_a){
+    return reinterpret_cast<entry_t *>(pd_a[page_id/1024].address<<12)+(page_id%1024);
 }
 
-static inline void set_page_table_entry(page_entry_t * pte,page_table_entry_flags_t flags,void * pages){
-    uint32_t addr=reinterpret_cast<uint32_t>(pages);
-    if(addr%4096){
-        k_abort_s("misaligned page table entry");
-    }
-    pte->address=addr>>12;
+static inline void set_page_table_entry(entry_t * pte,page_table_entry_flags_t flags,uint32_t page_id){
+    pte->address=page_id;
     pte->present=flags.present;
     pte->rw=flags.rw;
     pte->user=flags.user;
@@ -61,7 +57,7 @@ static inline void set_page_table_entry(page_entry_t * pte,page_table_entry_flag
     pte->unused=0;
 }
 
-static inline void set_page_directory_entry(page_entry_t * pde,page_directory_entry_flags_t flags,void * tables){
+static inline void set_page_directory_entry(entry_t * pde,page_directory_entry_flags_t flags,void * tables){
     uint32_t addr=reinterpret_cast<uint32_t>(tables);
     if(addr%4096){
         k_abort_s("misaligned page directory entry");
@@ -80,59 +76,56 @@ static inline void set_page_directory_entry(page_entry_t * pde,page_directory_en
 }
 
 uint32_t Memory::map_virtual_page(uint32_t p,uint32_t v,uint32_t n){
-    k_abort_s("map_virtual_page unimplemented");
     //TODO
-    return v;
+    k_abort_s("Memory::map_virtual_page unimplemented");
 }
 
 void Memory::unmap_virtual_page(uint32_t v,uint32_t n){
-    k_abort_s("unmap_virtual_page unimplemented");
     //TODO
+    k_abort_s("Memory::unmap_virtual_page unimplemented");
 }
 
 uint32_t Memory::get_mapping_phys(uint32_t p){
-    k_abort_s("get_mapping_phys unimplemented");
     //TODO
+    k_abort_s("Memory::get_mapping_phys unimplemented");
 }
 
 uint32_t Memory::get_mapping_virt(uint32_t v){
-    k_abort_s("get_mapping_virt unimplemented");
     //TODO
+    k_abort_s("Memory::get_mapping_virt unimplemented");
 }
 
 uint32_t Memory::next_free_virt_page(){
-    k_abort_s("next_free_virt_page unimplemented");
     //TODO
+    k_abort_s("Memory::next_free_virt_page unimplemented");
 }
 
 extern uint8_t kernel_start;
 
 extern uint8_t kernel_end;
 
-void paging_enable(page_entry_t * pd){
-    asm("movl %0,%%eax\ncall ASM_paging_enable":"=r"(pd));
+void paging_enable(entry_t * pd){
+    asm("movl %0,%%eax\ncall ASM_paging_enable"::"r"(pd));
 }
 
 void Memory::paging_init(){
     print("\n -Initializing Paging...\n");
-    page_entry_t * pd=reinterpret_cast<page_entry_t*>(Internal::alloc_phys_page(pages_to_fit(sizeof(page_entry_t)*1024)));
+    entry_t * pd=reinterpret_cast<entry_t*>(Internal::alloc_phys_page(pages_to_fit(sizeof(entry_t)*1024)));
     for(uint32_t i=0;i<1024;i++){
-        page_entry_t * pt=reinterpret_cast<page_entry_t*>(Internal::alloc_phys_page(pages_to_fit(sizeof(page_entry_t)*1024)));
+        entry_t * pt=reinterpret_cast<entry_t*>(Internal::alloc_phys_page(pages_to_fit(sizeof(entry_t)*1024)));
         for(uint32_t j=0;j<1024;j++){
-            set_page_table_entry(pt+j,{.present=false,.rw=false,.user=false},nullptr);
+            set_page_table_entry(pt+j,{.present=false,.rw=false,.user=false},0);
         }
         set_page_directory_entry(pd+i,{.present=true,.rw=true,.user=false},pt);
     }
-    //TODO setup identity paging for already-allocated pages
     uint32_t i;
-    for(i=0;!Internal::is_phys_page_free(i);i++){//map all non-free pages
-        set_page_table_entry(id_to_page_entry(i,pd),{.present=true,.rw=true,.user=false},Internal::phys_id_to_ptr(i));
+    uint32_t last=Internal::last_used_page();
+    for(i=0;i<last;i++){//map all non-free pages
+        if(!Internal::is_phys_page_free(i))set_page_table_entry(id_to_page_entry(i,pd),{.present=true,.rw=true,.user=false},i);
     }
-    print("First Free Page:",i);
     paging_enable(pd);
     print("  .Paging ");
-    Screen::setfgcolor(Screen::RED);
-    print("FAIL");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    print("OK");
     Screen::setfgcolor(Screen::WHITE);
-    k_abort_s("Paging unimplemented");
 }
