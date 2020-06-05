@@ -12,3 +12,4 @@ bin/
 *.lnk
 img/
 *.bxrc
+*.tar.gz

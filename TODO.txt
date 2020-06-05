@@ -1,0 +1,2 @@
+implement basic virtual memory allocator (paging already working)
+integrate ACPICA into kernel
