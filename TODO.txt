@@ -1,2 +1,5 @@
-implement basic virtual memory allocator (paging already working)
+port stack unwinding library, implement exceptions
 integrate ACPICA into kernel
+IDE driver
+AHCI driver
+VGA driver

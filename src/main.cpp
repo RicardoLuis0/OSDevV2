@@ -71,9 +71,6 @@ extern "C" void k_main(){
     Screen::write_s("\n>Starting Kernel");
     Screen::write_s("\n -Initializing Drivers");
     Drivers::Keyboard::PS2::init();
-    //TODO PATA/IDE driver
-    //TODO SATA/AHCI driver
-    //TODO VGA driver
     Screen::write_s("\n>Loading Kernel Shell");
     kshell();
     k_abort_s("Kernel Shell Returned!");
