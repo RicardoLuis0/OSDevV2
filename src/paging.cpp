@@ -36,10 +36,13 @@ namespace Memory{
     namespace Internal {
         extern uint64_t total;
         extern uint64_t usable;
+        entry_t * current_page_directory=nullptr;
     }
 }
 
 static inline entry_t * id_to_page_entry(uint32_t page_id,entry_t * pd_a){
+    constexpr uint32_t last=1<<20;
+    if(page_id>=last)k_abort_s("virtual address out of range");
     return reinterpret_cast<entry_t *>(pd_a[page_id/1024].address<<12)+(page_id%1024);
 }
 
@@ -76,28 +79,65 @@ static inline void set_page_directory_entry(entry_t * pde,page_directory_entry_f
 }
 
 uint32_t Memory::map_virtual_page(uint32_t p,uint32_t v,uint32_t n){
-    //TODO
-    k_abort_s("Memory::map_virtual_page unimplemented");
+    uint32_t last=v+n;
+    for(uint32_t i=v;i<last;i++){
+        entry_t * pte=id_to_page_entry(i,Internal::current_page_directory);
+        if(!pte->present){
+            set_page_table_entry(pte,{.present=true,.rw=true,.user=false},p);
+            p++;
+        }else{
+            k_abort_s("can't map into already-mapped virtual address");
+        }
+    }
+    return v;
 }
 
 void Memory::unmap_virtual_page(uint32_t v,uint32_t n){
-    //TODO
-    k_abort_s("Memory::unmap_virtual_page unimplemented");
+    uint32_t last=v+n;
+    for(uint32_t i=v;i<last;i++){
+        entry_t * pte=id_to_page_entry(i,Internal::current_page_directory);
+        if(pte->present){
+            set_page_table_entry(pte,{.present=false,.rw=false,.user=false},0);
+        }else{
+            k_abort_s("can't unmap unused virutal address");
+        }
+    }
 }
 
 uint32_t Memory::get_mapping_phys(uint32_t p){
-    //TODO
-    k_abort_s("Memory::get_mapping_phys unimplemented");
+    constexpr uint32_t last=1<<20;
+    for(uint32_t i=0;i<last;i++){
+        entry_t * pte=id_to_page_entry(i,Internal::current_page_directory);
+        if(pte->address==p){
+            return i;
+        }
+    }
+    return 0;//can't find address
 }
 
 uint32_t Memory::get_mapping_virt(uint32_t v){
-    //TODO
-    k_abort_s("Memory::get_mapping_virt unimplemented");
+    entry_t * pte=id_to_page_entry(v,Internal::current_page_directory);
+    if(pte->present){
+        return pte->address;
+    }
+    return 0;//can't find address
 }
 
-uint32_t Memory::next_free_virt_page(){
-    //TODO
-    k_abort_s("Memory::next_free_virt_page unimplemented");
+uint32_t Memory::next_free_virt_page(uint32_t n){
+    if(!Internal::current_page_directory) k_abort_s("trying to call Memory::next_free_virt_page while paging is disabled");
+    uint32_t c=0;
+    for(uint32_t i=0;i<1024;i++){
+        entry_t * pt=reinterpret_cast<entry_t*>(Internal::current_page_directory[i].address<<12);
+        for(uint32_t j=0;j<1024;j++){
+            if(!pt[j].present){
+                c++;
+                if(c==n)return (i<<10)+j;
+            }else{
+                c=0;
+            }
+        }
+    }
+    k_abort_s("Out of Virtual Memory");
 }
 
 extern uint8_t kernel_start;
@@ -106,6 +146,7 @@ extern uint8_t kernel_end;
 
 void paging_enable(entry_t * pd){
     asm("movl %0,%%eax\ncall ASM_paging_enable"::"r"(pd));
+    Internal::current_page_directory=pd;
 }
 
 void Memory::paging_init(){
@@ -119,8 +160,7 @@ void Memory::paging_init(){
         set_page_directory_entry(pd+i,{.present=true,.rw=true,.user=false},pt);
     }
     uint32_t i;
-    uint32_t last=Internal::last_used_page();
-    for(i=0;i<last;i++){//map all non-free pages
+    for(i=0;i<=Internal::pages.last_usable;i++){//map all non-free pages
         if(!Internal::is_phys_page_free(i))set_page_table_entry(id_to_page_entry(i,pd),{.present=true,.rw=true,.user=false},i);
     }
     paging_enable(pd);

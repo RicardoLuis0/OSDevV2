@@ -145,7 +145,7 @@ static inline void * register_phys_page(void * p,size_t n){
 }
 
 static inline void * map_virt(void * p,uint32_t n){
-    return to_ptr(map_virtual_page(to_page_id(p),next_free_virt_page(),n));
+    return to_ptr(map_virtual_page(to_page_id(p),next_free_virt_page(n),n));
 }
 
 static inline void unmap_virt(void * v,uint32_t n){
@@ -190,7 +190,6 @@ static inline void * next_free_phys_pages(size_t n){
 }
 
 void * Memory::Internal::alloc_phys_page(uint32_t n){
-    if(n!=1)k_abort_s("multi-page allocation unimplemented");
     return register_phys_page(next_free_phys_pages(n),n);
 }
 

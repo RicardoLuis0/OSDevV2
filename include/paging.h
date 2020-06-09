@@ -18,11 +18,11 @@ namespace Memory {
 
     void unmap_virtual_page(uint32_t v,uint32_t n);//unmap 'n' virtual pages at virtual address 'v'
 
-    uint32_t get_mapping_phys(uint32_t p);//get virtual mapping of physical address
+    uint32_t get_mapping_phys(uint32_t p);//get first virtual mapping of physical address
 
     uint32_t get_mapping_virt(uint32_t v);//get physical mapping of virtual address
 
-    uint32_t next_free_virt_page();//get a free unused virtual address ( to pass to map_virtual_page )
+    uint32_t next_free_virt_page(uint32_t n);//get a free unused virtual address ( to pass to map_virtual_page ) that can fit 'n' pages
 
     void paging_init();
 
