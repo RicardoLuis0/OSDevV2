@@ -7,6 +7,7 @@ namespace Util {
         volatile int _lock=0;
     public:
         void lock();
+        bool try_lock();
         void release();
     };
 
