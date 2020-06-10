@@ -245,17 +245,17 @@ void Memory::cmd_meminfo(){
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     k_putmem(mem_used);
     Screen::setfgcolor(Screen::WHITE);
-    k_puts("\nNon-Heap Size: ");
-    Screen::setfgcolor(Screen::LIGHT_GREEN);
-    k_putmem(mem_used-liballoc_heap_size());
-    Screen::setfgcolor(Screen::WHITE);
-    k_puts("\nHeap Size: ");
+    k_puts("\nKernel Heap Size: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     k_putmem(mem_heap);
     Screen::setfgcolor(Screen::WHITE);
-    k_puts("\nHeap In Use: ");
+    k_puts("\nKernel Heap In Use: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     k_putmem(mem_heap_used);
+    Screen::setfgcolor(Screen::WHITE);
+    k_puts("\nNon-Heap In Use: ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    k_putmem(mem_used-liballoc_heap_size());
     Screen::setfgcolor(Screen::WHITE);
     //k_abort_s("meminfo unimplemented");
 }
