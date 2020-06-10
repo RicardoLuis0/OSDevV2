@@ -38,12 +38,12 @@ namespace IDT{
         RING_3,
     };
     void init();
-    void set_irq_handler(uint8_t num,void(*)(void),gate_type,ring_type);
-    void set_irq_handler(uint8_t num,void(*)(int),gate_type,ring_type);
-    void set_irq_handler(uint8_t num,void(*)(int,int),gate_type,ring_type);
-    void set_exception_handler(uint8_t num,void(*)(void),gate_type,ring_type);
-    void set_exception_handler(uint8_t num,void(*)(int),gate_type,ring_type);
-    void set_exception_handler(uint8_t num,void(*)(int,int),gate_type,ring_type);
+    void set_irq_handler(uint8_t num,void(*)(void),gate_type,ring_type);//ignores data
+    void set_irq_handler(uint8_t num,void(*)(uint32_t),gate_type,ring_type);//receives data
+    void set_irq_handler(uint8_t num,void(*)(uint32_t,uint32_t),gate_type,ring_type);//receives data and irq number (for multi-irq handlers)
+    void set_exception_handler(uint8_t num,void(*)(void),gate_type,ring_type);//ignores data
+    void set_exception_handler(uint8_t num,void(*)(uint32_t),gate_type,ring_type);//receives data
+    void set_exception_handler(uint8_t num,void(*)(uint32_t,uint32_t),gate_type,ring_type);//receives data and irq number (for multi-irq handlers)
     void pic_enable(uint8_t irq);
     void pic_disable(uint8_t irq);
 

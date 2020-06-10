@@ -2,6 +2,7 @@
 #include "klib.h"
 #include "print.h"
 #include "mem.h"
+#include "arch/x86.h"
 
 using namespace Memory;
 
@@ -150,6 +151,49 @@ void paging_enable(entry_t * pd){
     Internal::current_page_directory=pd;
 }
 
+void page_fault_handler(uint32_t data){
+    Screen::setcolor(Screen::BLACK,Screen::WHITE);
+    Screen::clear();
+    Screen::setcolor(Screen::RED,Screen::WHITE);
+    Screen::clear_line(0);
+    Screen::clear_line(1);
+    Screen::move(0,0);
+    Screen::write_s("Page Fault: ");
+    if(data&0x1){
+        Screen::write_s("present ");
+    }else{
+        Screen::write_s("not-present ");
+    }
+    if(data&0x2){
+        Screen::write_s("write ");
+    }else{
+        Screen::write_s("read ");
+    }
+    if(data&0x4){
+        Screen::write_s("user ");
+    }else{
+        Screen::write_s("kernel ");
+    }
+    /*
+    something to do with PSE/PAE???
+    if(data&0x8){
+        Screen::write_s("reserved ");
+    }
+    */
+    /*
+    //no execute bit
+    if(data&0x10){
+        Screen::write_s("instruction ");
+    }else{
+        Screen::write_s("data ");
+    }
+    */
+    Screen::write_s("( ");
+    Screen::write_h(data);
+    Screen::write_s(")");
+    k_abort();
+}
+
 void Memory::paging_init(){
     print("\n -Initializing Paging...\n");
     entry_t * pd=reinterpret_cast<entry_t*>(Internal::alloc_phys_page(pages_to_fit(sizeof(entry_t)*1024)));
@@ -170,6 +214,8 @@ void Memory::paging_init(){
     }
     Internal::phys_mem_in_use*=4096;
     paging_enable(pd);
+    set_page_table_entry(id_to_page_entry(0,pd),{.present=false,.rw=false,.user=false},0);//mark first page as non-present
+    IDT::set_exception_handler(14,page_fault_handler,IDT::G_32_INT,IDT::RING_0);//enable page fault handler
     print("  .Paging ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     print("OK");
