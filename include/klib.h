@@ -16,7 +16,7 @@ extern "C" {
 #endif // __cplusplus
 
 void * k_malloc(size_t size);
-void * k_malloc_x(size_t size,size_t align);
+//void * k_malloc_x(size_t size,size_t align);
 void * k_calloc(size_t num,size_t size);
 void * k_realloc(void * ptr,size_t size);
 void k_free(void * ptr);
@@ -28,9 +28,19 @@ NORETURN void k_abort_s(const char * msg);
 NORETURN void k_abort_s_i_s(const char * s1,int i,const char * s2);
 NORETURN void k_abort_assert(const char * condition,const char * name,uint32_t line);
 NORETURN void k_abort_massert(const char * condition,const char * msg,const char * name,uint32_t line);
+
 void k_putc(char c);
 void k_puts(const char * s);
+
+void k_puti(int32_t);//print int
+void k_putu(int32_t);//print unsigned int
+void k_putll(int64_t);//print long long
+void k_putull(int64_t);//print unsigned long long
+void k_puth(uint64_t);//print unsigned long long as hex
+void k_putmem(uint64_t);//print unsigned long long as memory (ex. 10M 2K 10B)
+
 int k_getch();
+
 enum k_getch_ext_keys{
     K_GETCH_EXT_UP=256,
     K_GETCH_EXT_DOWN,

@@ -36,6 +36,7 @@ namespace Memory{
     namespace Internal {
         extern uint64_t total;
         extern uint64_t usable;
+        extern uint64_t phys_mem_in_use;
         entry_t * current_page_directory=nullptr;
     }
 }
@@ -160,9 +161,14 @@ void Memory::paging_init(){
         set_page_directory_entry(pd+i,{.present=true,.rw=true,.user=false},pt);
     }
     uint32_t i;
+    Internal::phys_mem_in_use=0;
     for(i=0;i<=Internal::pages.last_usable;i++){//map all non-free pages
-        if(!Internal::is_phys_page_free(i))set_page_table_entry(id_to_page_entry(i,pd),{.present=true,.rw=true,.user=false},i);
+        if(!Internal::is_phys_page_free(i)){
+            set_page_table_entry(id_to_page_entry(i,pd),{.present=true,.rw=true,.user=false},i);
+            Internal::phys_mem_in_use++;
+        }
     }
+    Internal::phys_mem_in_use*=4096;
     paging_enable(pd);
     print("  .Paging ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);

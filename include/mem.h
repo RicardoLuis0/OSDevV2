@@ -15,7 +15,7 @@ namespace Memory{
         void * alloc_phys_page(uint32_t n);//get 'n' new physical pages (and mark as used)
         void free_phys_page(void*,uint32_t n);//mark 'n' physical pages as unused
         void set_phys_free(uint32_t page_id_start,uint32_t page_id_end,bool new_free);
-        int last_used_page();//highest index of used page
+        uint32_t count_used_pages();//counts number of non-free physical pages
     }
     void * alloc_virt_page(uint32_t n);//get 'n' new virtual pages (and mark as used)
     void free_virt_page(void*,uint32_t n);//mark 'n' virtual pages as unused

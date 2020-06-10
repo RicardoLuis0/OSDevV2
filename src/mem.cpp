@@ -12,6 +12,7 @@ namespace Memory::Internal {
     uint64_t total;
     uint64_t usable;
     uint64_t free_mem;
+    uint64_t phys_mem_in_use;
     physical_pages_t pages;
 }
 
@@ -90,6 +91,7 @@ static inline bool is_free(uint16_t chunk,uint8_t offset,size_t length,uint16_t 
             }
             if(free_pgs==length)return true;
         }
+        offset=0;
     }
     chunk_out=phys_page_segment;
     offset_out=32;
@@ -206,12 +208,12 @@ void Memory::Internal::free_phys_page(void * p,uint32_t n){
     }
 }
 
-int Memory::Internal::last_used_page(){//highest index of used page
-    int last=0;
+uint32_t Memory::Internal::count_used_pages(){//highest index of used page
+    uint32_t count=0;
     for(int i=0;i<pages.last_usable;i++){//TODO optimize
-        if(!is_free(i))last=i;
+        if(!is_free(i))count++;
     }
-    return last;
+    return count;
 }
 
 void * Memory::alloc_virt_page(uint32_t n){
@@ -223,38 +225,64 @@ void Memory::free_virt_page(void * p,uint32_t n){
     unmap_virt(p,n);
 }
 
-extern "C" void * k_malloc(size_t size){
-    if(size==0)k_abort_s("cannot allocate 0 memory");
-    if(size<=4096)return alloc_virt_page(1);
-    else k_abort_s("k_malloc unimplemented");
-}
-
-extern "C" void * k_malloc_x(size_t size,size_t align){
-    k_abort_s("k_malloc_x unimplemented");
-}
-
-static inline void * zero_alloc(size_t size){
-    void * p=k_malloc(size);
-    if(p){
-        k_memset(p,0,size);
-    }
-    return p;
-}
-
-extern "C" void * k_calloc(size_t num,size_t size){
-    return zero_alloc(size*num);
-}
-
-extern "C" void * k_realloc(void * ptr,size_t size){
-    if(size<=4096)return ptr;
-    k_abort_s("k_realloc unimplemented");
-}
-
-extern "C" void k_free(void * ptr){
-    free_virt_page(ptr,1);
-}
+extern "C" uint64_t liballoc_heap_size();
+extern "C" uint64_t liballoc_used();
 
 void Memory::cmd_meminfo(){
-    k_abort_s("meminfo unimplemented");
+    uint64_t mem_used=count_used_pages()*4096ULL;
+    uint64_t mem_heap=liballoc_heap_size();
+    uint64_t mem_heap_used=liballoc_used();
+    uint64_t real_mem_used=(mem_used-mem_heap)+mem_heap_used;
+    k_puts("\nFree Physical Memory: ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    k_putmem(usable-mem_used);
+    Screen::setfgcolor(Screen::WHITE);
+    k_puts("\nUsable Memory (+free heap space): ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    k_putmem(usable-real_mem_used);
+    Screen::setfgcolor(Screen::WHITE);
+    k_puts("\nOccupied Physical Memory: ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    k_putmem(mem_used);
+    Screen::setfgcolor(Screen::WHITE);
+    k_puts("\nNon-Heap Size: ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    k_putmem(mem_used-liballoc_heap_size());
+    Screen::setfgcolor(Screen::WHITE);
+    k_puts("\nHeap Size: ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    k_putmem(mem_heap);
+    Screen::setfgcolor(Screen::WHITE);
+    k_puts("\nHeap In Use: ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    k_putmem(mem_heap_used);
+    Screen::setfgcolor(Screen::WHITE);
+    //k_abort_s("meminfo unimplemented");
 }
 
+
+Util::Spinlock _liballoc_spinlock;
+
+extern "C" {
+    
+    //liballoc support functions
+    
+    int liballoc_lock(){
+        _liballoc_spinlock.lock();
+        return 0;
+    }
+    
+    int liballoc_unlock(){
+        _liballoc_spinlock.release();
+        return 0;
+    }
+    
+    void * liballoc_alloc(size_t n){
+        return alloc_virt_page(n);
+    }
+    
+    int liballoc_free(void * p,size_t n){
+        free_virt_page(p,n);
+        return 0;
+    }
+}

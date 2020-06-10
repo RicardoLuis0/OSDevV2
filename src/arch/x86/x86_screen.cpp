@@ -12,6 +12,32 @@ extern "C" void k_puts(const char * s){
     Screen::write_s(s);
 }
 
+
+extern "C" void k_puti(int32_t i){
+    Screen::write_i(i);
+}
+
+extern "C" void k_putu(int32_t u){
+    Screen::write_u(u);
+}
+
+extern "C" void k_putll(int64_t ll){
+    Screen::write_ll(ll);
+}
+
+extern "C" void k_putull(int64_t ull){
+    Screen::write_ull(ull);
+}
+
+extern "C" void k_puth(uint64_t h){
+    Screen::write_h(h);
+}
+
+extern "C" void k_putmem(uint64_t mem){
+    Screen::write_mem(mem,0);
+}
+
+
 using namespace Screen;
 
 size_t xpos;
@@ -222,26 +248,57 @@ void Screen::write_s_skip_space(const char * str){
     move(pos);
 }
 
-static void write_i_rec(unsigned int i,int &pos){
-    if(i>9){
-        write_i_rec(i/10,pos);
-        i%=10;
+void Screen::write_i(int i){
+    if(i<0){
+        Screen::write_c('-');
+        i*=-1;
     }
-    vga[pos++]=vga_entry(i+'0');
+    Screen::write_u(i);
 }
 
-void Screen::write_i(unsigned int i){
+static void write_u_rec(unsigned int u,int &pos){
+    if(u>9){
+        write_u_rec(u/10,pos);
+        u%=10;
+    }
+    vga[pos++]=vga_entry(u+'0');
+}
+
+void Screen::write_u(unsigned int u){
     int pos=vga_xy(xpos,ypos);
-    write_i_rec(i,pos);
+    write_u_rec(u,pos);
     move(pos);
 }
 
-static void write_h_rec(uint64_t i,int &pos){
-    if(i>15){
-        write_h_rec(i/16,pos);
-        i%=16;
+void Screen::write_ll(int64_t ll){
+    if(ll<0){
+        Screen::write_c('-');
+        ll*=-1;
     }
-    vga[pos++]=vga_entry((i<10)?(i+'0'):((i-10)+'A'));
+    Screen::write_ull(ll);
+}
+
+static void write_ull_rec(uint64_t u,int &pos){
+    if(u>9){
+        write_ull_rec(u/10,pos);
+        u%=10;
+    }
+    vga[pos++]=vga_entry(u+'0');
+}
+
+void Screen::write_ull(uint64_t u){
+    int pos=vga_xy(xpos,ypos);
+    write_ull_rec(u,pos);
+    move(pos);
+}
+
+
+static void write_h_rec(uint64_t h,int &pos){
+    if(h>15){
+        write_h_rec(h/16,pos);
+        h%=16;
+    }
+    vga[pos++]=vga_entry((h<10)?(h+'0'):((h-10)+'A'));
 }
 
 void Screen::write_h(uint64_t h){
@@ -284,7 +341,7 @@ void Screen::write_mem(uint64_t mem,int depth){
         if(!last){
             write_c(' ');//whitespace between numbers
         }
-        write_i(mem%1024ULL);
+        write_u(mem%1024ULL);
         write_c(id);
     }
 }

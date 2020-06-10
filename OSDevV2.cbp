@@ -44,18 +44,21 @@
 			<Add option="-std=c11" />
 			<Add option="-std=c++17" />
 			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-rtti -fno-exceptions -Werror=implicit-function-declaration" />
+			<Add option="-D__ELF__" />
 			<Add directory="tinycc/include" />
 		</Compiler>
 		<Linker>
 			<Add option="-T linker.ld" />
+			<Add option="-lclang_builtins_i386" />
+			<Add directory="lib" />
 		</Linker>
 		<Unit filename="include/arch/x86.h" />
-		<Unit filename="include/drivers/ahci.h" />
 		<Unit filename="include/drivers/keyboard/ps2/keyboard.h" />
 		<Unit filename="include/drivers/keyboard/ps2/keycodes.h" />
 		<Unit filename="include/extern/multiboot.h" />
 		<Unit filename="include/klib.h" />
 		<Unit filename="include/kshell/kshell.h" />
+		<Unit filename="include/liballoc.h" />
 		<Unit filename="include/mem.h" />
 		<Unit filename="include/new.h" />
 		<Unit filename="include/paging.h" />
@@ -113,6 +116,9 @@
 		<Unit filename="src/arch/x86/x86_screen.cpp" />
 		<Unit filename="src/klib.cpp" />
 		<Unit filename="src/kshell/kshell.cpp" />
+		<Unit filename="src/liballoc.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/mem.cpp" />
 		<Unit filename="src/new.cpp" />

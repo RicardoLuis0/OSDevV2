@@ -5,15 +5,11 @@ template<> void print(char c){
 }
 
 template<> void print(int i){
-    if(i<0){
-        Screen::write_c('-');
-        i*=-1;
-    }
     Screen::write_i(i);
 }
 
-template<> void print(unsigned int i){
-    Screen::write_i(i);
+template<> void print(unsigned int u){
+    Screen::write_u(u);
 }
 
 template<> void print(const char * s){

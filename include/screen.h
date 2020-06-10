@@ -30,7 +30,10 @@ namespace Screen {
     void write_c(char c);
     void write_s(const char * str);
     void write_s_skip_space(const char * str);
-    void write_i(unsigned int i);
+    void write_i(int i);
+    void write_u(unsigned int u);
+    void write_ll(int64_t ll);
+    void write_ull(uint64_t ull);
     void write_h(uint64_t h);//write int as hex
     void write_mem(uint64_t mem,int offset=0);//write as memory size
     void scroll(int len);
