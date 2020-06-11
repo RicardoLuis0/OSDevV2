@@ -15,7 +15,6 @@
 				<Option use_console_runner="0" />
 				<Compiler>
 					<Add option="-g" />
-					<Add option="-Werror=return-type" />
 					<Add option="-DDEBUG" />
 					<Add directory="include" />
 				</Compiler>
@@ -43,9 +42,7 @@
 			<Add option="-Wall" />
 			<Add option="-std=c11" />
 			<Add option="-std=c++17" />
-			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-rtti -fno-exceptions -Werror=implicit-function-declaration" />
-			<Add option="-D__ELF__" />
-			<Add directory="tinycc/include" />
+			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-rtti -fno-exceptions -Werror=implicit-function-declaration -Werror=return-type" />
 		</Compiler>
 		<Linker>
 			<Add option="-T linker.ld" />

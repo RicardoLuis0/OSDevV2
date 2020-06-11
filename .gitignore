@@ -13,3 +13,4 @@ bin/
 img/
 *.bxrc
 *.tar.gz
+build/
