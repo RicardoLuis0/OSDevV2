@@ -3,7 +3,7 @@
 import os;
 import subprocess;
 
-clang_path="C:\\Program Files\\LLVM\\bin\\";
+llvm_path="C:\\Program Files\\LLVM\\bin\\";
 nasm_path="";
 
 class compiler:
@@ -29,7 +29,7 @@ class linker_ld_lld(linker):
         self.flags=flags
         self.libs=libs
     def get_cmd(self,out):
-        return "\""+clang_path+"ld.lld\" "+(" ".join(self.flags))+" "+(" ".join(self.libs))+" -o \""+out+"\" "+(" ".join(self.start_files))+" "+(" ".join(self.files))+" "+(" ".join(self.end_files))
+        return "\""+llvm_path+"ld.lld\" "+(" ".join(self.flags))+" "+(" ".join(self.libs))+" -o \""+out+"\" "+(" ".join(self.start_files))+" "+(" ".join(self.files))+" "+(" ".join(self.end_files))
 
 class clang(compiler):
     def __init__(self,flags,cpp):
@@ -39,9 +39,9 @@ class clang(compiler):
     def get_cmd(self,src,out,extraflags):
         cmd=" -c "+(" ".join(self.flags))+" "+(" ".join(extraflags))+" \""+src+"\" -o \""+out+"\""
         if(self.cpp):
-            return "\""+clang_path+"clang++\" "+cmd
+            return "\""+llvm_path+"clang++\" "+cmd
         else:
-            return "\""+clang_path+"clang\" "+cmd
+            return "\""+llvm_path+"clang\" "+cmd
 
 class nasm(compiler):
     def __init__(self,flags):
