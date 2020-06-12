@@ -1,10 +1,11 @@
 #makesystem
 
-import os;
-import subprocess;
+import os
+import subprocess
 
-llvm_path="C:\\Program Files\\LLVM\\bin\\";
-nasm_path="";
+llvm_path="C:\\Program Files\\LLVM\\bin\\"  #you can leave this empty if llvm is in path
+
+nasm_path=""                                #you can leave this empty if nasm is in path
 
 class compiler:
 
@@ -61,8 +62,8 @@ class compiler_runner:
         self.nolink=nolink
     
     def run(self):
-        cmd=self.compiler.get_cmd(self.src,self.out,self.extraflags);
-        print("running "+cmd);
+        cmd=self.compiler.get_cmd(self.src,self.out,self.extraflags)
+        print("running "+cmd)
         if (subprocess.Popen(cmd,shell=True).wait()):
             raise "compile of file "+self.get_filename()+" failed"
         elif not self.nolink:
@@ -96,5 +97,5 @@ runners=get_files("src","build\\obj",config,["crti","crtn","boot"],ld)
 for runner in runners:
     runner.run()
 ld_cmd=ld.get_cmd("build/kernel.bin")
-print("running "+ld_cmd);
+print("running "+ld_cmd)
 subprocess.Popen(ld_cmd).wait()
