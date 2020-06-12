@@ -2,9 +2,9 @@
 
 constexpr uint32_t sz=sizeof(size_t);
 
-/*
-memmove from musl (https://github.com/esmil/musl/blob/master/src/string/memmove.c)
+//memmove from musl (https://github.com/esmil/musl/blob/master/src/string/memmove.c)
 
+/*
 musl as a whole is licensed under the following standard MIT license:
 ----------------------------------------------------------------------
 Copyright © 2005-2014 Rich Felker, et al.

@@ -1,8 +1,6 @@
-#include "paging.h"
+#include "arch/x86.h"
 #include "klib.h"
 #include "print.h"
-#include "mem.h"
-#include "arch/x86.h"
 
 using namespace Memory;
 
@@ -146,12 +144,12 @@ extern uint8_t kernel_start;
 
 extern uint8_t kernel_end;
 
-void paging_enable(entry_t * pd){
+static void paging_enable(entry_t * pd){
     asm("movl %0,%%eax\ncall ASM_paging_enable"::"r"(pd));
     Internal::current_page_directory=pd;
 }
 
-void page_fault_handler(uint32_t data){
+static void page_fault_handler(uint32_t data){
     Screen::setcolor(Screen::BLACK,Screen::WHITE);
     Screen::clear();
     Screen::setcolor(Screen::RED,Screen::WHITE);
@@ -194,7 +192,7 @@ void page_fault_handler(uint32_t data){
     k_abort();
 }
 
-void Memory::paging_init(){
+void Memory::x86_paging_init(){
     print("\n -Initializing Paging...\n");
     entry_t * pd=reinterpret_cast<entry_t*>(Internal::alloc_phys_page(pages_to_fit(sizeof(entry_t)*1024)));
     for(uint32_t i=0;i<1024;i++){

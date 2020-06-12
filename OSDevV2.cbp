@@ -58,7 +58,6 @@
 		<Unit filename="include/liballoc.h" />
 		<Unit filename="include/mem.h" />
 		<Unit filename="include/new.h" />
-		<Unit filename="include/paging.h" />
 		<Unit filename="include/print.h" />
 		<Unit filename="include/screen.h" />
 		<Unit filename="include/stdc/assert.h" />
@@ -107,6 +106,10 @@
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
 		<Unit filename="src/arch/x86/idt.cpp" />
+		<Unit filename="src/arch/x86/paging.asm">
+			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
+		</Unit>
+		<Unit filename="src/arch/x86/paging.cpp" />
 		<Unit filename="src/arch/x86/spinlock.cpp" />
 		<Unit filename="src/arch/x86/x86.cpp" />
 		<Unit filename="src/arch/x86/x86_mem.cpp" />
@@ -117,12 +120,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/main.cpp" />
-		<Unit filename="src/mem.cpp" />
 		<Unit filename="src/new.cpp" />
-		<Unit filename="src/paging.asm">
-			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
-		</Unit>
-		<Unit filename="src/paging.cpp" />
 		<Unit filename="src/print.cpp" />
 		<Unit filename="src/tdraw.cpp" />
 		<Extensions>
