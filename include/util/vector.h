@@ -3,6 +3,7 @@
 
 #include "klib.h"
 #include "util/spinlock.h"
+#include "util/tmp.h"
 
 namespace Util {
 
@@ -20,6 +21,7 @@ namespace Util {
 
     template<typename T,auto VALUE_REMOVE=nullptr>//D is function called on removal of object instead of destructor
     class Vector{
+        protected:
             Spinlock lock;
             size_t len;
             size_t alloc;
@@ -30,6 +32,16 @@ namespace Util {
             Vector():len(0),alloc(0),vec(nullptr){
             }
 
+
+            Vector(const T * arr,size_t n){
+                vec=(T*)k_calloc(sizeof(T),n);
+                len=n;
+                alloc=n;
+                for(size_t i=0;i<n;i++){
+                    vec[i]=arr[i];
+                }
+            }
+            
             virtual ~Vector(){
                 for(size_t i=0;i<len;i++){
                     REMOVE<T,VALUE_REMOVE>::remove(vec[i]);
@@ -100,6 +112,7 @@ namespace Util {
             }
 
             size_t size(){
+                SpinlockGuard guard(lock);
                 return len;
             }
 
@@ -113,11 +126,15 @@ namespace Util {
 
         protected:
 
-            void grow(size_t by){
-                size_t n=len+by;
+            void grow(size_t min){
+                size_t n=len+min;
                 if(alloc>=n)return;//no need to grow
                 if(vec){
-                    vec=(T*)k_realloc(vec,sizeof(T)*n);
+                    if(n>(alloc*2)){
+                        vec=(T*)k_realloc(vec,sizeof(T)*n);
+                    }else{
+                        vec=(T*)k_realloc(vec,sizeof(T)*alloc*2);//grow by doubling size
+                    }
                 }else{
                     vec=(T*)k_calloc(sizeof(T),n);
                 }
@@ -136,6 +153,7 @@ namespace Util {
                 }
                 len=n;
             }
+            
 
         private:
     };
