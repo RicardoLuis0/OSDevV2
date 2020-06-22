@@ -35,7 +35,7 @@ extern "C" void x86_start(struct multiboot_info * mbd, unsigned int magic){//x86
     Memory::x86_init(mbd);
     Screen::write_s("\n>Calling Global Constructors");
     global_constructors_ran=false;
-    _init();//only call global constructors after setting up screen and memory
+    _init();//only call global constructors after setting up screen, paging, memory management, etc...
     Screen::write_s("\n -Global Constructors ");
     if(global_constructors_ran){
         Screen::setfgcolor(Screen::LIGHT_GREEN);

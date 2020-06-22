@@ -5,8 +5,8 @@
     FLAGS       equ  MBALIGN | MEMINFO ; this is the Multiboot 'flag' field
     MAGIC       equ  0x1BADB002        ; 'magic number' lets bootloader find the header
     CHECKSUM    equ  -(MAGIC + FLAGS)  ; checksum of above, to prove we are multiboot
-    STACK_SIZE  equ  32768             ; 32K stack
-;   STACK_SIZE  equ  1048576           ; 1MB stack
+;    STACK_SIZE  equ  32768            ; 32K stack
+   STACK_SIZE  equ  1048576            ; 1MB stack
 %define ARCH x86
 
 section .multiboot

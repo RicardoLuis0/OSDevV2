@@ -15,6 +15,7 @@
 				<Option use_console_runner="0" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-Og" />
 					<Add option="-DDEBUG" />
 					<Add directory="include" />
 				</Compiler>
