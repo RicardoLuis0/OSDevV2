@@ -14,3 +14,4 @@ img/
 *.bxrc
 *.tar.gz
 build/
+acpica_src/
