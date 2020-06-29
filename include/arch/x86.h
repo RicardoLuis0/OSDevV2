@@ -10,6 +10,7 @@ extern "C" uint32_t has_cpuid();
 
 namespace CPUID {
     void check();
+    void cmd_cpuid();
 }
 
 namespace Memory{

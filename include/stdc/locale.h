@@ -1,0 +1,6 @@
+#ifndef LOCALE_H_INCLUDED
+#define LOCALE_H_INCLUDED
+
+//TODO
+
+#endif // LOCALE_H_INCLUDED

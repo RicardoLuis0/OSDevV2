@@ -7,10 +7,12 @@
 extern "C" {
 #endif // __cplusplus
 
-void * k_malloc(size_t size);
-void * k_calloc(size_t num,size_t size);
-void * k_realloc(void * ptr,size_t size);
-void k_free(void * ptr);
+void * malloc(size_t size);
+void * calloc(size_t num,size_t size);
+void * realloc(void * ptr,size_t size);
+void free(void * ptr);
+int abs(int);
+long int strtol (const char* str, char** endptr, int base);
 
 //TODO
 

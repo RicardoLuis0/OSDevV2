@@ -29,6 +29,7 @@ namespace Screen {
     void setchar(char c);
     void write_c(char c);
     void write_s(const char * str);
+    void write_sn(const char * str,size_t n);
     void write_s_skip_space(const char * str);
     void write_i(int i);
     void write_u(unsigned int u);

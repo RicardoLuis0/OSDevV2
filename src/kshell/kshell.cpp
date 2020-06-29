@@ -4,6 +4,7 @@
 #include "mem.h"
 #include "drivers/keyboard/ps2/keyboard.h"
 #include "util/hash_table.h"
+#include "arch/x86.h"
 
 void kshell_execute(char * cmd);
 
@@ -125,12 +126,17 @@ static void cmd_help(char * cmd,Util::HashTable<kshell_cmd> * commands){
     }
 }
 
+static void cmd_cpuid(char * cmd,Util::HashTable<kshell_cmd> * commands){
+    CPUID::cmd_cpuid();
+}
+
 void kshell(){
     Util::HashTable<kshell_cmd> commands;
     commands["cls"]={cmd_cls,"cls","clear the screen","- cls"};
     commands["halt"]={cmd_halt,"halt","halt the system","- halt"};
     commands["help"]={cmd_help,"help [command]","displays help","- help : list all commands\n- help [command] : show command usage"};
     commands["abort"]={cmd_abort,"abort","abort kernel","- abort"};
+    commands["cpuid"]={cmd_cpuid,"cpuid","check cpu features","- cpuid"};
     //commands["kbdump"]={cmd_kbdump,"kbdump","test keyboard mapping","- kbdump"};
     commands["meminfo"]={cmd_meminfo,"meminfo","display memory information","- meminfo"};
     Screen::enable_cursor(14,15);
@@ -140,7 +146,7 @@ void kshell(){
     uint8_t cmdsize=0;//0-77
     uint8_t ptrpos=0;//0-77
     uint8_t line=Screen::getY();
-    k_memset(cmdbuf,0,sizeof(cmdbuf));
+    memset(cmdbuf,0,sizeof(cmdbuf));
     for(;;){
         Screen::clear_line(line);
         Screen::setfgcolor(Screen::LIGHT_CYAN);
@@ -160,7 +166,7 @@ void kshell(){
         case '\b':
             if(cmdsize>0){
                 if(ptrpos!=cmdsize){
-                    k_memmove(&cmdbuf[ptrpos-1],&cmdbuf[ptrpos],cmdsize-ptrpos);
+                    memmove(&cmdbuf[ptrpos-1],&cmdbuf[ptrpos],cmdsize-ptrpos);
                 }
                 ptrpos--;
                 cmdsize--;
@@ -194,7 +200,7 @@ void kshell(){
         default:
             if(c<128&&cmdsize<77){
                 if(ptrpos!=cmdsize){
-                    k_memmove(&cmdbuf[ptrpos+1],&cmdbuf[ptrpos],cmdsize-ptrpos);
+                    memmove(&cmdbuf[ptrpos+1],&cmdbuf[ptrpos],cmdsize-ptrpos);
                 }
                 cmdbuf[ptrpos]=c;
                 ptrpos++;

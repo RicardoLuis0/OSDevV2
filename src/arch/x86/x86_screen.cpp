@@ -4,39 +4,69 @@
 #include "klib.h"
 #include "arch/x86.h"
 
-extern "C" void k_putc(char c){
-    Screen::write_c(c);
+extern "C" {
+
+    void putc(char c){
+        Screen::write_c(c);
+    }
+
+    void puts(const char * s){
+        Screen::write_s(s);
+    }
+
+    void k_putc(char c){
+        Screen::write_c(c);
+    }
+
+    void k_puts(const char * s){
+        Screen::write_s(s);
+    }
+
+    void k_putsn(const char * s,size_t n){
+        Screen::write_sn(s,n);
+    }
+
+    void k_cls(){
+        Screen::clear();
+    }
+
+    void k_puti(int32_t i){
+        Screen::write_i(i);
+    }
+
+    void k_putu(int32_t u){
+        Screen::write_u(u);
+    }
+
+    void k_putll(int64_t ll){
+        Screen::write_ll(ll);
+    }
+
+    void k_putull(int64_t ull){
+        Screen::write_ull(ull);
+    }
+
+    void k_puth(uint64_t h){
+        Screen::write_h(h);
+    }
+
+    void k_putmem(uint64_t mem){
+        Screen::write_mem(mem,0);
+    }
+
+    size_t k_get_y(){
+        return Screen::getY();
+    }
+
+    size_t k_get_x(){
+        return Screen::getX();
+    }
+
+    void k_set_xy(size_t x,size_t y){
+        Screen::move(x,y);
+    }
+
 }
-
-extern "C" void k_puts(const char * s){
-    Screen::write_s(s);
-}
-
-
-extern "C" void k_puti(int32_t i){
-    Screen::write_i(i);
-}
-
-extern "C" void k_putu(int32_t u){
-    Screen::write_u(u);
-}
-
-extern "C" void k_putll(int64_t ll){
-    Screen::write_ll(ll);
-}
-
-extern "C" void k_putull(int64_t ull){
-    Screen::write_ull(ull);
-}
-
-extern "C" void k_puth(uint64_t h){
-    Screen::write_h(h);
-}
-
-extern "C" void k_putmem(uint64_t mem){
-    Screen::write_mem(mem,0);
-}
-
 
 using namespace Screen;
 
@@ -101,7 +131,7 @@ void Screen::clear_line_multi(size_t linestart,size_t lineend){
 void Screen::scroll(int len){
     if(len>0){
         uint32_t scr=len*XLEN;
-        k_memcpy((void*)vga,(void*)(vga+scr),(POSLEN-scr)*2);
+        memcpy((void*)vga,(void*)(vga+scr),(POSLEN-scr)*2);
         clear_line_multi(25-len,25);
     }else if(len<0){
         //TODO scroll down
@@ -213,6 +243,35 @@ void Screen::write_s(const char * str){
             vga[pos++]=vga_entry(*str++);
             break;
         }
+    }
+    move(pos);
+}
+
+void Screen::write_sn(const char * str,size_t n){
+    int pos=vga_xy(xpos,ypos);
+    size_t i=0;
+    while(*str!='\0'&&pos<POSLEN&&i<n){
+        switch(*str){
+        case '\r'://carriage return
+            str++;
+            pos=((pos/XLEN)+1);
+            break;
+        case '\n'://newline
+            xpos=pos%XLEN;
+            ypos=pos/XLEN;
+            newline();
+            pos=vga_xy(xpos,ypos);
+            str++;
+            break;
+        case '\b'://back
+            str++;
+            if(pos>0)pos--;
+            break;
+        default:
+            vga[pos++]=vga_entry(*str++);
+            break;
+        }
+        i++;
     }
     move(pos);
 }

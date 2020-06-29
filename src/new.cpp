@@ -2,17 +2,17 @@
 #include "klib.h"
 
 void * operator new(size_t size) {
-    return k_malloc(size);
+    return malloc(size);
 }
 
 void * operator new[](size_t size) {
-    return k_malloc(size);
+    return malloc(size);
 }
 
 void operator delete(void *p) {
-    k_free(p);
+    free(p);
 }
 
 void operator delete[](void *p) {
-    k_free(p);
+    free(p);
 }

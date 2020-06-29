@@ -34,7 +34,7 @@ namespace Util {
 
 
             Vector(const T * arr,size_t n){
-                vec=(T*)k_calloc(sizeof(T),n);
+                vec=(T*)calloc(sizeof(T),n);
                 len=n;
                 alloc=n;
                 for(size_t i=0;i<n;i++){
@@ -46,7 +46,7 @@ namespace Util {
                 for(size_t i=0;i<len;i++){
                     REMOVE<T,VALUE_REMOVE>::remove(vec[i]);
                 }
-                k_free(vec);
+                free(vec);
             }
 
             void push(T v){
@@ -60,9 +60,9 @@ namespace Util {
                 SpinlockGuard guard(lock);
                 if(alloc<num){
                     if(vec){
-                        vec=(T*)k_realloc(vec,sizeof(T)*num);
+                        vec=(T*)realloc(vec,sizeof(T)*num);
                     }else{
-                        vec=(T*)k_calloc(sizeof(T),num);
+                        vec=(T*)calloc(sizeof(T),num);
                     }
                     alloc=num;
                 }
@@ -119,7 +119,7 @@ namespace Util {
             void shrink_to_fit(){
                 SpinlockGuard guard(lock);
                 if(alloc>len){
-                    vec=(T*)k_realloc(vec,sizeof(T)*len);
+                    vec=(T*)realloc(vec,sizeof(T)*len);
                     alloc=len;
                 }
             }
@@ -131,12 +131,12 @@ namespace Util {
                 if(alloc>=n)return;//no need to grow
                 if(vec){
                     if(n>(alloc*2)){
-                        vec=(T*)k_realloc(vec,sizeof(T)*n);
+                        vec=(T*)realloc(vec,sizeof(T)*n);
                     }else{
-                        vec=(T*)k_realloc(vec,sizeof(T)*alloc*2);//grow by doubling size
+                        vec=(T*)realloc(vec,sizeof(T)*alloc*2);//grow by doubling size
                     }
                 }else{
-                    vec=(T*)k_calloc(sizeof(T),n);
+                    vec=(T*)calloc(sizeof(T),n);
                 }
                 alloc=n;
             }

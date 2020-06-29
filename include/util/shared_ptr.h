@@ -117,7 +117,7 @@ public:
     template<typename T,typename... U>
     SharedPtr<T> makeShared(U&&... args){
         constexpr size_t ptr_start=align_size(sizeof(PtrData),alignof(T));
-        void * buf=k_malloc(ptr_start+sizeof(T));
+        void * buf=malloc(ptr_start+sizeof(T));
         return SharedPtr<T>(new(buf)PtrData,new((void*)(((uint8_t*)buf)+ptr_start))T(TMP::forward<U>(args)...));
     }
 

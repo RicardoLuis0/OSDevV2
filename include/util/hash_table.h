@@ -31,9 +31,9 @@ namespace Util {
              typename K=char *,                 //internal key type
              typename CK=const char *,          //input key type
              auto KEY_COMPARE=k_strcmp_bool,    //key comparsion function, required for pointers, if null will use '=='
-             auto KEY_REMOVE=k_free,            //key removal function, required for pointers, if null will use destructor
+             auto KEY_REMOVE=free,              //key removal function, required for pointers, if null will use destructor
              auto KEY_HASH=k_hash_s,            //key hash function, required
-             auto KEY_CLONE=k_strdup,           //key duplication function, required for pointers, if null will use '='
+             auto KEY_CLONE=strdup,             //key duplication function, required for pointers, if null will use '='
              size_t L=256                       //size of hash table, higher sized lower collision, but increase memory usage
             >
     class HashTable {
