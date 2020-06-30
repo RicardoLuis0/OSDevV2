@@ -10,13 +10,6 @@ void kshell_execute(char * cmd);
 
 struct kshell_cmd;
 
-static char * first_char(char * s,char c){
-    while(*s!=c){
-        if(!*s++)return 0;
-    }
-    return s;
-}
-
 /*unused
 static bool is_int(char * s){
     size_t len=0;
@@ -98,10 +91,10 @@ static void cmd_meminfo(char * cmd,Util::HashTable<kshell_cmd> * commands){
 }
 
 static void cmd_help(char * cmd,Util::HashTable<kshell_cmd> * commands){
-    char * arg=first_char(cmd,' ');
+    char * arg=strchr(cmd,' ');
     if(arg){
         arg++;
-        char * end=first_char(arg,' ');
+        char * end=strchr(arg,' ');
         if(end){
             *end='\0';
         }
@@ -174,7 +167,7 @@ void kshell(){
             }
             break;
         case '\n':{
-                char * temp=first_char(cmdbuf,' ');
+                char * temp=strchr(cmdbuf,' ');
                 if(temp){
                     *temp='\0';
                 }

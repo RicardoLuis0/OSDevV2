@@ -5,42 +5,55 @@
 #include <limits.h>
 
 extern "C" {
+
     int tolower(int c) {
         return (c>='a'&&c<='z')?c-('a'-'A'):c;
     }
+
     int toupper(int c) {
         return (c>='A'&&c<='Z')?c-('A'-'a'):c;
     }
+
     int isspace (int c){
         return c==' '||c=='\n'||c=='\t'||c=='\r'||c=='\v'||c=='\f';
     }
+
     int iscntrl(int c){
         return (c>=0x0&&c<=0x1f)||c==0x7f;
     }
+
     int ispunct(int c){
         return (c>='!'&&c<='/')||(c>=':'&&c<='@')||(c>='['&&c<='`')||(c>='{'&&c<='~');
     }
+
     int isdigit(int c){
         return c>='0'&&c<='9';
     }
+
     int isxdigit(int c){
         return (c>='A'&&c<='F')||(c>='a'&&c<='f')||(c>='0'&&c<='9');
     }
+
     int isupper(int c){
         return (c>='A'&&c<='Z');
     }
+
     int islower(int c){
         return (c>='a'&&c<='z');
     }
+
     int isalpha(int c){
         return (c>='A'&&c<='Z')||(c>='a'&&c<='z');
     }
+
     int isalnum(int c){
         return (c>='A'&&c<='Z')||(c>='a'&&c<='z')||(c>='0'&&c<='9');
     }
+
     int isgraph(int c){
-        return (c>='A'&&c<='F')||(c>='a'&&c<='f')||(c>='0'&&c<='9')||(c>='!'&&c<='/')||(c>=':'&&c<='@')||(c>='['&&c<='`')||(c>='{'&&c<='~');
+        return (c>='A'&&c<='Z')||(c>='a'&&c<='z')||(c>='0'&&c<='9')||(c>='!'&&c<='/')||(c>=':'&&c<='@')||(c>='['&&c<='`')||(c>='{'&&c<='~');
     }
+
     char * strrchr(const char * s,int c){
         size_t i = 0;
         while (s[i++]);
@@ -51,6 +64,11 @@ extern "C" {
         } while(i);
         return NULL;
     }
+
+    int strcoll(const char * str1,const char * str2){
+        return strcmp(str1,str2);
+    }
+
     size_t strspn(const char * s1, const char * s2) {
         size_t len = 0;
         const char * p;
@@ -69,50 +87,177 @@ extern "C" {
         }
         return len;
     }
+
+    int strcmp( const char * s1, const char * s2 ) {
+        while ( ( *s1 ) && ( *s1 == *s2 ) ) {
+            ++s1;
+            ++s2;
+        }
+        return ( *( unsigned char * )s1 - * ( unsigned char * )s2 );
+    }
+
+    int strncmp( const char * s1, const char * s2, size_t n ) {
+        while ( n && *s1 && ( *s1 == *s2 ) ) {
+            ++s1;
+            ++s2;
+            --n;
+        }
+        if ( n == 0 ) {
+            return 0;
+        } else {
+            return ( *( unsigned char * )s1 - * ( unsigned char * )s2 );
+        }
+    }
+
+    char * strstr( const char * s1, const char * s2 ) {
+        const char * p1 = s1;
+        const char * p2;
+        while ( *s1 ) {
+            p2 = s2;
+            while ( *p2 && ( *p1 == *p2 ) ) {
+                ++p1;
+                ++p2;
+            }
+            if ( ! *p2 ) {
+                return ( char * ) s1;
+            }
+            ++s1;
+            p1 = s1;
+        }
+        return NULL;
+    }
+
+    char * strchr( const char * s, int c ) {
+        do {
+            if ( *s == ( char ) c ) {
+                return ( char * ) s;
+            }
+        } while ( *s++ );
+        return NULL;
+    }
+
+    char * strcpy( char * s1,const char * s2 ) {
+        char * rc = s1;
+        while ( ( *s1++ = *s2++ ) );
+        return rc;
+    }
+
+    int memcmp( const void * s1, const void * s2, size_t n ) {
+        const unsigned char * p1 = ( const unsigned char * ) s1;
+        const unsigned char * p2 = ( const unsigned char * ) s2;
+        while ( n-- ) {
+            if ( *p1 != *p2 ) {
+                return *p1 - *p2;
+            }
+            ++p1;
+            ++p2;
+        }
+        return 0;
+    }
+
+
+
+
+
+    double strtod(const char *nptr, char **endptr) {
+        //Written by Paul Edwards, Released to the Public Domain
+        double x = 0.0;
+        double xs= 1.0;
+        double es = 1.0;
+        double xf = 0.0;
+        double xd = 1.0;
+        while( isspace( (unsigned char)*nptr ) ) ++nptr;
+        if(*nptr == '-') {
+            xs = -1;
+            nptr++;
+        } else if(*nptr == '+') {
+            nptr++;
+        }
+        while (1) {
+            if (isdigit((unsigned char)*nptr)) {
+                x = x * 10 + (*nptr - '0');
+                nptr++;
+            } else {
+                x = x * xs;
+                break;
+            }
+        }
+        if (*nptr == '.') {
+            nptr++;
+            while (1) {
+                if (isdigit((unsigned char)*nptr)) {
+                    xf = xf * 10 + (*nptr - '0');
+                    xd = xd * 10;
+                } else {
+                    x = x + xs * (xf / xd);
+                    break;
+                }
+                nptr++;
+            }
+        }
+        if ((*nptr == 'e') || (*nptr == 'E')) {
+            nptr++;
+            if (*nptr == '-') {
+                es = -1;
+                nptr++;
+            }
+            xd = 1;
+            xf = 0;
+            while (1) {
+                if (isdigit((unsigned char)*nptr)) {
+                    xf = xf * 10 + (*nptr - '0');
+                    nptr++;
+                } else {
+                    while (xf > 0) {
+                        xd *= 10;
+                        xf--;
+                    }
+                    if (es < 0.0) {
+                        x = x / xd;
+                    } else {
+                        x = x * xd;
+                    }
+                    break;
+                }
+            }
+        }
+        if (endptr != NULL) {
+            *endptr = (char *)nptr;
+        }
+        return (x);
+    }
+
     extern const char * _digits;
     extern const char * _Xdigits;
-    
+
     static uintmax_t _strtox_main( const char ** p, unsigned int base, uintmax_t error, uintmax_t limval, int limdigit, char * sign ) {
         uintmax_t rc = 0;
         int digit = -1;
         const char * x;
-
-        while ( ( x = (const char *)memchr( _digits, tolower( **p ), base ) ) != NULL )
-        {
+        while ( ( x = (const char *)memchr( _digits, tolower( **p ), base ) ) != NULL ) {
             digit = x - _digits;
-
-            if ( ( rc < limval ) || ( ( rc == limval ) && ( digit <= limdigit ) ) )
-            {
+            if ( ( rc < limval ) || ( ( rc == limval ) && ( digit <= limdigit ) ) ) {
                 rc = rc * base + ( unsigned )digit;
                 ++( *p );
-            }
-            else
-            {
+            } else {
                 errno = ERANGE;
-
                 /* TODO: Only if endptr != NULL - but do we really want *another* parameter? */
                 /* TODO: Earlier version was missing tolower() here but was not caught by tests */
-                while ( memchr( _digits, tolower( **p ), base ) != NULL )
-                {
+                while ( memchr( _digits, tolower( **p ), base ) != NULL ) {
                     ++( *p );
                 }
-
                 /* TODO: This is ugly, but keeps caller from negating the error value */
                 *sign = '+';
                 return error;
             }
         }
-
-        if ( digit == -1 )
-        {
+        if ( digit == -1 ) {
             *p = NULL;
             return 0;
         }
-
         return rc;
     }
-    
-    
+
     static const char * _strtox_prelim( const char * p, char * sign, int * base ) {
         /* skipping leading whitespace */
         while ( isspace( *p ) ) {
@@ -153,7 +298,7 @@ extern "C" {
         }
         return ( ( *base >= 2 ) && ( *base <= 36 ) ) ? p : NULL;
     }
-    
+
     long int strtol( const char * s, char ** endptr, int base ) {
         long int rc;
         char sign = '+';
@@ -221,6 +366,27 @@ extern "C" {
         while(*s++)count++;
         return count;
     }
+
+
+    char * strpbrk( const char * s1, const char * s2 ) {
+        const char * p1 = s1;
+        const char * p2;
+        while ( *p1 ) {
+            p2 = s2;
+            while ( *p2 ) {
+                if ( *p1 == *p2++ ) {
+                    return ( char * ) p1;
+                }
+            }
+            ++p1;
+        }
+        return NULL;
+    }
+
+
+
+
+
 
     //memmove from musl (https://github.com/esmil/musl/blob/master/src/string/memmove.c)
 

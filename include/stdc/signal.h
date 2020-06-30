@@ -9,6 +9,21 @@ extern "C" {
 
 typedef atomic_int sig_atomic_t;
 
+enum sig_types{
+    SIGABRT,
+    SIGFPE,
+    SIGILL,
+    SIGINT,
+    SIGSEGV,
+    SIGTERM,
+};
+
+#define SIG_ERR ((void(*)(int))NULL)
+#define SIG_DFL ((void(*)(int))1)
+#define SIG_IGN ((void(*)(int))2)
+
+void (*signal( int sig, void (*handler) (int))) (int);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

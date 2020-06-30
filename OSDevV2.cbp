@@ -133,7 +133,61 @@
 		<Unit filename="src/stdc/file_io.cpp" />
 		<Unit filename="src/stdc/locale.cpp" />
 		<Unit filename="src/stdc/math.cpp" />
+		<Unit filename="src/stdc/math/__cos.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/__rem_pio2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/__rem_pio2_large.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/__sin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/__tan.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/acos.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/asin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/atan.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/atan2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/ceil.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/cos.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/exp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/floor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/fmod.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/frexp.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/stdc/math/libm.h" />
+		<Unit filename="src/stdc/math/log.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/log10.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/log2.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/stdc/math/pow.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -146,10 +200,16 @@
 		<Unit filename="src/stdc/math/scalbnf.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="src/stdc/math/sin.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/stdc/math/sqrt.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/stdc/math/sqrtf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/tan.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/stdc/printf.cpp" />

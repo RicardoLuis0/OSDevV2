@@ -11,6 +11,17 @@ struct lconv {
 
 struct lconv * localeconv();
 
+enum locale_categories{
+    LC_ALL,
+    LC_COLLATE,
+    LC_CTYPE,
+    LC_MONETARY,
+    LC_NUMERIC,
+    LC_TIME,
+};
+
+char* setlocale(int category, const char * locale);
+
 //TODO
 
 #ifdef __cplusplus

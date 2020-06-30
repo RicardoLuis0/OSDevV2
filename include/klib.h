@@ -48,6 +48,7 @@ void k_puth(uint64_t);//print unsigned long long as hex
 void k_putmem(uint64_t);//print unsigned long long as memory (ex. 10M 2K 10B)
 
 int k_getch();
+char * k_gets(char * str, int n);
 
 enum k_getch_ext_keys{
     K_GETCH_EXT_UP=256,

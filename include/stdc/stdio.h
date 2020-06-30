@@ -49,9 +49,12 @@ enum vbuf_type{
 int setvbuf(FILE *,char *buf,int type,size_t size);
 int fflush(FILE *);
 int getc(FILE *);
-int ungetc(int c, FILE *);
-char * fgets(char * str, int n, FILE *);
+int ungetc(int c,FILE *);
+char * fgets(char * str, int n,FILE *);
+int fputs ( const char * str,FILE *);
 size_t fwrite(const void * ptr,size_t sz,size_t n,FILE *);
+int remove(const char *filename);
+int rename(const char *old_filename, const char *new_filename);
 
 int printf(const char * RESTRICT fmt, ...);
 int vprintf(const char * RESTRICT fmt, va_list arg);
@@ -62,6 +65,9 @@ int vsnprintf( char * RESTRICT buf, size_t n, const char * RESTRICT fmt, va_list
 int fprintf(FILE *, const char * RESTRICT fmt, ...);
 int vfprintf(FILE *, const char * RESTRICT fmt, va_list arg);
 
+#define L_tmpnam 30 //not specific
+
+char * tmpnam(char * str);
 
 int feof(FILE*);
 int fread(void*,size_t,size_t,FILE*);

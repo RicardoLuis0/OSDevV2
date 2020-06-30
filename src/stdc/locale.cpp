@@ -7,4 +7,7 @@ extern "C" {
     lconv * localeconv(){
         return &loc;
     }
+    char * setlocale(int category, const char * locale){
+        k_abort_s("setlocale unimplemented");
+    }
 }

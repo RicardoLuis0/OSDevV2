@@ -24,6 +24,11 @@ int strcmp(const char * s1,const char * s2);
 int strncmp(const char * s1,const char * s2,size_t n);
 int memcmp(const void * p1,const void * p2,size_t n);//TODO implement
 
+
+int strcoll(const char * str1,const char * str2);
+
+char * strpbrk(const char * s1, const char * s2);
+
 //TODO
 
 #ifdef __cplusplus

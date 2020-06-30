@@ -1,12 +1,13 @@
 #include "klib.h"
+#include "util.h"
 #include <stdio.h>
 #include <errno.h>
+#include <ctype.h>
+#include <time.h>
+#include <signal.h>
 #include <util/hash_table.h>
 #include <util/smart_ptr.h>
 
-extern "C" {
-    int errno;
-}
 
 Util::HashTable<Util::UniquePtr<char>> * kernel_env=nullptr;
 
@@ -14,41 +15,148 @@ void k_env_init(){
     kernel_env=new Util::HashTable<Util::UniquePtr<char>>();
 }
 
-extern "C" char * getenv(const char* name){
-    return kernel_env->at_else(name,NULL);
-}
+extern "C" {
+    int errno;
 
-extern "C" int setenv(const char *name,const char *value,int overwrite){
-    if(overwrite||!kernel_env->has(name)){
-        (*kernel_env)[name]=strdup(value);
-    }
-    return 0;
-}
-
-extern "C" int unsetenv(const char *name){
-    kernel_env->unset(name);
-    return 0;
-}
-
-extern "C" int __cxa_atexit(void (*func) (void *), void * arg, void * d){
-    k_abort_s("__cxa_atexit unimplemented");
-}
-const char * err_unknown = "unknown error";
-char * errstr=(char*)err_unknown;
-
-extern "C" char * strerror(int errnum) {
-    return errstr;
-}
-
-extern "C" [[noreturn]] void abort() {
-    k_abort();
-}
-
-extern "C" int system(const char *command){
-    if(command==NULL){
+    time_t time(time_t* timer){
+        //k_abort_s("time unimplemented");
         return 0;
-    }else{
-        return -1;
+    }
+
+    clock_t clock(void){
+        return (clock_t)(-1);
+    }
+
+    time_t mktime(tm *time){
+        k_abort_s("mktime unimplemented");
+    }
+
+    tm * gmtime(const time_t *timer){
+        k_abort_s("gmtime unimplemented");
+    }
+
+    tm * localtime(const time_t *timer){
+        k_abort_s("localtime unimplemented");
+    }
+
+    size_t strftime(char *s, size_t n,const char *fmt,const struct tm *){
+        k_abort_s("strftime unimplemented");
+    }
+
+    double difftime(time_t time_end,time_t time_beg){
+        k_abort_s("difftime unimplemented");
+    }
+
+    char * getenv(const char* name){
+        return kernel_env->at_else(name,NULL);
+    }
+
+    void (*signal( int sig, void (*handler) (int))) (int){
+        return SIG_ERR;
+    }
+
+    int setenv(const char *name,const char *value,int overwrite){
+        if(overwrite||!kernel_env->has(name)){
+            (*kernel_env)[name]=strdup(value);
+        }
+        return 0;
+    }
+
+    int unsetenv(const char *name){
+        kernel_env->unset(name);
+        return 0;
+    }
+
+    int __cxa_atexit(void (*func) (void *), void * arg, void * d){
+        k_abort_s("__cxa_atexit unimplemented");
+    }
+
+    int atexit(void(*func)(void)){
+        return __cxa_atexit((void (*)(void*))func,NULL,NULL);
+    }
+
+    const char * err_unknown = "unknown error";
+    char * errstr=(char*)err_unknown;
+
+    char * strerror(int errnum) {
+        return errstr;
+    }
+
+    [[noreturn]] void abort() {
+        k_abort();
+    }
+
+    [[noreturn]] void exit(int c) {
+        char buf[256]={0};
+        snprintf(buf,255,"Exit Called with Code %d",c);
+        k_abort_s(buf);
+    }
+
+    int system(const char *command){
+        if(command==NULL){
+            return 0;
+        }else{
+            return -1;
+        }
+    }
+
+    char * k_gets(char * buf, int n){
+        buf[0]='\0';
+        size_t y=k_get_y();
+        size_t x=k_get_x();
+        size_t i=0;
+        size_t sz=0;
+        size_t szmax=min<size_t>(n-2,78-x);
+        while(true){
+            k_set_xy(x,y);
+            k_puts(buf);
+            k_set_xy(x+i,y);
+            int c=k_getch_extended();
+            switch(c){
+            case K_GETCH_EXT_RIGHT:
+                if(i<sz){
+                    i++;
+                }
+                break;
+            case K_GETCH_EXT_LEFT:
+                if(i>0){
+                    i--;
+                }
+                break;
+            case '\b':
+                if(sz>0){
+                    if(i!=sz){
+                        memmove(&buf[i-1],&buf[i],sz-i);
+                    }
+                    i--;
+                    sz--;
+                    buf[sz]='\0';
+                    k_set_xy(x+sz,y);
+                    k_putc(' ');
+                }
+                break;
+            default:
+                if((isgraph(c)||c=='\n'||c==' ')&&sz<szmax){
+                    if(i!=sz){
+                        memmove(&buf[i+1],&buf[i],sz-i);
+                    }
+                    if(c!='\n')buf[i]=c;
+                    i++;
+                    sz++;
+                    buf[sz]='\0';
+                    if(c=='\n'){
+                        k_putc('\n');
+                        return buf;
+                    }
+                }else if(c=='\n'){
+                    buf[szmax]='\n';
+                    buf[szmax+1]='\0';
+                    k_putc('\n');
+                    return buf;
+                }
+                break;
+            }
+        }
     }
 }
 
