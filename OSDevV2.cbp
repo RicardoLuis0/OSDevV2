@@ -83,7 +83,7 @@
 		<Unit filename="include/tdraw.h" />
 		<Unit filename="include/util.h" />
 		<Unit filename="include/util/hash_table.h" />
-		<Unit filename="include/util/shared_ptr.h" />
+		<Unit filename="include/util/smart_ptr.h" />
 		<Unit filename="include/util/spinlock.h" />
 		<Unit filename="include/util/tmp.h" />
 		<Unit filename="include/util/vector.h" />
@@ -131,7 +131,27 @@
 		<Unit filename="src/new.cpp" />
 		<Unit filename="src/print.cpp" />
 		<Unit filename="src/stdc/file_io.cpp" />
+		<Unit filename="src/stdc/locale.cpp" />
 		<Unit filename="src/stdc/math.cpp" />
+		<Unit filename="src/stdc/math/libm.h" />
+		<Unit filename="src/stdc/math/pow.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/powf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/scalbn.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/scalbnf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/sqrt.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/sqrtf.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/stdc/printf.cpp" />
 		<Unit filename="src/stdc/string.cpp" />
 		<Unit filename="src/tdraw.cpp" />

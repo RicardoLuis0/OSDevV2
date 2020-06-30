@@ -39,9 +39,13 @@ namespace Util {
     class HashTable {
             Spinlock lock;
             struct Value {
-                Value(CK k2,T v2){
+                Value(CK k2,const T &v2){//copy
                     CLONE<K,CK,KEY_CLONE>::clone(k,k2);
                     v=v2;
+                }
+                Value(CK k2,T && v2){//move
+                    CLONE<K,CK,KEY_CLONE>::clone(k,k2);
+                    v=TMP::move(v2);
                 }
                 static void VALUE_REMOVE(Value &v){
                     REMOVE<K,KEY_REMOVE>::remove(v.k);
@@ -81,6 +85,17 @@ namespace Util {
                 ht[hash].push(Value(k,T()));
                 return ht[hash].back().v;
             }
+            
+            T& at_else(CK k,T&&t){
+                SpinlockGuard guard(lock);
+                size_t hash=KEY_HASH(k)%L;
+                for(Value &v:ht[hash]){
+                    if(COMPARE<K,CK,KEY_COMPARE>::compare(v.k,k)){
+                        return v.v;
+                    }
+                }
+                return t;
+            }
 
             void set(CK k,T d){
                 SpinlockGuard guard(lock);
@@ -92,6 +107,23 @@ namespace Util {
                     }
                 }
                 ht[hash].push(Value(k,d));
+            }
+
+            void set(CK k,T && d){
+                SpinlockGuard guard(lock);
+                size_t hash=KEY_HASH(k)%L;
+                for(Value &v:ht[hash]){
+                    if(COMPARE<K,CK,KEY_COMPARE>::compare(v.k,k)){
+                        v.v=d;
+                        return;
+                    }
+                }
+                ht[hash].push(Value(k,d));
+            }
+
+            void unset(CK k){
+                //TODO
+                k_abort_s("HashTable::unset unimplemented");
             }
 
             void foreach(void(*callback)(T&)){

@@ -650,6 +650,26 @@ extern "C" {
         return vsnprintf(buf,SIZE_MAX,fmt,arg);
     }
 
+    int fprintf(FILE * f, const char * RESTRICT fmt, ...){
+        va_list arg;
+        va_start(arg,fmt);
+        int n=vfprintf(f,fmt,arg);
+        va_end(arg);
+        return n;
+    }
+
+    int vfprintf(FILE * f, const char * RESTRICT fmt, va_list arg){
+        va_list a2;
+        va_copy(a2,arg);
+        int n=vsnprintf(NULL,0,fmt,a2);
+        va_end(a2);
+        char * s=(char*)calloc(n+1,sizeof(char));
+        vsnprintf(s,n,fmt,arg);
+        fwrite(s,sizeof(char),n,f);
+        free(s);
+        return n;
+    }
+
     int vsnprintf( char * __restrict__ buf, size_t n, const char * __restrict__ fmt, va_list arg) {
         /* TODO: This function should interpret format as multibyte characters.  */
         printf_status st;

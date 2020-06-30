@@ -1,5 +1,6 @@
 #include "klib.h"
 #include <stdio.h>
+#include <ctype.h>
 #include <errno.h>
 #include <limits.h>
 
@@ -13,14 +14,32 @@ extern "C" {
     int isspace (int c){
         return c==' '||c=='\n'||c=='\t'||c=='\r'||c=='\v'||c=='\f';
     }
-    int isalnum(int c){
-        return (c>='A'&&c<='Z')||(c>='a'&&c<='z')||(c>='0'&&c<='9');
+    int iscntrl(int c){
+        return (c>=0x0&&c<=0x1f)||c==0x7f;
+    }
+    int ispunct(int c){
+        return (c>='!'&&c<='/')||(c>=':'&&c<='@')||(c>='['&&c<='`')||(c>='{'&&c<='~');
     }
     int isdigit(int c){
         return c>='0'&&c<='9';
     }
     int isxdigit(int c){
         return (c>='A'&&c<='F')||(c>='a'&&c<='f')||(c>='0'&&c<='9');
+    }
+    int isupper(int c){
+        return (c>='A'&&c<='Z');
+    }
+    int islower(int c){
+        return (c>='a'&&c<='z');
+    }
+    int isalpha(int c){
+        return (c>='A'&&c<='Z')||(c>='a'&&c<='z');
+    }
+    int isalnum(int c){
+        return (c>='A'&&c<='Z')||(c>='a'&&c<='z')||(c>='0'&&c<='9');
+    }
+    int isgraph(int c){
+        return (c>='A'&&c<='F')||(c>='a'&&c<='f')||(c>='0'&&c<='9')||(c>='!'&&c<='/')||(c>=':'&&c<='@')||(c>='['&&c<='`')||(c>='{'&&c<='~');
     }
     char * strrchr(const char * s,int c){
         size_t i = 0;

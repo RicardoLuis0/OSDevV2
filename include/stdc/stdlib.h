@@ -16,6 +16,11 @@ void * realloc(void * ptr,size_t size);
 void free(void * ptr);
 int abs(int);
 long int strtol (const char* str, char** endptr, int base);
+char * getenv(const char* name);
+int setenv(const char *name,const char *value,int overwrite);
+int unsetenv(const char *name);
+int system(const char *command);
+
 
 NORETURN void abort();
 

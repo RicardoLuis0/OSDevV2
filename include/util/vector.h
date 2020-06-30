@@ -49,10 +49,17 @@ namespace Util {
                 free(vec);
             }
 
-            void push(T v){
+            void push(const T &v){
                 SpinlockGuard guard(lock);
                 grow(1);
                 vec[len]=v;
+                len++;
+            }
+
+            void push(T && v){
+                SpinlockGuard guard(lock);
+                grow(1);
+                vec[len]=TMP::move(v);
                 len++;
             }
 

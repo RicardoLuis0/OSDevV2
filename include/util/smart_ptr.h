@@ -23,7 +23,14 @@ namespace Util {
         T * ptr;
         PtrData * ptrData;
 
-public:
+        friend class WeakPrt;
+
+        SharedPtr(PtrData * pd,T * t){
+            ptr=t;
+            ptrData=pd;
+        }
+
+    public:
 
         operator T*(){
             return ptr;
@@ -33,13 +40,12 @@ public:
             return ptr;
         }
 
-        SharedPtr(nullptr_t):ptr(nullptr),ptrData(nullptr){
+        SharedPtr():ptr(nullptr),ptrData(nullptr){
             
         }
 
-        SharedPtr(PtrData * pd,T * t){
-            ptr=t;
-            ptrData=pd;
+        SharedPtr(nullptr_t):ptr(nullptr),ptrData(nullptr){
+            
         }
 
         SharedPtr(T * t){//new shared pointer
@@ -76,19 +82,29 @@ public:
     };
 
     template<typename T>
-    class WeakPtr{
+    class WeakPtr{//TODO improve
 
         T * ptr;
         PtrData * ptrData;
 
     public:
-
+/*
         operator T*(){
             return ptr;
         }
 
         T* operator->(){
             return ptr;
+        }
+*/
+        SharedPtr<T> get(){
+            if(ptrData->strong_ptr_count>0){
+                SpinlockGuard guard(ptrData->lock);
+                ptrData->strong_ptr_count++;
+                return SharedPtr<T>(ptrData,ptr);
+            }else{
+                return SharedPtr<T>();//since pointer isn't valid, return a null pointer, TODO replace by exception when they're implemented
+            }
         }
 
         WeakPtr(const SharedPtr<T> &p){
@@ -121,6 +137,54 @@ public:
         return SharedPtr<T>(new(buf)PtrData,new((void*)(((uint8_t*)buf)+ptr_start))T(TMP::forward<U>(args)...));
     }
 
+    template<typename T>
+    class UniquePtr{
+        
+        T * ptr;
+        
+        UniquePtr(const UniquePtr<T>&)=delete;
+        
+        UniquePtr<T>&operator=(const UniquePtr<T>&)=delete;
+        
+    public:
+        
+        UniquePtr():ptr(nullptr){
+        }
+        
+        UniquePtr(T * p):ptr(p){
+        }
+        
+        UniquePtr(UniquePtr<T> && other){
+            if(ptr){
+                delete ptr;
+            }
+            ptr=other.ptr;
+            other.ptr=nullptr;
+        }
+        
+        UniquePtr<T>&operator=(UniquePtr<T>&& other){
+            if(ptr){
+                delete ptr;
+            }
+            ptr=other.ptr;
+            other.ptr=nullptr;
+            return *this;
+        }
+        
+        ~UniquePtr(){
+            if(ptr){
+                delete ptr;
+            }
+        }
+        
+        operator T*(){
+            return ptr;
+        }
+        
+        T*operator->(){
+            return ptr;
+        }
+    };
 }
 
 #endif // SHARED_PTR_H_INCLUDED

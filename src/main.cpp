@@ -6,7 +6,7 @@
 
 #include "kshell/kshell.h"
 
-#include "util/shared_ptr.h"
+#include "util/smart_ptr.h"
 #include "util/hash_table.h"
 
 extern "C" [[noreturn]] void hang();
@@ -67,7 +67,10 @@ extern "C" void k_abort_massert(const char * condition,const char * msg,const ch
     k_abort_main();
 }
 
+void klib_init();
+
 extern "C" void k_main(){
+    klib_init();
     Screen::write_s("\n>Starting Kernel");
     Screen::write_s("\n -Initializing Drivers");
     Drivers::Keyboard::PS2::init();
