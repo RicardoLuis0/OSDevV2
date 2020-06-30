@@ -13,6 +13,15 @@ extern "C" {
     int isspace (int c){
         return c==' '||c=='\n'||c=='\t'||c=='\r'||c=='\v'||c=='\f';
     }
+    int isalnum(int c){
+        return (c>='A'&&c<='Z')||(c>='a'&&c<='z')||(c>='0'&&c<='9');
+    }
+    int isdigit(int c){
+        return c>='0'&&c<='9';
+    }
+    int isxdigit(int c){
+        return (c>='A'&&c<='F')||(c>='a'&&c<='f')||(c>='0'&&c<='9');
+    }
     char * strrchr(const char * s,int c){
         size_t i = 0;
         while (s[i++]);
@@ -22,6 +31,24 @@ extern "C" {
             }
         } while(i);
         return NULL;
+    }
+    size_t strspn(const char * s1, const char * s2) {
+        size_t len = 0;
+        const char * p;
+        while ( s1[ len ] ) {
+            p = s2;
+            while ( *p ) {
+                if ( s1[len] == *p ) {
+                    break;
+                }
+                ++p;
+            }
+            if ( ! *p ) {
+                return len;
+            }
+            ++len;
+        }
+        return len;
     }
     extern const char * _digits;
     extern const char * _Xdigits;
@@ -72,22 +99,18 @@ extern "C" {
         while ( isspace( *p ) ) {
             ++p;
         }
-
         /* determining / skipping sign */
         if ( *p != '+' && *p != '-' ) {
             *sign = '+';
         } else {
             *sign = *( p++ );
         }
-
         /* determining base */
         if ( *p == '0' ) {
             ++p;
-
             if ( ( *base == 0 || *base == 16 ) && ( *p == 'x' || *p == 'X' ) ) {
                 *base = 16;
                 ++p;
-
                 /* catching a border case here: "0x" followed by a non-digit should
                    be parsed as the unprefixed zero.
                    We have to "rewind" the parsing; having the base set to 16 if it
@@ -109,7 +132,6 @@ extern "C" {
         } else if ( ! *base ) {
             *base = 10;
         }
-
         return ( ( *base >= 2 ) && ( *base <= 36 ) ) ? p : NULL;
     }
     

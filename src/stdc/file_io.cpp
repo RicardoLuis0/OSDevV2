@@ -20,6 +20,9 @@ extern "C" {
     FILE * freopen(const char *,const char *,FILE *){
         return NULL;
     }
+    FILE * tmpfile(){
+        return NULL;
+    }
     int ferror(FILE *){
         return 0;
     }

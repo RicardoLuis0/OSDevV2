@@ -1,0 +1,6 @@
+#ifndef FLOAT_H_INCLUDED
+#define FLOAT_H_INCLUDED
+
+//TODO
+
+#endif // FLOAT_H_INCLUDED

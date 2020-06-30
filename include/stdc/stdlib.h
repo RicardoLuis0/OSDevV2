@@ -5,6 +5,9 @@
 
 #ifdef __cplusplus
 extern "C" {
+#define NORETURN [[noreturn]]
+#else
+#define NORETURN __attribute__((noreturn))
 #endif // __cplusplus
 
 void * malloc(size_t size);
@@ -14,10 +17,14 @@ void free(void * ptr);
 int abs(int);
 long int strtol (const char* str, char** endptr, int base);
 
+NORETURN void abort();
+
 //TODO
 
 #ifdef __cplusplus
 }
 #endif // __cplusplus
+
+#undef NORETURN
 
 #endif // STDLIB_H_INCLUDED

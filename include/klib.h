@@ -13,7 +13,7 @@
 extern "C" {
 #define NORETURN [[noreturn]]
 #else
-#define NORETURN
+#define NORETURN __attribute__((noreturn))
 #endif // __cplusplus
 
 void * malloc(size_t size);

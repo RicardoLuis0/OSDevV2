@@ -65,6 +65,7 @@
 		<Unit filename="include/stdc/assert.h" />
 		<Unit filename="include/stdc/ctype.h" />
 		<Unit filename="include/stdc/errno.h" />
+		<Unit filename="include/stdc/float.h" />
 		<Unit filename="include/stdc/inttypes.h" />
 		<Unit filename="include/stdc/limits.h" />
 		<Unit filename="include/stdc/locale.h" />

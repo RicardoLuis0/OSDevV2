@@ -12,6 +12,10 @@ extern "C" char * strerror(int errnum) {
     return errstr;
 }
 
+extern "C" [[noreturn]] void abort() {
+    k_abort();
+}
+
 //source http://www.cse.yorku.ca/~oz/hash.html
 size_t k_hash_s(const char * s){
     size_t hash = 5381;

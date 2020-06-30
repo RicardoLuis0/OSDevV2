@@ -18,7 +18,8 @@ char * strcat(char * d,const char * s);
 size_t strlen(const char * s);
 char * strchr(const char * str,int c);
 char * strrchr(const char * str,int c);
-char * strstr(char * s1,const char * s2);
+char * strstr(const char * s1,const char * s2);
+size_t strspn(const char * s1, const char * s2 );
 int strcmp(const char * s1,const char * s2);
 int strncmp(const char * s1,const char * s2,size_t n);
 int memcmp(const void * p1,const void * p2,size_t n);//TODO implement

@@ -30,6 +30,7 @@ void putc(char c,FILE*);
 void puts(const char * s);
 FILE * fopen(const char * filename,const char * mode);
 FILE * freopen(const char * filename,const char * mode,FILE *);
+FILE * tmpfile();
 int getc(FILE *);
 int ferror(FILE *);
 int fclose(FILE *);
