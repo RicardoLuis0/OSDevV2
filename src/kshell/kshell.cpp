@@ -123,6 +123,14 @@ static void cmd_cpuid(char * cmd,Util::HashTable<kshell_cmd> * commands){
     CPUID::cmd_cpuid();
 }
 
+extern "C" int lua_main (int argc, char **argv);
+
+static void cmd_lua(char * cmd,Util::HashTable<kshell_cmd> * commands){
+    char * args[]={(char*)"lua"};
+    k_putc('\n');
+    lua_main(1,args);
+}
+
 void kshell(){
     Util::HashTable<kshell_cmd> commands;
     commands["cls"]={cmd_cls,"cls","clear the screen","- cls"};
@@ -132,6 +140,7 @@ void kshell(){
     commands["cpuid"]={cmd_cpuid,"cpuid","check cpu features","- cpuid"};
     //commands["kbdump"]={cmd_kbdump,"kbdump","test keyboard mapping","- kbdump"};
     commands["meminfo"]={cmd_meminfo,"meminfo","display memory information","- meminfo"};
+    commands["lua"]={cmd_lua,"lua","run lua interpreter","- lua"};
     Screen::enable_cursor(14,15);
     Screen::write_c('\n');
     constexpr char ptr_marker='#';

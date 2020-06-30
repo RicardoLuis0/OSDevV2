@@ -57,6 +57,34 @@
 		<Unit filename="include/extern/multiboot.h" />
 		<Unit filename="include/klib.h" />
 		<Unit filename="include/kshell/kshell.h" />
+		<Unit filename="include/kshell/lua/lapi.h" />
+		<Unit filename="include/kshell/lua/lauxlib.h" />
+		<Unit filename="include/kshell/lua/lcode.h" />
+		<Unit filename="include/kshell/lua/lctype.h" />
+		<Unit filename="include/kshell/lua/ldebug.h" />
+		<Unit filename="include/kshell/lua/ldo.h" />
+		<Unit filename="include/kshell/lua/lfunc.h" />
+		<Unit filename="include/kshell/lua/lgc.h" />
+		<Unit filename="include/kshell/lua/ljumptab.h" />
+		<Unit filename="include/kshell/lua/llex.h" />
+		<Unit filename="include/kshell/lua/llimits.h" />
+		<Unit filename="include/kshell/lua/lmem.h" />
+		<Unit filename="include/kshell/lua/lobject.h" />
+		<Unit filename="include/kshell/lua/lopcodes.h" />
+		<Unit filename="include/kshell/lua/lopnames.h" />
+		<Unit filename="include/kshell/lua/lparser.h" />
+		<Unit filename="include/kshell/lua/lprefix.h" />
+		<Unit filename="include/kshell/lua/lstate.h" />
+		<Unit filename="include/kshell/lua/lstring.h" />
+		<Unit filename="include/kshell/lua/ltable.h" />
+		<Unit filename="include/kshell/lua/ltests.h" />
+		<Unit filename="include/kshell/lua/ltm.h" />
+		<Unit filename="include/kshell/lua/lua.h" />
+		<Unit filename="include/kshell/lua/luaconf.h" />
+		<Unit filename="include/kshell/lua/lualib.h" />
+		<Unit filename="include/kshell/lua/lundump.h" />
+		<Unit filename="include/kshell/lua/lvm.h" />
+		<Unit filename="include/kshell/lua/lzio.h" />
 		<Unit filename="include/liballoc.h" />
 		<Unit filename="include/mem.h" />
 		<Unit filename="include/new.h" />
@@ -124,6 +152,108 @@
 		<Unit filename="src/arch/x86/x86_screen.cpp" />
 		<Unit filename="src/klib.cpp" />
 		<Unit filename="src/kshell/kshell.cpp" />
+		<Unit filename="src/kshell/lua/lapi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lauxlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lbaselib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lcode.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lcorolib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lctype.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/ldblib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/ldebug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/ldo.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/ldump.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lfunc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lgc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/linit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/liolib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/llex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lmathlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lmem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/loadlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lobject.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lopcodes.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/loslib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lparser.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lstate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lstring.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lstrlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/ltable.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/ltablib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/ltests.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/ltm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lua.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lundump.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lutf8lib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lvm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/kshell/lua/lzio.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/liballoc.c">
 			<Option compilerVar="CC" />
 		</Unit>
