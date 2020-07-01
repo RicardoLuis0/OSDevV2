@@ -86,7 +86,7 @@ uint32_t Memory::map_virtual_page(uint32_t p,uint32_t v,uint32_t n){
             set_page_table_entry(pte,{.present=true,.rw=true,.user=false},p);
             p++;
         }else{
-            k_abort_s("can't map into already-mapped virtual address");
+            k_abort_s("can't map mapped virtual address");
         }
     }
     return v;
@@ -99,7 +99,7 @@ void Memory::unmap_virtual_page(uint32_t v,uint32_t n){
         if(pte->present){
             set_page_table_entry(pte,{.present=false,.rw=false,.user=false},0);
         }else{
-            k_abort_s("can't unmap unused virtual address");
+            k_abort_s("can't unmap unmapped virtual address");
         }
     }
 }
@@ -125,16 +125,15 @@ uint32_t Memory::get_mapping_virt(uint32_t v){
 
 uint32_t Memory::next_free_virt_page(uint32_t n){
     if(!Internal::current_page_directory) k_abort_s("trying to call Memory::next_free_virt_page while paging is disabled");
+    constexpr uint32_t last=1<<20;
     uint32_t c=0;
-    for(uint32_t i=0;i<1024;i++){
-        entry_t * pt=reinterpret_cast<entry_t*>(Internal::current_page_directory[i].address<<12);
-        for(uint32_t j=0;j<1024;j++){
-            if(!pt[j].present){
-                c++;
-                if(c==n)return (i<<10)+j;
-            }else{
-                c=0;
-            }
+    for(uint32_t i=0;i<last;i++){
+        entry_t * pte=id_to_page_entry(i,Internal::current_page_directory);
+        if(!pte->present){
+            c++;
+            if(c==n)return i;
+        }else{
+            c=0;
         }
     }
     k_abort_s("Out of Virtual Memory");
