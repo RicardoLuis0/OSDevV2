@@ -153,6 +153,12 @@ static int os_execute (lua_State *L) {
 }
 
 
+static int os_meminfo (lua_State *L) {
+  system("meminfo");
+  return 0;
+}
+
+
 static int os_remove (lua_State *L) {
   const char *filename = luaL_checkstring(L, 1);
   return luaL_fileresult(L, remove(filename) == 0, filename);
@@ -416,6 +422,7 @@ static const luaL_Reg syslib[] = {
   {"setlocale", os_setlocale},
   {"time",      os_time},
   {"tmpname",   os_tmpname},
+  {"meminfo",   os_meminfo},
   {NULL, NULL}
 };
 
