@@ -201,7 +201,7 @@ void * Memory::Internal::alloc_phys_page(uint32_t n){
 void Memory::Internal::free_phys_page(void * p,uint32_t n){
     uint32_t id=to_page_id(p);
     while(n>0){
-        if(!is_phys_page_free(id)){
+        if(is_free(id)){
             k_abort_s("Can't free an unused page");
         }else{
             set_free(id,true);

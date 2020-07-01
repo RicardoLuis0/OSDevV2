@@ -99,7 +99,7 @@ void Memory::unmap_virtual_page(uint32_t v,uint32_t n){
         if(pte->present){
             set_page_table_entry(pte,{.present=false,.rw=false,.user=false},0);
         }else{
-            k_abort_s("can't unmap unused virutal address");
+            k_abort_s("can't unmap unused virtual address");
         }
     }
 }
