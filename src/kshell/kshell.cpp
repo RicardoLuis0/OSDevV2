@@ -6,8 +6,6 @@
 #include "util/hash_table.h"
 #include "arch/x86.h"
 
-void kshell_execute(char * cmd);
-
 struct kshell_cmd;
 
 /*unused
@@ -131,16 +129,44 @@ static void cmd_lua(char * cmd,Util::HashTable<kshell_cmd> * commands){
     lua_main(1,args);
 }
 
+static Util::HashTable<kshell_cmd> * commands=nullptr;
+
+void kshell_execute(const char * cmd){
+    if(!commands)return;
+    char * buf=strdup(cmd);
+    char * temp=strchr(buf,' ');
+    if(temp){
+        *temp='\0';
+    }
+    if(commands->has(buf)){
+        kshell_cmd &kcmd=commands->at(buf);
+        if(temp){
+            *temp=' ';
+        }
+        kcmd.cmd(buf,commands);
+        if(kcmd.cmd!=cmd_cls){
+            Screen::write_c('\n');
+        }
+    }else{
+        cmd_invalid(buf,commands);
+        Screen::write_c('\n');
+    }
+    free(buf);
+}
+
+void kshell_init(){
+    commands=new Util::HashTable<kshell_cmd>();
+    (*commands)["cls"]={cmd_cls,"cls","clear the screen","- cls"};
+    (*commands)["halt"]={cmd_halt,"halt","halt the system","- halt"};
+    (*commands)["help"]={cmd_help,"help [command]","displays help","- help : list all commands\n- help [command] : show command usage"};
+    (*commands)["abort"]={cmd_abort,"abort","abort kernel","- abort"};
+    (*commands)["cpuid"]={cmd_cpuid,"cpuid","check cpu features","- cpuid"};
+    //(*commands)["kbdump"]={cmd_kbdump,"kbdump","test keyboard mapping","- kbdump"};
+    (*commands)["meminfo"]={cmd_meminfo,"meminfo","display memory information","- meminfo"};
+    (*commands)["lua"]={cmd_lua,"lua","run lua interpreter","- lua"};
+}
+
 void kshell(){
-    Util::HashTable<kshell_cmd> commands;
-    commands["cls"]={cmd_cls,"cls","clear the screen","- cls"};
-    commands["halt"]={cmd_halt,"halt","halt the system","- halt"};
-    commands["help"]={cmd_help,"help [command]","displays help","- help : list all commands\n- help [command] : show command usage"};
-    commands["abort"]={cmd_abort,"abort","abort kernel","- abort"};
-    commands["cpuid"]={cmd_cpuid,"cpuid","check cpu features","- cpuid"};
-    //commands["kbdump"]={cmd_kbdump,"kbdump","test keyboard mapping","- kbdump"};
-    commands["meminfo"]={cmd_meminfo,"meminfo","display memory information","- meminfo"};
-    commands["lua"]={cmd_lua,"lua","run lua interpreter","- lua"};
     Screen::enable_cursor(14,15);
     Screen::write_c('\n');
     constexpr char ptr_marker='#';
@@ -176,23 +202,7 @@ void kshell(){
             }
             break;
         case '\n':{
-                char * temp=strchr(cmdbuf,' ');
-                if(temp){
-                    *temp='\0';
-                }
-                if(commands.has(cmdbuf)){
-                    kshell_cmd &cmd=commands[cmdbuf];
-                    if(temp){
-                        *temp=' ';
-                    }
-                    cmd.cmd(cmdbuf,&commands);
-                    if(cmd.cmd!=cmd_cls){
-                        Screen::write_c('\n');
-                    }
-                }else{
-                    cmd_invalid(cmdbuf,&commands);
-                    Screen::write_c('\n');
-                }
+                kshell_execute(cmdbuf);
                 line=Screen::getY();
                 ptrpos=0;
                 cmdsize=0;

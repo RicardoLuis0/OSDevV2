@@ -220,6 +220,11 @@ void Screen::write_c(char c){
     update_cursor();
 }
 
+static int calcx(int pos){
+    if(pos>POSMAX)pos=POSMAX;
+    return pos%XLEN;
+}
+
 void Screen::write_s(const char * str){
     int pos=vga_xy(xpos,ypos);
     while(*str!='\0'&&pos<POSLEN){
@@ -239,7 +244,15 @@ void Screen::write_s(const char * str){
             str++;
             if(pos>0)pos--;
             break;
+        case '\t':
+            str++;
+            vga[pos++]=vga_entry(' ');
+            while(calcx(pos)%4){//4-space tabs
+                vga[pos++]=vga_entry(' ');
+            }
+            break;
         default:
+            if(pos>POSMAX)pos=POSMAX;
             vga[pos++]=vga_entry(*str++);
             break;
         }
@@ -266,6 +279,12 @@ void Screen::write_sn(const char * str,size_t n){
         case '\b'://back
             str++;
             if(pos>0)pos--;
+            break;
+        case '\t':
+            str++;
+            while(calcx(pos)%4){//4-space tabs
+                pos++;
+            }
             break;
         default:
             vga[pos++]=vga_entry(*str++);

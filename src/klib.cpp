@@ -1,5 +1,6 @@
 #include "klib.h"
 #include "util.h"
+#include "kshell/kshell.h"
 #include <stdio.h>
 #include <errno.h>
 #include <ctype.h>
@@ -92,12 +93,9 @@ extern "C" {
         k_abort_s(buf);
     }
 
-    int system(const char *command){
-        if(command==NULL){
-            return 0;
-        }else{
-            return -1;
-        }
+    int system(const char * cmd){
+        kshell_execute(cmd);
+        return 0;
     }
 
     char * k_gets(char * buf, int n){
