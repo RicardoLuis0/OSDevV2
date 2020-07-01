@@ -282,8 +282,9 @@ void Screen::write_sn(const char * str,size_t n){
             break;
         case '\t':
             str++;
+            vga[pos++]=vga_entry(' ');
             while(calcx(pos)%4){//4-space tabs
-                pos++;
+                vga[pos++]=vga_entry(' ');
             }
             break;
         default:
