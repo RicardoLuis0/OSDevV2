@@ -79,12 +79,10 @@ static inline void set_page_directory_entry(entry_t * pde,page_directory_entry_f
 }
 
 uint32_t Memory::map_virtual_page(uint32_t p,uint32_t v,uint32_t n){
-    uint32_t last=v+n;
-    for(uint32_t i=v;i<last;i++){
-        entry_t * pte=id_to_page_entry(i,Internal::current_page_directory);
+    for(uint32_t i=0;i<n;i++){
+        entry_t * pte=id_to_page_entry(v+i,Internal::current_page_directory);
         if(!pte->present){
-            set_page_table_entry(pte,{.present=true,.rw=true,.user=false},p);
-            p++;
+            set_page_table_entry(pte,{.present=true,.rw=true,.user=false},p+i);
         }else{
             k_abort_s("can't map mapped virtual address");
         }
@@ -93,9 +91,8 @@ uint32_t Memory::map_virtual_page(uint32_t p,uint32_t v,uint32_t n){
 }
 
 void Memory::unmap_virtual_page(uint32_t v,uint32_t n){
-    uint32_t last=v+n;
-    for(uint32_t i=v;i<last;i++){
-        entry_t * pte=id_to_page_entry(i,Internal::current_page_directory);
+    for(uint32_t i=0;i<n;i++){
+        entry_t * pte=id_to_page_entry(v+i,Internal::current_page_directory);
         if(pte->present){
             set_page_table_entry(pte,{.present=false,.rw=false,.user=false},0);
         }else{
@@ -127,11 +124,15 @@ uint32_t Memory::next_free_virt_page(uint32_t n){
     if(!Internal::current_page_directory) k_abort_s("trying to call Memory::next_free_virt_page while paging is disabled");
     constexpr uint32_t last=1<<20;
     uint32_t c=0;
+    uint32_t s=0;
     for(uint32_t i=0;i<last;i++){
         entry_t * pte=id_to_page_entry(i,Internal::current_page_directory);
         if(!pte->present){
+            if(c==0){
+                s=i;
+            }
             c++;
-            if(c==n)return i;
+            if(c==n)return s;
         }else{
             c=0;
         }
