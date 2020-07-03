@@ -158,6 +158,10 @@ static int os_meminfo (lua_State *L) {
   return 0;
 }
 
+static int os_cls (lua_State *L) {
+  k_cls();
+  return 0;
+}
 
 static int os_remove (lua_State *L) {
   const char *filename = luaL_checkstring(L, 1);
@@ -170,7 +174,6 @@ static int os_rename (lua_State *L) {
   const char *toname = luaL_checkstring(L, 2);
   return luaL_fileresult(L, rename(fromname, toname) == 0, NULL);
 }
-
 
 static int os_tmpname (lua_State *L) {
   char buff[LUA_TMPNAMBUFSIZE];
@@ -423,6 +426,7 @@ static const luaL_Reg syslib[] = {
   {"time",      os_time},
   {"tmpname",   os_tmpname},
   {"meminfo",   os_meminfo},
+  {"cls",       os_cls},
   {NULL, NULL}
 };
 
