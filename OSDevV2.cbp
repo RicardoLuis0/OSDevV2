@@ -136,6 +136,7 @@
 		</Unit>
 		<Unit filename="src/arch/x86/drivers/keyboard/ps2/keyboard.cpp" />
 		<Unit filename="src/arch/x86/drivers/keyboard/ps2/layout.cpp" />
+		<Unit filename="src/arch/x86/fpu.cpp" />
 		<Unit filename="src/arch/x86/gdt.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>

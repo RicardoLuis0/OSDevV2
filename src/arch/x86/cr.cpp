@@ -103,8 +103,9 @@ void CR::cmd_crdump(){
         lines=0;
     }
     Screen::setfgcolor(Screen::LIGHT_CYAN);
-    k_puts("CR3=");
+    k_puts("CR3");
     Screen::setfgcolor(Screen::WHITE);
+    k_putc('=');
     k_puth(CR3::get());
     k_putc('\n');
     Screen::setfgcolor(Screen::LIGHT_CYAN);

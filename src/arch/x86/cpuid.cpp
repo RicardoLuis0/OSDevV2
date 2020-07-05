@@ -70,7 +70,7 @@ static const char * cpuid_features_edx_str[32] {
     "CPUID_FEAT_EDX_SS -- CPU cache self-snoop",
     "CPUID_FEAT_EDX_HTT -- Hyper-threading",
     "CPUID_FEAT_EDX_TM1 -- Thermal Monitor 1",
-    "CPUID_FEAT_EDX_IA64 -- Running as x86 on 64-bit CPU",
+    "CPUID_FEAT_EDX_IA64 -- Running as x86 emulation on 64-bit CPU",
     "CPUID_FEAT_EDX_PBE -- Pending Break Enable wakeup capability",
 };
 
@@ -153,7 +153,7 @@ void CPUID::cmd_cpuid(){
 bool CPUID::cpuid_has(uint32_t ecx,uint32_t edx){
     uint32_t ecx2,edx2;
     cpuid_get(ecx2,edx2);
-    return ((ecx&ecx2)==ecx&&(edx&edx2)==edx);
+    return ((ecx&ecx2)==ecx)&&((edx&edx2)==edx);
 }
 
 void CPUID::check(){

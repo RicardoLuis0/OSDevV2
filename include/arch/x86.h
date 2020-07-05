@@ -73,6 +73,10 @@ namespace CR{
     }
 };
 
+namespace FPU {
+    void init();
+}
+
 namespace CPUID {
 
     enum cpuid_features_ecx{
@@ -141,7 +145,7 @@ namespace CPUID {
         CPUID_FEAT_EDX_SS           = 1U << 27,//CPU cache self-snoop
         CPUID_FEAT_EDX_HTT          = 1U << 28,//Hyper-threading
         CPUID_FEAT_EDX_TM1          = 1U << 29,//Thermal Monitor 1
-        CPUID_FEAT_EDX_IA64         = 1U << 30,//Running as x86 on 64-bit CPU
+        CPUID_FEAT_EDX_IA64         = 1U << 30,//Running as x86 emulation on 64-bit CPU
         CPUID_FEAT_EDX_PBE          = 1U << 31,//Pending Break Enable wakeup capability
     };
     void check();
