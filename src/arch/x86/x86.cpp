@@ -31,8 +31,9 @@ extern "C" void x86_start(struct multiboot_info * mbd, unsigned int magic){//x86
     CPUID::check();
     Screen::write_s(">Initializing x86 System");
     GDT::init();
+    Memory::x86_init(mbd);//initialize physical memory
     IDT::init();
-    Memory::x86_init(mbd);
+    Memory::x86_paging_init();//initialize virtual memory
     Screen::write_s("\n>Calling Global Constructors");
     global_constructors_ran=false;
     _init();//only call global constructors after setting up screen, paging, memory management, etc...

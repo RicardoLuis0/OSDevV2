@@ -358,7 +358,6 @@ void Memory::x86_init(struct multiboot_info * mbd){
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem((((uint32_t)&kernel_end)-((uint32_t)&kernel_start)));//??
     Screen::setfgcolor(Screen::WHITE);
-    x86_paging_init();
 }
 
 

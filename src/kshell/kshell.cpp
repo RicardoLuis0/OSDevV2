@@ -78,11 +78,9 @@ static void cmd_abort(char * cmd,Util::HashTable<kshell_cmd> * commands){
     k_abort_fullscreen();
 }
 
-/*
 static void cmd_kbdump(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Drivers::Keyboard::PS2::cmd_kbdump();
 }
-*/
 
 static void cmd_meminfo(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Memory::cmd_meminfo();
@@ -154,6 +152,13 @@ void kshell_execute(const char * cmd){
     free(buf);
 }
 
+static void cmd_crdump(char * cmd,Util::HashTable<kshell_cmd> * commands){
+    CR::cmd_crdump();
+}
+static void cmd_pagefault(char * cmd,Util::HashTable<kshell_cmd> * commands){
+    Memory::cmd_pagefault();
+}
+
 void kshell_init(){
     commands=new Util::HashTable<kshell_cmd>();
     (*commands)["cls"]={cmd_cls,"cls","clear the screen","- cls"};
@@ -161,9 +166,11 @@ void kshell_init(){
     (*commands)["help"]={cmd_help,"help [command]","displays help","- help : list all commands\n- help [command] : show command usage"};
     (*commands)["abort"]={cmd_abort,"abort","abort kernel","- abort"};
     (*commands)["cpuid"]={cmd_cpuid,"cpuid","check cpu features","- cpuid"};
-    //(*commands)["kbdump"]={cmd_kbdump,"kbdump","test keyboard mapping","- kbdump"};
+    (*commands)["kbdump"]={cmd_kbdump,"kbdump","test keyboard mapping","- kbdump"};
     (*commands)["meminfo"]={cmd_meminfo,"meminfo","display memory information","- meminfo"};
     (*commands)["lua"]={cmd_lua,"lua","run lua interpreter","- lua"};
+    (*commands)["crdump"]={cmd_crdump,"crdump","dump contents of control registers","- crdump"};
+    (*commands)["pagefault"]={cmd_pagefault,"pagefault","cause page fault","- pagefault"};
 }
 
 void kshell(){

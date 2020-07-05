@@ -79,6 +79,12 @@ static inline void set_page_directory_entry(entry_t * pde,page_directory_entry_f
 }
 
 uint32_t Memory::map_virtual_page(uint32_t p,uint32_t v,uint32_t n){
+    if(v==0){
+        k_abort_s("can't map invalid virtual address");
+    }
+    if(p>=Internal::pages.last_usable){
+        k_abort_s("can't map invalid physical address");
+    }
     for(uint32_t i=0;i<n;i++){
         entry_t * pte=id_to_page_entry(v+i,Internal::current_page_directory);
         if(!pte->present){
@@ -91,6 +97,9 @@ uint32_t Memory::map_virtual_page(uint32_t p,uint32_t v,uint32_t n){
 }
 
 void Memory::unmap_virtual_page(uint32_t v,uint32_t n){
+    if(v==0){
+        k_abort_s("can't unmap invalid virtual address");
+    }
     for(uint32_t i=0;i<n;i++){
         entry_t * pte=id_to_page_entry(v+i,Internal::current_page_directory);
         if(pte->present){
@@ -103,7 +112,7 @@ void Memory::unmap_virtual_page(uint32_t v,uint32_t n){
 
 uint32_t Memory::get_mapping_phys(uint32_t p){
     constexpr uint32_t last=1<<20;
-    for(uint32_t i=0;i<last;i++){
+    for(uint32_t i=1;i<last;i++){
         entry_t * pte=id_to_page_entry(i,Internal::current_page_directory);
         if(pte->address==p){
             return i;
@@ -125,7 +134,7 @@ uint32_t Memory::next_free_virt_page(uint32_t n){
     constexpr uint32_t last=1<<20;
     uint32_t c=0;
     uint32_t s=0;
-    for(uint32_t i=0;i<last;i++){
+    for(uint32_t i=1;i<last;i++){
         entry_t * pte=id_to_page_entry(i,Internal::current_page_directory);
         if(!pte->present){
             if(c==0){
@@ -145,7 +154,8 @@ extern uint8_t kernel_start;
 extern uint8_t kernel_end;
 
 static void paging_enable(entry_t * pd){
-    asm("movl %0,%%eax\ncall ASM_paging_enable"::"r"(pd));
+    CR::CR3::set((uint32_t)pd);
+    CR::CR0::enableFlags(CR::CR0_PG);
     Internal::current_page_directory=pd;
 }
 
@@ -156,21 +166,23 @@ static void page_fault_handler(uint32_t data){
     Screen::clear_line(0);
     Screen::clear_line(1);
     Screen::move(0,0);
-    Screen::write_s("Page Fault: ");
+    Screen::write_s("Page Fault trying to access ( ");
+    Screen::write_h(CR::CR2::get());
+    Screen::write_s(" ): ");
     if(data&0x1){
         Screen::write_s("present ");
     }else{
         Screen::write_s("not-present ");
     }
     if(data&0x2){
-        Screen::write_s("write ");
+        Screen::write_s(", write ");
     }else{
-        Screen::write_s("read ");
+        Screen::write_s(", read ");
     }
     if(data&0x4){
-        Screen::write_s("user ");
+        Screen::write_s(", user ");
     }else{
-        Screen::write_s("kernel ");
+        Screen::write_s(", kernel ");
     }
     /*
     something to do with PSE/PAE???
@@ -190,6 +202,15 @@ static void page_fault_handler(uint32_t data){
     Screen::write_h(data);
     Screen::write_s(")");
     k_abort();
+}
+
+void Memory::cmd_pagefault(){
+    uint32_t p=next_free_virt_page(1);
+    Screen::write_s("\n Causing Page Fault at (");
+    Screen::write_h(p);
+    Screen::write_s("), Press Any Key to continue...");
+    k_getch_extended();
+    *((uint32_t*)p)=0;
 }
 
 void Memory::x86_paging_init(){

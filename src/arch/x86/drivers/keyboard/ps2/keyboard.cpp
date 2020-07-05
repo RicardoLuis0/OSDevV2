@@ -131,49 +131,53 @@ extern "C" int k_getch_extended(){
     return 0;
 }
 
+void update_state(keycode key){
+    switch(key){
+    case KEY_LEFT_SHIFT_PRESSED:
+        left_shift_down=true;
+        break;
+    case KEY_RIGHT_SHIFT_PRESSED:
+        right_shift_down=true;
+        break;
+    case KEY_LEFT_SHIFT_RELEASED:
+        left_shift_down=false;
+        break;
+    case KEY_RIGHT_SHIFT_RELEASED:
+        right_shift_down=false;
+        break;
+    case KEY_LEFT_CONTROL_PRESSED:
+        left_ctrl_down=true;
+        break;
+    case KEY_RIGHT_CONTROL_PRESSED:
+        right_ctrl_down=true;
+        break;
+    case KEY_LEFT_CONTROL_RELEASED:
+        left_ctrl_down=false;
+        break;
+    case KEY_RIGHT_CONTROL_RELEASED:
+        right_ctrl_down=false;
+        break;
+    case KEY_LEFT_ALT_PRESSED:
+        left_alt_down=true;
+        break;
+    case KEY_RIGHT_ALT_PRESSED:
+        right_alt_down=true;
+        break;
+    case KEY_LEFT_ALT_RELEASED:
+        left_alt_down=false;
+        break;
+    case KEY_RIGHT_ALT_RELEASED:
+        right_alt_down=false;
+        break;
+    default:
+        break;
+    }
+}
+
 static void kbint(){
     if(has_scancode()){
         last_key=get_keycode();
-        switch(last_key){
-        case KEY_LEFT_SHIFT_PRESSED:
-            left_shift_down=true;
-            break;
-        case KEY_RIGHT_SHIFT_PRESSED:
-            right_shift_down=true;
-            break;
-        case KEY_LEFT_SHIFT_RELEASED:
-            left_shift_down=false;
-            break;
-        case KEY_RIGHT_SHIFT_RELEASED:
-            right_shift_down=false;
-            break;
-        case KEY_LEFT_CONTROL_PRESSED:
-            left_ctrl_down=true;
-            break;
-        case KEY_RIGHT_CONTROL_PRESSED:
-            right_ctrl_down=true;
-            break;
-        case KEY_LEFT_CONTROL_RELEASED:
-            left_ctrl_down=false;
-            break;
-        case KEY_RIGHT_CONTROL_RELEASED:
-            right_ctrl_down=false;
-            break;
-        case KEY_LEFT_ALT_PRESSED:
-            left_alt_down=true;
-            break;
-        case KEY_RIGHT_ALT_PRESSED:
-            right_alt_down=true;
-            break;
-        case KEY_LEFT_ALT_RELEASED:
-            left_alt_down=false;
-            break;
-        case KEY_RIGHT_ALT_RELEASED:
-            right_alt_down=false;
-            break;
-        default:
-            break;
-        }
+        update_state(last_key);
         wait_for_key=false;
     }
 }
@@ -210,9 +214,15 @@ static inline keycode get_keycode_dump(){
     return KEY_INVALID;//fallback to invalid
 }
 
+volatile bool kbdump_continue;
+
 void kbint_dump(){
     if(has_scancode()){
         keycode k=get_keycode_dump();
+        update_state(k);
+        if((left_ctrl_down||right_ctrl_down)&&k==KEY_C_PRESSED){
+            kbdump_continue=false;
+        }
         print("(");
         print(keycode_name(k));
         print(")");
@@ -220,10 +230,12 @@ void kbint_dump(){
 }
 
 void cmd_kbdump(){
+    kbdump_continue=true;
     IDT::set_irq_handler(0x21,kbint_dump,IDT::G_32_INT,IDT::RING_0);
-    for(;;){
+    while(kbdump_continue){
         asm("pause");
     }
+    IDT::set_irq_handler(0x21,kbint,IDT::G_32_INT,IDT::RING_0);
 }
 
 char simple_getch(){

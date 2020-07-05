@@ -13,7 +13,7 @@
 #define IDTXdv(n) IDTXd(n##0) IDTXd(n##1) IDTXd(n##2) IDTXd(n##3) IDTXd(n##4) IDTXv(n##5)
 #define IDTXa() IDTXdi() IDTXdd(1) IDTXdv(2)
 
-#define listIDTX(n) _idtx##n,
+#define listIDTX(n) ( (void*) _idtx##n ),
 #define listIDTXi() listIDTX(0) listIDTX(1) listIDTX(2) listIDTX(3) listIDTX(4) listIDTX(5) listIDTX(6) listIDTX(7) listIDTX(8) listIDTX(9)
 #define listIDTXd(n) listIDTX(n##0) listIDTX(n##1) listIDTX(n##2) listIDTX(n##3) listIDTX(n##4) listIDTX(n##5) listIDTX(n##6) listIDTX(n##7) listIDTX(n##8) listIDTX(n##9)
 #define listIDTXdi() listIDTXi() listIDTXd(1) listIDTXd(2) listIDTXd(3) listIDTXd(4) listIDTXd(5) listIDTXd(6) listIDTXd(7) listIDTXd(8) listIDTXd(9)
@@ -26,16 +26,13 @@ using namespace IDT;
 
 namespace IDT {
     //https://wiki.osdev.org/Interrupt_Descriptor_Table
-    union IDT_type_attributes {
-        uint8_t raw;
-        struct{
-            uint8_t type:4;
-            uint8_t segment:1;
-            uint8_t dpl:2;
-            uint8_t present:1;
-        };
+    struct IDT_type_attributes {
+        uint8_t type:4;
+        uint8_t segment:1;
+        uint8_t dpl:2;
+        uint8_t present:1;
         IDT_type_attributes(){
-            type=G_32_INT;
+            type=0;
             segment=0;
             dpl=0;
             present=0;
@@ -61,7 +58,7 @@ namespace IDT {
             offset_2=address>>16;
         }
     };
-    IDT_entry IDT[256];
+    IDT_entry * IDT;
     struct idt_callback_t {
         enum{
             IC_NONE,
@@ -99,7 +96,7 @@ extern "C" void call_idt(uint32_t irq,uint32_t data){
 
 IDTXa()
 
-constexpr void(*idtx[256])(){//array of asm idt entrypoints
+constexpr void * idtx[256]{//array of asm idt entrypoints
     listIDTXa()
 };
 
@@ -122,10 +119,7 @@ static void init_pic(){
 
 void IDT::init(){
     Screen::write_s("\n -Loading IDT...");
-    int cr0;
-    asm volatile ("movl %%cr0,%0":"=r"(cr0));
-    cr0|=1<<5;
-    asm volatile ("movl %0,%%cr0"::"r"(cr0));
+    IDT=(IDT_entry*)Memory::Internal::alloc_phys_page(Memory::pages_to_fit(sizeof(IDT_entry)*256));
     for(uint32_t i=0;i<256;i++){//setup interrupt table
         IDT_type_attributes ta;
         if(i<32){
@@ -143,7 +137,7 @@ void IDT::init(){
     }
     init_pic();
     //Load IDT
-    loadidt((uint32_t)IDT,sizeof(IDT));
+    loadidt((uint32_t)IDT,sizeof(IDT_entry)*256);
 }
 
 void IDT::pic_enable(uint8_t irq){

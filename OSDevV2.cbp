@@ -4,6 +4,7 @@
 	<Project>
 		<Option title="OSDevV2" />
 		<Option pch_mode="2" />
+		<Option default_target="KernelDebug" />
 		<Option compiler="llvm_clang_compiler_osdev" />
 		<Option extended_obj_names="1" />
 		<Build>
@@ -124,6 +125,7 @@
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
 		<Unit filename="src/arch/x86/cpuid.cpp" />
+		<Unit filename="src/arch/x86/cr.cpp" />
 		<Unit filename="src/arch/x86/crti.asm">
 			<Option link="0" />
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o obj/crti.o" />
@@ -142,9 +144,6 @@
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
 		<Unit filename="src/arch/x86/idt.cpp" />
-		<Unit filename="src/arch/x86/paging.asm">
-			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
-		</Unit>
 		<Unit filename="src/arch/x86/paging.cpp" />
 		<Unit filename="src/arch/x86/spinlock.cpp" />
 		<Unit filename="src/arch/x86/x86.cpp" />
