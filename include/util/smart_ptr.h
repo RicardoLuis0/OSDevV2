@@ -36,6 +36,10 @@ namespace Util {
             return ptr;
         }
 
+        operator const T*() const{
+            return ptr;
+        }
+
         T* operator->(){
             return ptr;
         }
@@ -178,6 +182,10 @@ namespace Util {
         }
         
         operator T*(){
+            return ptr;
+        }
+        
+        operator const T*() const{
             return ptr;
         }
         

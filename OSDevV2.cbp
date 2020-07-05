@@ -44,7 +44,7 @@
 			<Add option="-Wall" />
 			<Add option="-std=c11" />
 			<Add option="-std=c++17" />
-			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-rtti -fno-exceptions -Werror=implicit-function-declaration -Werror=return-type" />
+			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-rtti -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-exceptions -Werror=implicit-function-declaration -Werror=return-type" />
 			<Add directory="include/stdc/" />
 		</Compiler>
 		<Linker>
@@ -56,6 +56,9 @@
 		<Unit filename="include/drivers/keyboard/ps2/keyboard.h" />
 		<Unit filename="include/drivers/keyboard/ps2/keycodes.h" />
 		<Unit filename="include/extern/multiboot.h" />
+		<Unit filename="include/fs/fs.h" />
+		<Unit filename="include/fs/ramfs.h" />
+		<Unit filename="include/fs/vfs.h" />
 		<Unit filename="include/klib.h" />
 		<Unit filename="include/kshell/kshell.h" />
 		<Unit filename="include/kshell/lua/lapi.h" />
@@ -114,6 +117,7 @@
 		<Unit filename="include/util/hash_table.h" />
 		<Unit filename="include/util/smart_ptr.h" />
 		<Unit filename="include/util/spinlock.h" />
+		<Unit filename="include/util/string.h" />
 		<Unit filename="include/util/tmp.h" />
 		<Unit filename="include/util/vector.h" />
 		<Unit filename="linker.ld" />
@@ -150,6 +154,9 @@
 		<Unit filename="src/arch/x86/x86.cpp" />
 		<Unit filename="src/arch/x86/x86_mem.cpp" />
 		<Unit filename="src/arch/x86/x86_screen.cpp" />
+		<Unit filename="src/fs/fs.cpp" />
+		<Unit filename="src/fs/ramfs.cpp" />
+		<Unit filename="src/fs/vfs.cpp" />
 		<Unit filename="src/klib.cpp" />
 		<Unit filename="src/kshell/kshell.cpp" />
 		<Unit filename="src/kshell/lua/lapi.c">
@@ -345,6 +352,7 @@
 		<Unit filename="src/stdc/printf.cpp" />
 		<Unit filename="src/stdc/string.cpp" />
 		<Unit filename="src/tdraw.cpp" />
+		<Unit filename="src/util/string.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

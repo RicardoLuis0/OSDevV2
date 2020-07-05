@@ -62,16 +62,20 @@ extern "C" {
         }
         return 0;
     }
-
+    
     int unsetenv(const char *name){
         kernel_env->unset(name);
         return 0;
     }
-
+    
     int __cxa_atexit(void (*func) (void *), void * arg, void * d){
         k_abort_s("__cxa_atexit unimplemented");
     }
-
+    
+    [[noreturn]] void __cxa_pure_virtual(){
+        k_abort_s("call to pure virtual method");
+    }
+    
     int atexit(void(*func)(void)){
         return __cxa_atexit((void (*)(void*))func,NULL,NULL);
     }
