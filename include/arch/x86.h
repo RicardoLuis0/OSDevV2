@@ -8,6 +8,14 @@
 
 extern "C" uint32_t has_cpuid();
 
+namespace CPU {
+    struct cpu_state{
+        //TODO implement
+    };
+    void save(cpu_state*);
+    void restore(cpu_state*);
+}
+
 namespace CR{
     void cmd_crdump();
     enum CR0_flags {

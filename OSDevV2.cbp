@@ -125,6 +125,7 @@
 			<Option link="0" />
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o obj/boot.o" />
 		</Unit>
+		<Unit filename="src/arch/x86/cpu.cpp" />
 		<Unit filename="src/arch/x86/cpuid.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
