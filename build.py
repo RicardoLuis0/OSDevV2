@@ -3,6 +3,8 @@
 import os
 import subprocess
 
+lai_path="..\\lai\\"
+
 llvm_path="C:\\Program Files\\LLVM\\bin\\"  #you can leave this empty if llvm is in path
 
 nasm_path=""                                #you can leave this empty if nasm is in path
@@ -138,14 +140,14 @@ config={
     ),
     ".cpp":clang(
         #flags
-        ["-std=c++17","-DDEBUG","-g","-Iinclude","--target=i686-pc-none-elf","-march=i686","-ffreestanding","-fno-builtin","-nostdlib","-nostdinc","-nostdinc++","-fno-rtti","-fno-exceptions","-Wall","-Werror=implicit-function-declaration","-Werror=return-type"],
+        ["-std=c++17","-DDEBUG","-g","-Iinclude","-I\"include/stdc\"","-I\""+lai_path+"\include\"","--target=i686-pc-none-elf","-march=i686","-ffreestanding","-fno-builtin","-nostdlib","-nostdinc","-nostdinc++","-fno-rtti","-fno-exceptions","-Wall","-Werror=implicit-function-declaration","-Werror=return-type"],
         
         #c++
         True
     ),
     ".c":clang(
         #flags
-        ["-std=c18","-DDEBUG","-g","-Iinclude","--target=i686-pc-none-elf","-march=i686","-ffreestanding","-fno-builtin","-nostdlib","-nostdinc","-Wall","-Werror=implicit-function-declaration","-Werror=return-type"],
+        ["-std=c18","-DDEBUG","-g","-Iinclude","-I\"include/stdc\"","-I\""+lai_path+"\include\"","--target=i686-pc-none-elf","-march=i686","-ffreestanding","-fno-builtin","-nostdlib","-nostdinc","-Wall","-Werror=implicit-function-declaration","-Werror=return-type"],
         
         #c++
         False

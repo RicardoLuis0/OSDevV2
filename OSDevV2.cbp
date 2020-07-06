@@ -364,7 +364,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/stdc/printf.cpp" />
-		<Unit filename="src/stdc/string.cpp" />
+		<Unit filename="src/stdc/stringlib.cpp" />
 		<Unit filename="src/tdraw.cpp" />
 		<Unit filename="src/util/string.cpp" />
 		<Extensions>
