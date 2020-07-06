@@ -17,6 +17,10 @@ void k_env_init(){
     kernel_env=new Util::HashTable<Util::UniquePtr<char>>();
 }
 
+void klib_init(){
+    k_env_init();
+}
+
 extern "C" {
     int errno;
 
@@ -219,22 +223,19 @@ extern "C" {
         print("\nKernel Aborted! In ",name,":",line,", Assertion ",condition," failed.\n",msg);
         k_abort_main();
     }
-}
 
-void klib_init(){
-    k_env_init();
-}
-
-//source http://www.cse.yorku.ca/~oz/hash.html
-size_t k_hash_s(const char * s){
-    size_t hash = 5381;
-    while(*s++)hash = ((hash << 5) + hash) + ((size_t)*s); /* hash * 33 + c */
-    return hash;
-}
-
-int k_strcmp_bool(const char * s1,const char * s2){
-    while(*s1||*s2){
-        if(*s1++!=*s2++)return false;
+    int k_strcmp_bool(const char * s1,const char * s2){
+        while(*s1||*s2){
+            if(*s1++!=*s2++)return false;
+        }
+        return true;
     }
-    return true;
+
+    //source http://www.cse.yorku.ca/~oz/hash.html
+    size_t k_hash_s(const char * s){
+        size_t hash = 5381;
+        while(*s++)hash = ((hash << 5) + hash) + ((size_t)*s); /* hash * 33 + c */
+        return hash;
+    }
+
 }
