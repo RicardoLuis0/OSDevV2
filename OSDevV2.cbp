@@ -16,7 +16,6 @@
 				<Option use_console_runner="0" />
 				<Compiler>
 					<Add option="-g" />
-					<Add option="-Og" />
 					<Add option="-DDEBUG" />
 					<Add directory="include" />
 				</Compiler>
@@ -274,6 +273,15 @@
 		<Unit filename="src/stdc/locale.cpp" />
 		<Unit filename="src/stdc/math.cpp" />
 		<Unit filename="src/stdc/math/__cos.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/__fpclassify.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/__fpclassifyf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/math/__fpclassifyl.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/stdc/math/__rem_pio2.c">

@@ -110,6 +110,14 @@ void Memory::unmap_virtual_page(uint32_t v,uint32_t n){
     }
 }
 
+void Memory::Internal::map_null(){
+    set_page_table_entry(id_to_page_entry(0,current_page_directory),{.present=true,.rw=true,.user=true},0);
+}
+
+void Memory::Internal::unmap_null(){
+    set_page_table_entry(id_to_page_entry(0,current_page_directory),{.present=false,.rw=false,.user=false},0);
+}
+
 uint32_t Memory::get_mapping_phys(uint32_t p){
     constexpr uint32_t last=1<<20;
     for(uint32_t i=1;i<last;i++){

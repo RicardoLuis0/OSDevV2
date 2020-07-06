@@ -194,6 +194,10 @@ namespace Memory{
         void free_phys_page(void*,uint32_t n);//mark 'n' physical pages as unused
         void set_phys_free(uint32_t page_id_start,uint32_t page_id_end,bool new_free);
         uint32_t count_used_pages();//counts number of non-free physical pages
+        
+        //map and unmap nullpointer as identity for working with raw data near it
+        void map_null();
+        void unmap_null();
     }
     void * alloc_virt_page(uint32_t n);//get 'n' new virtual pages (and mark as used)
     void free_virt_page(void*,uint32_t n);//mark 'n' virtual pages as unused
