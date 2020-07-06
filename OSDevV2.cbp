@@ -45,14 +45,16 @@
 			<Add option="-std=c++17" />
 			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-rtti -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-exceptions -Werror=implicit-function-declaration -Werror=return-type" />
 			<Add directory="include/stdc/" />
+			<Add directory="../lai/include" />
 		</Compiler>
 		<Linker>
 			<Add option="-T linker.ld" />
 			<Add option="-lclang_builtins_i386" />
+			<Add option="-llai" />
 			<Add directory="lib" />
 		</Linker>
+		<Unit filename="include/acpi.h" />
 		<Unit filename="include/arch/x86.h" />
-		<Unit filename="include/drivers/acpi/acpi.h" />
 		<Unit filename="include/drivers/keyboard/ps2/keyboard.h" />
 		<Unit filename="include/drivers/keyboard/ps2/keycodes.h" />
 		<Unit filename="include/extern/multiboot.h" />
@@ -121,6 +123,8 @@
 		<Unit filename="include/util/tmp.h" />
 		<Unit filename="include/util/vector.h" />
 		<Unit filename="linker.ld" />
+		<Unit filename="src/arch/x86/acpi/acpi.cpp" />
+		<Unit filename="src/arch/x86/acpi/lai_host_layer.cpp" />
 		<Unit filename="src/arch/x86/boot.asm">
 			<Option link="0" />
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o obj/boot.o" />
@@ -139,7 +143,6 @@
 			<Option link="0" />
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o obj/crtn.o" />
 		</Unit>
-		<Unit filename="src/arch/x86/drivers/acpi/acpi.cpp" />
 		<Unit filename="src/arch/x86/drivers/keyboard/ps2/keyboard.cpp" />
 		<Unit filename="src/arch/x86/drivers/keyboard/ps2/layout.cpp" />
 		<Unit filename="src/arch/x86/fpu.cpp" />

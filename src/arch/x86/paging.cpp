@@ -110,6 +110,17 @@ void Memory::unmap_virtual_page(uint32_t v,uint32_t n){
     }
 }
 
+void Memory::Internal::pages_for(uint32_t addr,uint32_t len,uint32_t &p_id,uint32_t &n){
+    p_id=addr>>12;
+    uint32_t start=p_id<<12;
+    uint32_t end=addr+len;
+    uint32_t len2=end-start;
+    n=len2<<12;
+    if(len2%4096){
+        n++;
+    }
+}
+
 void Memory::Internal::map_null(){
     set_page_table_entry(id_to_page_entry(0,current_page_directory),{.present=true,.rw=true,.user=true},0);
 }

@@ -182,11 +182,13 @@ namespace Memory{
     uint32_t next_free_virt_page(uint32_t n);//get a free unused virtual address ( to pass to map_virtual_page ) that can fit 'n' pages
 
     void x86_paging_init();
-    
+
     constexpr size_t pages_to_fit(size_t size){//calculate enough pages to fit 'size' bytes of data
         return (size%4096)?(size/4096)+1:size/4096;
     }
+
     namespace Internal {
+        void pages_for(uint32_t addr,uint32_t len,uint32_t &p_id,uint32_t &n);
         extern physical_pages_t pages;
         bool is_phys_page_free(uint32_t page_id);//check if page with id
         void * phys_id_to_ptr(uint32_t page_id);

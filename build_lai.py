@@ -3,6 +3,8 @@
 import os
 import subprocess
 
+lai_path="..\\lai\\"
+
 llvm_path="C:\\Program Files\\LLVM\\bin\\"  #you can leave this empty if llvm is in path
 
 nasm_path=""                                #you can leave this empty if nasm is in path
@@ -37,6 +39,14 @@ class linker_ld_lld(linker): #llvm linker on windows, might need to use plain ld
 
     def get_cmd(self,out): #get command to run
         return "\""+llvm_path+"ld.lld\" "+(" ".join(self.flags))+" "+(" ".join(self.libs))+" -o \""+out+"\" "+(" ".join(self.start_files))+" "+(" ".join(self.files))+" "+(" ".join(self.end_files))
+
+class linker_ar(linker): #just packages object files together
+    def __init__(self,flags,start_files,end_files):
+        super(linker_ar,self).__init__(start_files,end_files)
+        self.flags=flags #linker flags, list
+
+    def get_cmd(self,out): #get command to run
+        return "ar "+(" ".join(self.flags))+" \""+out+"\" "+(" ".join(self.start_files))+" "+(" ".join(self.files))+" "+(" ".join(self.end_files))
 
 class clang(compiler): #clang compiler
     def __init__(self,flags,cpp):
@@ -77,121 +87,105 @@ class compiler_runner: #runs a compiler for a file
 
 def get_files(folder,out_folder,compiler_exts,nolink,linker):#must be relative folders, compiler_exts = dict of file extensions to compilers, ex: {".c":clang_c_default,".cpp":clang_cpp_default,".asm":nasm}
     compiler_runners=[]
-    for path,dirs,files in os.walk(folder) :
-        for file in files:
-            split=os.path.splitext(file)
-            ext=split[1]
-            if ext in compiler_exts: #if extension has a compiler
-                if split[0] in nolink : #don't link file
-                    compiler_runners.append(
-                        compiler_runner(
-                            #compiler for extension
-                            compiler_exts[ext],
-                            
-                            #linker
-                            linker,
-                            
-                            #source file
-                            "\""+path+os.path.sep+file+"\"",
-                            
-                            #output file
-                            "\""+out_folder+os.path.sep+split[0]+".o\"", #don't add extension to .o if in nolink
-                            
-                            #extra flags
-                            [],
-                            
-                            #nolink
-                            True
+    if(type(folder)==list):
+        for f in folder :
+            compiler_runners+=get_files(f,out_folder,compiler_exts,nolink,linker)
+    else:
+        for path,dirs,files in os.walk(folder) :
+            for file in files:
+                split=os.path.splitext(file)
+                ext=split[1]
+                if ext in compiler_exts: #if extension has a compiler
+                    if split[0] in nolink : #don't link file
+                        compiler_runners.append(
+                            compiler_runner(
+                                #compiler for extension
+                                compiler_exts[ext],
+                                
+                                #linker
+                                linker,
+                                
+                                #source file
+                                "\""+path+os.path.sep+file+"\"",
+                                
+                                #output file
+                                "\""+out_folder+os.path.sep+split[0]+".o\"", #don't add extension to .o if in nolink
+                                
+                                #extra flags
+                                [],
+                                
+                                #nolink
+                                True
+                            )
+                        ) 
+                    else:
+                        compiler_runners.append(
+                            compiler_runner(
+                                #compiler for extension
+                                compiler_exts[ext],
+                                
+                                #linker
+                                linker,
+                                
+                                #source file
+                                "\""+path+os.path.sep+file+"\"",
+                                
+                                #output file
+                                "\""+out_folder+os.path.sep+file+".o\"",
+                                
+                                #extra flags
+                                [],
+                                
+                                #nolink
+                                False
+                            )
                         )
-                    ) 
+                    print("preparing '"+ext+"' file "+file)
                 else:
-                    compiler_runners.append(
-                        compiler_runner(
-                            #compiler for extension
-                            compiler_exts[ext],
-                            
-                            #linker
-                            linker,
-                            
-                            #source file
-                            "\""+path+os.path.sep+file+"\"",
-                            
-                            #output file
-                            "\""+out_folder+os.path.sep+file+".o\"",
-                            
-                            #extra flags
-                            [],
-                            
-                            #nolink
-                            False
-                        )
-                    )
-                print("preparing '"+ext+"' file "+file)
-            else:
-                print("skipping '"+ext+"' file "+file)
+                    print("skipping '"+ext+"' file "+file)
     return compiler_runners
 
-config={
+config_debug={
     ".asm":nasm(
         #flags
         ["-f elf"]
     ),
-    ".cpp":clang(
-        #flags
-        ["-std=c++17","-DDEBUG","-g","-Iinclude","--target=i686-pc-none-elf","-march=i686","-ffreestanding","-fno-builtin","-nostdlib","-nostdinc","-nostdinc++","-fno-rtti","-fno-exceptions","-Wall","-Werror=implicit-function-declaration","-Werror=return-type"],
-        
-        #c++
-        True
-    ),
     ".c":clang(
         #flags
-        ["-std=c18","-DDEBUG","-g","-Iinclude","--target=i686-pc-none-elf","-march=i686","-ffreestanding","-fno-builtin","-nostdlib","-nostdinc","-Wall","-Werror=implicit-function-declaration","-Werror=return-type"],
-        
+        [
+        #defines
+        "-DDEBUG",
+        #other flags
+        "-std=c18","-g","-I\""+lai_path+"include\"","--target=i686-pc-none-elf","-march=i686","-ffreestanding","-fno-builtin","-nostdlib",
+        #"-nostdinc",
+        "-Wall","-Werror=undef"],
         #c++
         False
     ),
 }
 
-ld=linker_ld_lld(
+ar=linker_ar(
     #flags
-    ["-T linker.ld","-Llib"],
-    
-    #libraries
-    ["-lclang_builtins_i386","-llai"],
+    ["rc"],
     
     #link before other files
-    ["\"build\\obj\\boot.o\"","\"build\\obj\\crti.o\"","\"misc\\crtbegin.o\""],
+    [],
     
     #link after other files
-    ["\"misc\\crtend.o\"","\"build\\obj\\crtn.o\""]
+    []
 )
 
-runners=get_files(
-    #source folder
-    "src",
-
-    #obj output folder
-    "build\\obj",
-
-    #extension <-> compiler association
-    config,
-    
-    #don't add to linker list
-    ["crti","crtn","boot"],
-    
-    #linker
-    ld
-)
+runners=get_files([lai_path+"core",lai_path+"helpers"],lai_path+"obj",config_debug,[],ar)
 
 #run compilers
 for runner in runners:
     runner.run()
 
 #run linker
-ld_cmd=ld.get_cmd(
+ar_cmd=ar.get_cmd(
     #final output file
-    "build/kernel.bin"
+    "lib/liblai.a"
 )
-print("running "+ld_cmd)
-subprocess.Popen(ld_cmd).wait()
+print("running "+ar_cmd)
+subprocess.Popen(ar_cmd).wait()
 #end!

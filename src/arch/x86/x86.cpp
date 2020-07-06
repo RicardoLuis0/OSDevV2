@@ -2,6 +2,7 @@
 #include "screen.h"
 #include "klib.h"
 #include "stdc/assert.h"
+#include "acpi.h"
 
 static volatile bool global_constructors_ran;
 
@@ -35,6 +36,7 @@ extern "C" void x86_start(struct multiboot_info * mbd, unsigned int magic){//x86
     IDT::init();
     Memory::x86_paging_init();//initialize virtual memory
     FPU::init();
+    ACPI::init();
     Screen::write_s("\n>Calling Global Constructors");
     global_constructors_ran=false;
     _init();//only call global constructors after setting up screen, paging, memory management, etc...

@@ -1,7 +1,7 @@
 #ifndef ACPI_H_INCLUDED
 #define ACPI_H_INCLUDED
 
-namespace Drivers::ACPI{
+namespace ACPI{
     void init();
     //TODO
 }
