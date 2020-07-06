@@ -53,6 +53,7 @@
 			<Add directory="lib" />
 		</Linker>
 		<Unit filename="include/arch/x86.h" />
+		<Unit filename="include/drivers/acpi/acpi.h" />
 		<Unit filename="include/drivers/keyboard/ps2/keyboard.h" />
 		<Unit filename="include/drivers/keyboard/ps2/keycodes.h" />
 		<Unit filename="include/extern/multiboot.h" />
@@ -139,6 +140,7 @@
 			<Option link="0" />
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o obj/crtn.o" />
 		</Unit>
+		<Unit filename="src/arch/x86/drivers/acpi/acpi.cpp" />
 		<Unit filename="src/arch/x86/drivers/keyboard/ps2/keyboard.cpp" />
 		<Unit filename="src/arch/x86/drivers/keyboard/ps2/layout.cpp" />
 		<Unit filename="src/arch/x86/fpu.cpp" />

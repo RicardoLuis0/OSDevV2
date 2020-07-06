@@ -16,6 +16,26 @@ extern "C" {
 #define NORETURN __attribute__((noreturn))
 #endif // __cplusplus
 
+#define FOR2(s) s s
+#define FOR4(s) FOR2(s) FOR2(s)
+#define FOR8(s) FOR4(s) FOR4(s)
+#define FOR16(s) FOR8(s) FOR8(s)
+#define FOR32(s) FOR16(s) FOR16(s)
+#define FOR64(s) FOR32(s) FOR32(s)
+#define FOR128(s) FOR64(s) FOR64(s)
+#define FOR256(s) FOR128(s) FOR128(s)
+#define FOR512(s) FOR256(s) FOR256(s)
+
+#define FORC2(s) s , s
+#define FORC4(s) FORC2(s) , FORC2(s)
+#define FORC8(s) FORC4(s) , FORC4(s)
+#define FORC16(s) FORC8(s) , FORC8(s)
+#define FORC32(s) FORC16(s) , FORC16(s)
+#define FORC64(s) FORC32(s) , FORC32(s)
+#define FORC128(s) FORC64(s) , FORC64(s)
+#define FORC256(s) FORC128(s) , FORC128(s)
+#define FORC512(s) FORC256(s) , FORC256(s)
+
 void * malloc(size_t size);
 //void * k_malloc_x(size_t size,size_t align);
 void * calloc(size_t num,size_t size);

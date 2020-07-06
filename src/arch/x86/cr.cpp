@@ -2,16 +2,6 @@
 #include "screen.h"
 #include "klib.h"
 
-#define FOR2(s) s , s
-#define FOR4(s) FOR2(s) , FOR2(s)
-#define FOR8(s) FOR4(s) , FOR4(s)
-#define FOR16(s) FOR8(s) , FOR8(s)
-#define FOR32(s) FOR16(s) , FOR16(s)
-#define FOR64(s) FOR32(s) , FOR32(s)
-#define FOR128(s) FOR64(s) , FOR64(s)
-#define FOR256(s) FOR128(s) , FOR128(s)
-#define FOR512(s) FOR256(s) , FOR256(s)
-
 static const char * CR0_flags_str[32] {
     "CR0_PE -- protected mode enable bit",
     "CR0_MP -- monitor co-processor",
@@ -19,13 +9,13 @@ static const char * CR0_flags_str[32] {
     "CR0_TS -- x87 task switched",
     "CR0_ET -- x87 type",
     "CR0_NE -- x87 numeric error",
-    FOR8("reserved -- unused"),
+    FORC8("reserved -- unused"),
     "reserved -- unused",
     "reserved -- unused",
     "CR0_WP -- ring 0 write protect",
     "reserved -- unused",
     "CR0_AM -- ring 3 alignment check",
-    FOR8("reserved -- unused"),
+    FORC8("reserved -- unused"),
     "reserved -- unused",
     "reserved -- unused",
     "CR0_NW -- write-through caching disable bit",
@@ -57,7 +47,7 @@ static const char * CR4_flags_str[32] {
     "CR4_SMEP -- enable Supervisor Mode Execution Protection",
     "CR4_SMAP -- enable Supervisor Mode Access Prevention",
     "CR4_PKE -- enable Protection Key",
-    FOR8("reserved -- unused"),
+    FORC8("reserved -- unused"),
     "reserved -- unused",
 };
 
