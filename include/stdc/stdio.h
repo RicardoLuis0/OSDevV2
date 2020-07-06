@@ -20,7 +20,9 @@ extern "C" {
 #define BUFSIZ 512
 
 struct k_FILE {
-    size_t temp;//
+    void * f_handle;//FS::FolderHandle
+    size_t index;
+    size_t size;
     //TODO
 };
 

@@ -30,6 +30,9 @@ namespace FS {
     
     class FileHandle : public FSHandle {
     public:
+        virtual void lock()=0;
+        virtual bool try_lock()=0;
+        virtual void unlock()=0;
         virtual size_t read(void * buf,size_t buf_len,size_t offset,size_t count)=0;
     };
     
