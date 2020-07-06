@@ -262,13 +262,13 @@
 		<Unit filename="src/kshell/lua/lzio.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="src/liballoc.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/new.cpp" />
 		<Unit filename="src/print.cpp" />
 		<Unit filename="src/stdc/file_io.cpp" />
+		<Unit filename="src/stdc/liballoc.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/stdc/locale.cpp" />
 		<Unit filename="src/stdc/math.cpp" />
 		<Unit filename="src/stdc/math/__cos.c">
