@@ -2,6 +2,16 @@
 #include "screen.h"
 #include "klib.h"
 
+#define FOR2(s) s , s
+#define FOR4(s) FOR2(s) , FOR2(s)
+#define FOR8(s) FOR4(s) , FOR4(s)
+#define FOR16(s) FOR8(s) , FOR8(s)
+#define FOR32(s) FOR16(s) , FOR16(s)
+#define FOR64(s) FOR32(s) , FOR32(s)
+#define FOR128(s) FOR64(s) , FOR64(s)
+#define FOR256(s) FOR128(s) , FOR128(s)
+#define FOR512(s) FOR256(s) , FOR256(s)
+
 static const char * CR0_flags_str[32] {
     "CR0_PE -- protected mode enable bit",
     "CR0_MP -- monitor co-processor",
@@ -9,33 +19,20 @@ static const char * CR0_flags_str[32] {
     "CR0_TS -- x87 task switched",
     "CR0_ET -- x87 type",
     "CR0_NE -- x87 numeric error",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
+    FOR8("reserved -- unused"),
     "reserved -- unused",
     "reserved -- unused",
     "CR0_WP -- ring 0 write protect",
     "reserved -- unused",
     "CR0_AM -- ring 3 alignment check",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
+    FOR8("reserved -- unused"),
     "reserved -- unused",
     "reserved -- unused",
     "CR0_NW -- write-through caching disable bit",
     "CR0_CD -- memory caching disable bit",
     "CR0_PG -- paging enable bit",
 };
+
 static const char * CR4_flags_str[32] {
     "CR4_VME -- V8086 mode virtual interrupt support",
     "CR4_PVI -- protected mode virtual interrupt support",
@@ -60,14 +57,7 @@ static const char * CR4_flags_str[32] {
     "CR4_SMEP -- enable Supervisor Mode Execution Protection",
     "CR4_SMAP -- enable Supervisor Mode Access Prevention",
     "CR4_PKE -- enable Protection Key",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
-    "reserved -- unused",
+    FOR8("reserved -- unused"),
     "reserved -- unused",
 };
 
