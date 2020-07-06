@@ -129,13 +129,11 @@ void CPUID::cpuid_get(uint32_t &ecx,uint32_t &edx){
     edx=0;
     asm volatile(
         R"asm(
-            push %%ecx //save modified registers just in case
-            push %%edx
+            pusha //save registers just in case
             push %0
             push %1
             call cpuid_features
-            pop %%edx //restore modified registers
-            pop %%ecx
+            popa //restore registers
         )asm"
         :
         :

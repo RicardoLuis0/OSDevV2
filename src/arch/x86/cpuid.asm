@@ -19,10 +19,10 @@ cpuid_features:
     mov ecx,0
     mov edx,0
     cpuid
-    pop ebx
-    pop eax
-    mov [eax],edx
-    pop eax
-    mov [eax],ecx
-    push ebx
+    pop ebx ; save return address
+    pop eax ; pop pointer into eax
+    mov [eax],edx ; dereference and save edx into pointer
+    pop eax ; pop pointer into eax
+    mov [eax],ecx ; dereference and save ecx into pointer
+    push ebx ; restore return address
     ret
