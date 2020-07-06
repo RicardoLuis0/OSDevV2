@@ -1,5 +1,6 @@
 #include "klib.h"
 #include "util.h"
+#include "print.h"
 #include "kshell/kshell.h"
 #include <stdio.h>
 #include <errno.h>
@@ -159,6 +160,64 @@ extern "C" {
                 break;
             }
         }
+    }
+
+    [[noreturn]] void hang();
+
+    [[noreturn]] void k_halt(){
+        //TODO clean up system before hang
+        hang();
+    }
+
+    [[noreturn]] static inline void k_abort_main(){
+        Screen::disable_cursor();
+        k_halt();
+    }
+
+    void k_abort(){
+        Screen::setcolor(Screen::RED,Screen::WHITE);
+        print("\nKernel Aborted!");
+        k_abort_main();
+    }
+
+    void k_abort_fullscreen(){
+        Screen::setcolor(Screen::BLACK,Screen::WHITE);
+        Screen::clear();
+        Screen::setcolor(Screen::RED,Screen::WHITE);
+        Screen::clear_line(0);
+        Screen::move(32,0);
+        print("Kernel Aborted!");
+        k_abort_main();
+    }
+
+    void k_abort_i(int code){
+        Screen::setcolor(Screen::RED,Screen::WHITE);
+        print("\nKernel Aborted! Error code '",code,"'");
+        k_abort_main();
+    }
+
+    void k_abort_s(const char * msg){
+        Screen::setcolor(Screen::RED,Screen::WHITE);
+        print("\nKernel Aborted! ",msg,"");
+        k_abort_main();
+    }
+
+    void k_abort_s_i_s(const char * s1,int i,const char * s2){
+        Screen::setcolor(Screen::RED,Screen::WHITE);
+        print("\nKernel Aborted! ",s1,i,s2,"");
+        k_abort_main();
+    }
+
+    void k_abort_assert(const char * condition,const char * name,uint32_t line){
+        Screen::setcolor(Screen::RED,Screen::WHITE);
+        print("\nKernel Aborted! In ",name,":",line,", Assertion ",condition," failed.");
+        k_abort_main();
+    }
+
+    void k_abort_massert(const char * condition,const char * msg,const char * name,uint32_t line){
+        Screen::setcolor(Screen::RED,Screen::WHITE);
+        print("\nKernel Aborted! In ",name,":",line,", Assertion ",condition," failed.\n",msg);
+        k_abort_main();
     }
 }
 
