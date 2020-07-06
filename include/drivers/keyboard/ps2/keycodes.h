@@ -3,10 +3,7 @@
 
 #include "stdc/stdint.h"
 
-namespace Drivers{
-namespace Keyboard {
-namespace PS2{
-    
+namespace Drivers::Keyboard::PS2{
     extern uint16_t * keycodes;//array of 0xFF keycodes
     extern uint16_t * keycodes_extra1;//array of 0xFF keycodes
     
@@ -238,7 +235,7 @@ namespace PS2{
         //
         KEY_PRINTSCR_RELEASED,
     };
-}}}
+}
 
 
 #endif // KEYCODES_H_INCLUDED
