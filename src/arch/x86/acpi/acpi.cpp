@@ -41,10 +41,18 @@ void ACPI::init(){
     
     //save tables
     rsdp=(acpi_rsdp_t*)laihost_map(rsdp_info.rsdp_address,sizeof(acpi_rsdp_t));
-    rsdt=(acpi_rsdt_t*)laihost_map(rsdp->rsdt,sizeof(acpi_rsdt_t));
+    {
+        rsdt=(acpi_rsdt_t*)laihost_map(rsdp->rsdt,sizeof(acpi_rsdt_t));
+        uint32_t len=rsdt->header.length;
+        laihost_unmap(rsdt,sizeof(acpi_rsdt_t));
+        rsdt=(acpi_rsdt_t*)laihost_map(rsdp->rsdt,len);
+    }
     if(rsdp_info.acpi_version>=2){
         xsdp=(acpi_xsdp_t*)rsdp;
         xsdt=(acpi_xsdt_t*)laihost_map(xsdp->xsdt,sizeof(acpi_xsdt_t));
+        uint32_t len=xsdt->header.length;
+        laihost_unmap(xsdt,sizeof(acpi_xsdt_t));
+        xsdt=(acpi_xsdt_t*)laihost_map(xsdp->xsdt,len);
     }
     
     //initialize LAI

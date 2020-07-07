@@ -51,16 +51,14 @@ extern "C" {
     void * laihost_map(size_t address, size_t count){
         if(address<4096){
             Memory::Internal::map_null();
-            return (void*)address;
         }else if(address>=1_MB){
-            uint32_t p_id,n,offset=address%4096;
+            uint32_t p_id,n;
             Memory::Internal::pages_for(address,count,p_id,n);
-            Memory::Internal::map_virtual_page_unsafe(address>>12,p_id,n);
-            return (void*)((p_id>>12)+offset);
+            Memory::Internal::map_virtual_page_unsafe(p_id,p_id,n);
         }else{
             //lower memory except first page is always mapped, do nothing
-            return (void*)address;
         }
+        return (void*)address;
     }
 
     void * laihost_scan(const char * signature,size_t index){
