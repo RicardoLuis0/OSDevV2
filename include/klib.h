@@ -67,6 +67,8 @@ void k_putull(int64_t);//print unsigned long long
 void k_puth(uint64_t);//print unsigned long long as hex
 void k_putmem(uint64_t);//print unsigned long long as memory (ex. 10M 2K 10B)
 
+void k_sleep(uint64_t);
+
 int k_getch();
 char * k_gets(char * str, int n);
 
@@ -84,6 +86,12 @@ int k_strcmp_bool(const char * s1,const char * s2);//returns true/false whether 
 
 void outb(uint16_t port, uint8_t val);
 uint8_t inb(uint16_t port);
+
+void outw(uint16_t port, uint16_t val);
+uint16_t inw(uint16_t port);
+
+void outl(uint16_t port, uint32_t val);
+uint32_t inl(uint16_t port);
 
 #ifdef __cplusplus
 }

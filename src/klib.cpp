@@ -21,7 +21,12 @@ void klib_init(){
     k_env_init();
 }
 
+
 extern "C" {
+    void k_sleep(uint64_t){
+        k_abort_s("k_sleep unimplemented");
+    }
+
     int errno;
 
     time_t time(time_t* timer){
