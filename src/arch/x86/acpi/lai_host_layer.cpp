@@ -69,8 +69,22 @@ extern "C" {
     }
 
     void * laihost_scan(const char * sig,size_t index){
+        if(memcmp("DSDT",sig,4)==0){
+            acpi_fadt_t * fadt=(acpi_fadt_t *)laihost_scan("FACP",0);
+            if(!fadt)k_abort_s("Couldn't find FADT header!");
+            if(xsdt){
+                if(fadt->x_dsdt){
+                    if(fadt->x_dsdt<4_GB){
+                        return ACPI::map_table(fadt->x_dsdt);
+                    }else{
+                        k_abort_s("X_DSDT too far!");
+                    }
+                }
+            }
+            return ACPI::map_table(fadt->dsdt);
+        }
         if(xsdt){
-            const uint32_t count=((xsdt->header.length-sizeof(acpi_header_t))/sizeof(uint32_t));
+            const uint32_t count=((xsdt->header.length-sizeof(acpi_header_t))/sizeof(uint64_t));
             for(uint32_t i=0;i<count;i++){
                 void * t=ACPI::map_table(xsdt->tables[i]);
                 if(memcmp(t,sig,4)==0){
