@@ -15,6 +15,19 @@ acpi_xsdt_t * xsdt;
 
 lai_rsdp_info rsdp_info;
 
+void * ACPI::map_table(uint32_t addr){
+    acpi_header_t * t=(acpi_header_t*)laihost_map(addr,sizeof(acpi_header_t));
+    uint32_t len=t->length;
+    laihost_unmap(t,sizeof(acpi_header_t));
+    t=(acpi_header_t*)laihost_map(addr,len);
+    return t;
+}
+
+void ACPI::unmap_table(void * p){
+    acpi_header_t * t=(acpi_header_t*)p;
+    laihost_unmap(t,t->length);
+}
+
 void ACPI::init(){
     Screen::write_s("\n -Initializing ACPI");
     if(lai_bios_detect_rsdp(&rsdp_info)!=LAI_ERROR_NONE){

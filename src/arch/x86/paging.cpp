@@ -78,7 +78,7 @@ static inline void set_page_directory_entry(entry_t * pde,page_directory_entry_f
     pde->unused=0;
 }
 
-uint32_t Memory::Internal::map_virtual_page_unsafe(uint32_t p,uint32_t v,uint32_t n){
+uint32_t Memory::Internal::map_virtual_page_unsafe(uint32_t p,uint32_t v,uint32_t n,bool allow_remap_if_same){
     if(v==0){
         k_abort_s("can't map invalid virtual address");
     }
@@ -87,6 +87,7 @@ uint32_t Memory::Internal::map_virtual_page_unsafe(uint32_t p,uint32_t v,uint32_
         if(!pte->present){
             set_page_table_entry(pte,{.present=true,.rw=true,.user=false},p+i);
         }else{
+            if(allow_remap_if_same&&(pte->address==(p+i)))continue;//allow 'remapping' already mapped pages to same address
             k_abort_s("can't map mapped virtual address");
         }
     }
@@ -100,7 +101,7 @@ uint32_t Memory::map_virtual_page(uint32_t p,uint32_t v,uint32_t n){
     if(p>=Internal::pages.last_usable){
         k_abort_s("can't map invalid physical address");
     }
-    return Internal::map_virtual_page_unsafe(p,v,n);
+    return Internal::map_virtual_page_unsafe(p,v,n,false);
 }
 
 void Memory::unmap_virtual_page(uint32_t v,uint32_t n){

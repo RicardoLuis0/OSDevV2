@@ -1,5 +1,6 @@
 #include "arch/x86.h"
 #include <stdlib.h>
+#include "acpi.h"
 #include "util.h"
 #include "klib.h"
 #include "lai/host.h"
@@ -11,6 +12,8 @@ extern acpi_rsdt_t * rsdt;
 
 extern acpi_xsdp_t * xsdp;
 extern acpi_xsdt_t * xsdt;
+
+
 
 extern "C" {
     
@@ -54,24 +57,53 @@ extern "C" {
         }else if(address>=1_MB){
             uint32_t p_id,n;
             Memory::Internal::pages_for(address,count,p_id,n);
-            Memory::Internal::map_virtual_page_unsafe(p_id,p_id,n);
+#ifdef LAI_HOST_IDENTITY_MAP
+            Memory::Internal::map_virtual_page_unsafe(p_id,p_id,n,true);
+#else
+            return (void*)((Memory::Internal::map_virtual_page_unsafe(p_id,Memory::next_free_virt_page(n),n,false)<<12)+(address%4096));
+#endif // LAI_HOST_IDENTITY_MAP
         }else{
             //lower memory except first page is always mapped, do nothing
         }
         return (void*)address;
     }
 
-    void * laihost_scan(const char * signature,size_t index){
-        k_abort_s("laihost_scan unimplemented");
+    void * laihost_scan(const char * sig,size_t index){
+        if(xsdt){
+            const uint32_t count=((xsdt->header.length-sizeof(acpi_header_t))/sizeof(uint32_t));
+            for(uint32_t i=0;i<count;i++){
+                void * t=ACPI::map_table(xsdt->tables[i]);
+                if(memcmp(t,sig,4)==0){
+                    if(index==0)return t;
+                    index--;
+                }
+                ACPI::unmap_table(t);
+            }
+        }else{
+            const uint32_t count=((rsdt->header.length-sizeof(acpi_header_t))/sizeof(uint32_t));
+            for(uint32_t i=0;i<count;i++){
+                void * t=ACPI::map_table(rsdt->tables[i]);
+                if(memcmp(t,sig,4)==0){
+                    if(index==0)return t;
+                    index--;
+                }
+                ACPI::unmap_table(t);
+            }
+        }
+        return nullptr;//couldn't find header
     }
 
     void laihost_unmap(void *pointer, size_t count){
         if((uint32_t)pointer<4096){
             Memory::Internal::unmap_null();
         }else if((uint32_t)pointer>=1_MB){
+#ifdef LAI_HOST_IDENTITY_MAP
+            //if identity mapping don't unmap since a page could have been mapped multiple times
+#else
             uint32_t p_id,n;
             Memory::Internal::pages_for((uint32_t)pointer,count,p_id,n);
             Memory::unmap_virtual_page(p_id,n);
+#endif // LAI_HOST_IDENTITY_MAP
         }else{
             //lower memory except first page is always mapped, do nothing
         }
