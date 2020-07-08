@@ -5,12 +5,12 @@
 
 namespace PCI {
     void init();
-    void writeb(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset, uint8_t val);
-    void writew(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset, uint16_t val);
-    void writed(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset, uint32_t val);
-    uint8_t readb(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset);
-    uint16_t readw(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset);
-    uint32_t readd(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset);
+    void writeb(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off, uint8_t val);
+    void writew(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off, uint16_t val);
+    void writed(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off, uint32_t val);
+    uint8_t readb(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off);
+    uint16_t readw(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off);
+    uint32_t readd(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off);
 }
 
 namespace ACPI {

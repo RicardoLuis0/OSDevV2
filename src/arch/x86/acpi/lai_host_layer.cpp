@@ -150,27 +150,27 @@ extern "C" {
     }
 
     void laihost_pci_writeb(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset, uint8_t val){
-        PCI::writeb(seg,bus,slot,fun,offset,val);
+        PCI::writeb(bus,slot,fun,offset,val);
     }
 
     void laihost_pci_writew(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset, uint16_t val){
-        PCI::writew(seg,bus,slot,fun,offset,val);
+        PCI::writew(bus,slot,fun,offset,val);
     }
 
     void laihost_pci_writed(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset, uint32_t val){
-        PCI::writed(seg,bus,slot,fun,offset,val);
+        PCI::writed(bus,slot,fun,offset,val);
     }
 
     uint8_t laihost_pci_readb(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset){
-        return PCI::readb(seg,bus,slot,fun,offset);
+        return PCI::readb(bus,slot,fun,offset);
     }
 
     uint16_t laihost_pci_readw(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset){
-        return PCI::readw(seg,bus,slot,fun,offset);
+        return PCI::readw(bus,slot,fun,offset);
     }
 
     uint32_t laihost_pci_readd(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset){
-        return PCI::readd(seg,bus,slot,fun,offset);
+        return PCI::readd(bus,slot,fun,offset);
     }
 
 }
