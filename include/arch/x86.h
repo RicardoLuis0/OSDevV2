@@ -210,6 +210,10 @@ namespace Screen{
     void x86_init();
 }
 
+namespace Serial{
+    void x86_init();
+}
+
 namespace GDT {
     void init();
 }

@@ -53,6 +53,7 @@ NORETURN void k_abort_massert(const char * condition,const char * msg,const char
 
 //screen
 void k_putc(char c);
+void k_logs(const char * c);//write to both VGA and Serial
 void k_puts(const char * s);
 void k_putsn(const char * s,size_t n);
 void k_cls();

@@ -96,6 +96,7 @@
 		<Unit filename="include/new.h" />
 		<Unit filename="include/print.h" />
 		<Unit filename="include/screen.h" />
+		<Unit filename="include/serial.h" />
 		<Unit filename="include/stdc/assert.h" />
 		<Unit filename="include/stdc/ctype.h" />
 		<Unit filename="include/stdc/errno.h" />
@@ -159,6 +160,7 @@
 		<Unit filename="src/arch/x86/x86.cpp" />
 		<Unit filename="src/arch/x86/x86_mem.cpp" />
 		<Unit filename="src/arch/x86/x86_screen.cpp" />
+		<Unit filename="src/arch/x86/x86_serial.cpp" />
 		<Unit filename="src/fs/fs.cpp" />
 		<Unit filename="src/fs/ramfs.cpp" />
 		<Unit filename="src/fs/vfs.cpp" />

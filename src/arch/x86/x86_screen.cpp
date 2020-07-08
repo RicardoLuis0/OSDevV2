@@ -3,6 +3,7 @@
 #include "stdc/stdint.h"
 #include "klib.h"
 #include "arch/x86.h"
+#include "serial.h"
 
 extern "C" {
 
@@ -20,6 +21,11 @@ extern "C" {
 
     void k_puts(const char * s){
         Screen::write_s(s);
+    }
+
+    void k_logs(const char * s){
+        Screen::write_s(s);
+        Serial::write_s(s);
     }
 
     void k_putsn(const char * s,size_t n){

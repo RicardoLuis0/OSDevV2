@@ -25,8 +25,8 @@ extern "C" {
         switch(level){
         case LAI_DEBUG_LOG:
             #ifdef DEBUG
-            k_puts("\n[LAI/DEBUG] ");
-            k_puts(msg);
+            k_logs("\n[LAI/DEBUG] ");
+            k_logs(msg);
             #endif // DEBUG
             break;
         case LAI_WARN_LOG:
