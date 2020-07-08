@@ -13,6 +13,8 @@ acpi_rsdt_t * rsdt;
 acpi_xsdp_t * xsdp;
 acpi_xsdt_t * xsdt;
 
+acpi_fadt_t * fadt;
+
 lai_rsdp_info rsdp_info;
 
 void * ACPI::map_table(uint32_t addr){
@@ -52,25 +54,23 @@ void ACPI::init(){
         break;
     }
     
-    //save tables
-    rsdp=(acpi_rsdp_t*)laihost_map(rsdp_info.rsdp_address,sizeof(acpi_rsdp_t));
-    {
-        rsdt=(acpi_rsdt_t*)laihost_map(rsdp->rsdt,sizeof(acpi_rsdt_t));
-        uint32_t len=rsdt->header.length;
-        laihost_unmap(rsdt,sizeof(acpi_rsdt_t));
-        rsdt=(acpi_rsdt_t*)laihost_map(rsdp->rsdt,len);
-    }
+    //setup initial tables
+    
+    rsdp=(acpi_rsdp_t*)ACPI::map_table(rsdp_info.rsdp_address);
+    rsdt=(acpi_rsdt_t*)ACPI::map_table(rsdp_info.rsdt_address);
     if(rsdp_info.acpi_version>=2){
         xsdp=(acpi_xsdp_t*)rsdp;
-        xsdt=(acpi_xsdt_t*)laihost_map(xsdp->xsdt,sizeof(acpi_xsdt_t));
-        uint32_t len=xsdt->header.length;
-        laihost_unmap(xsdt,sizeof(acpi_xsdt_t));
-        xsdt=(acpi_xsdt_t*)laihost_map(xsdp->xsdt,len);
+        xsdt=(acpi_xsdt_t*)ACPI::map_table(rsdp_info.xsdt_address);
     }
     
+    fadt=(acpi_fadt_t*)laihost_scan("FACP",0);
+    if(!fadt)k_abort_s("Couldn't find FADT header!");
+    
     //initialize LAI
+    
     lai_set_acpi_revision(rsdp->revision);
     lai_create_namespace();
+    
     #if defined(DEBUG) && defined(K_LAI_DEBUG_EXTRA)
     lai_enable_tracing(LAI_TRACE_OP|LAI_TRACE_IO|LAI_TRACE_NS);
     #endif // K_LAI_DEBUG_EXTRA

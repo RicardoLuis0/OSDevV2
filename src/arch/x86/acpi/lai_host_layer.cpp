@@ -13,6 +13,8 @@ extern acpi_rsdt_t * rsdt;
 extern acpi_xsdp_t * xsdp;
 extern acpi_xsdt_t * xsdt;
 
+extern acpi_fadt_t * fadt;
+
 //#define LAI_HOST_IDENTITY_MAP
 
 extern "C" {
@@ -66,8 +68,6 @@ extern "C" {
 
     void * laihost_scan(const char * sig,size_t index){
         if(memcmp("DSDT",sig,4)==0){
-            acpi_fadt_t * fadt=(acpi_fadt_t *)laihost_scan("FACP",0);
-            if(!fadt)k_abort_s("Couldn't find FADT header!");
             if(xsdt){
                 if(fadt->x_dsdt){
                     if(fadt->x_dsdt<4_GB){
