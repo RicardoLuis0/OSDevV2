@@ -25,7 +25,6 @@ void PCI::writew(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off, uint16_t
 void PCI::writed(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off, uint32_t val){
     outl(0xcf8,addr(bus,slot,func,off));
     outl(0xcfc+(off&3),val);
-    k_abort_s("PCI::writed unimplemented");
 }
 
 uint8_t PCI::readb(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off){
