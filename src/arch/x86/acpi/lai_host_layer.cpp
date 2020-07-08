@@ -3,6 +3,7 @@
 #include "acpi.h"
 #include "util.h"
 #include "klib.h"
+#include <stdio.h>
 #include "lai/host.h"
 #include "acpispec/tables.h"
 
@@ -13,12 +14,20 @@ extern acpi_rsdt_t * rsdt;
 extern acpi_xsdp_t * xsdp;
 extern acpi_xsdt_t * xsdt;
 
-
+//#define LAI_HOST_IDENTITY_MAP
 
 extern "C" {
     
     void * laihost_malloc(size_t n){
+#ifdef DEBUG
+        void * p=malloc(n);
+        char buf[80];
+        snprintf(buf,79,"laihost_malloc(%u)=0x%x",n,(uint32_t)p);
+        laihost_log(LAI_DEBUG_LOG,buf);
+        return p;
+#else
         return malloc(n);
+#endif // DEBUG
     }
     
     void laihost_log(int level, const char * msg) {
@@ -44,10 +53,23 @@ extern "C" {
     }
 
     void * laihost_realloc(void * p, size_t n){
+#ifdef DEBUG
+        void * p2=realloc(p,n);
+        char buf[80];
+        snprintf(buf,79,"laihost_realloc(0x%x,%u)=0x%x",(uint32_t)p,n,(uint32_t)p2);
+        laihost_log(LAI_DEBUG_LOG,buf);
+        return p2;
+#else
         return realloc(p,n);
+#endif // DEBUG
     }
 
     void laihost_free(void * p){
+#ifdef DEBUG
+        char buf[80];
+        snprintf(buf,79,"laihost_free(0x%x)",(uint32_t)p);
+        laihost_log(LAI_DEBUG_LOG,buf);
+#endif // DEBUG
         free(p);
     }
 
@@ -60,15 +82,31 @@ extern "C" {
 #ifdef LAI_HOST_IDENTITY_MAP
             Memory::Internal::map_virtual_page_unsafe(p_id,p_id,n,true);
 #else
+    #ifdef DEBUG
+            void *p = (void*)((Memory::Internal::map_virtual_page_unsafe(p_id,Memory::next_free_virt_page(n),n,false)<<12)+(address%4096));
+            char buf[80];
+            snprintf(buf,79,"laihost_map(0x%x,%u)=0x%x",(uint32_t)address,count,(uint32_t)p);
+            laihost_log(LAI_DEBUG_LOG,buf);
+            return p;
+    #else
             return (void*)((Memory::Internal::map_virtual_page_unsafe(p_id,Memory::next_free_virt_page(n),n,false)<<12)+(address%4096));
+    #endif // DEBUG
 #endif // LAI_HOST_IDENTITY_MAP
         }else{
             //lower memory except first page is always mapped, do nothing
         }
+#ifdef DEBUG
+        char buf[80];
+        snprintf(buf,79,"laihost_map(0x%x,%u)=0x%x",(uint32_t)address,count,(uint32_t)address);
+        laihost_log(LAI_DEBUG_LOG,buf);
+#endif // DEBUG
         return (void*)address;
     }
 
     void * laihost_scan(const char * sig,size_t index){
+#ifdef DEBUG
+        size_t orig_index=index;
+#endif // DEBUG
         if(memcmp("DSDT",sig,4)==0){
             acpi_fadt_t * fadt=(acpi_fadt_t *)laihost_scan("FACP",0);
             if(!fadt)k_abort_s("Couldn't find FADT header!");
@@ -81,14 +119,29 @@ extern "C" {
                     }
                 }
             }
+#ifdef DEBUG
+            void * t=ACPI::map_table(fadt->dsdt);
+            char buf[80];
+            snprintf(buf,79,"laihost_scan(%.4s,%u)=0x%x",sig,orig_index,(uint32_t)t);
+            laihost_log(LAI_DEBUG_LOG,buf);
+            return t;
+#else
             return ACPI::map_table(fadt->dsdt);
+#endif // DEBUG
         }
         if(xsdt){
             const uint32_t count=((xsdt->header.length-sizeof(acpi_header_t))/sizeof(uint64_t));
             for(uint32_t i=0;i<count;i++){
                 void * t=ACPI::map_table(xsdt->tables[i]);
                 if(memcmp(t,sig,4)==0){
-                    if(index==0)return t;
+                    if(index==0){
+#ifdef DEBUG
+                        char buf[80];
+                        snprintf(buf,79,"laihost_scan(%.4s,%u)=0x%x",sig,orig_index,(uint32_t)t);
+                        laihost_log(LAI_DEBUG_LOG,buf);
+#endif // DEBUG
+                        return t;
+                    }
                     index--;
                 }
                 ACPI::unmap_table(t);
@@ -98,16 +151,33 @@ extern "C" {
             for(uint32_t i=0;i<count;i++){
                 void * t=ACPI::map_table(rsdt->tables[i]);
                 if(memcmp(t,sig,4)==0){
-                    if(index==0)return t;
+                    if(index==0){
+#ifdef DEBUG
+                        char buf[80];
+                        snprintf(buf,79,"laihost_scan(%.4s,%u)=0x%x",sig,orig_index,(uint32_t)t);
+                        laihost_log(LAI_DEBUG_LOG,buf);
+#endif // DEBUG
+                        return t;
+                    }
                     index--;
                 }
                 ACPI::unmap_table(t);
             }
         }
+#ifdef DEBUG
+        char buf[80];
+        snprintf(buf,79,"laihost_scan(%.4s,%u) not found",sig,orig_index);
+        laihost_log(LAI_DEBUG_LOG,buf);
+#endif // DEBUG
         return nullptr;//couldn't find header
     }
 
     void laihost_unmap(void *pointer, size_t count){
+#ifdef DEBUG
+        char buf[80];
+        snprintf(buf,79,"laihost_unmap(0x%x,%u)",(uint32_t)pointer,count);
+        laihost_log(LAI_DEBUG_LOG,buf);
+#endif // DEBUG
         if((uint32_t)pointer<4096){
             Memory::Internal::unmap_null();
         }else if((uint32_t)pointer>=1_MB){
