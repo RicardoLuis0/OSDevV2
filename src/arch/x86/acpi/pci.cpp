@@ -14,26 +14,31 @@ static constexpr uint32_t addr(uint8_t bus, uint8_t slot, uint8_t func,uint16_t 
 
 void PCI::writeb(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off, uint8_t val){
     outl(0xcf8,addr(bus,slot,func,off));
-    //TODO ???
-    k_abort_s("PCI::writeb unimplemented");
+    outb(0xcfc+(off&3),val);
 }
 
 void PCI::writew(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off, uint16_t val){
-    k_abort_s("PCI::writew unimplemented");
+    outl(0xcf8,addr(bus,slot,func,off));
+    outw(0xcfc+(off&3),val);
 }
 
 void PCI::writed(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off, uint32_t val){
+    outl(0xcf8,addr(bus,slot,func,off));
+    outl(0xcfc+(off&3),val);
     k_abort_s("PCI::writed unimplemented");
 }
 
 uint8_t PCI::readb(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off){
-    k_abort_s("PCI::readb unimplemented");
+    outl(0xcf8,addr(bus,slot,func,off));
+    return inb(0xcfc+(off&3));
 }
 
 uint16_t PCI::readw(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off){
-    k_abort_s("PCI::readw unimplemented");
+    outl(0xcf8,addr(bus,slot,func,off));
+    return inw(0xcfc+(off&3));
 }
 
 uint32_t PCI::readd(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off){
-    k_abort_s("PCI::readd unimplemented");
+    outl(0xcf8,addr(bus,slot,func,off));
+    return inl(0xcfc+(off&3));
 }
