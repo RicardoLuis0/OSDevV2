@@ -4,6 +4,7 @@
 #include "stdc/stdint.h"
 #include "stdc/stddef.h"
 #include "extern/multiboot.h"
+#include <stdatomic.h>
 
 
 extern "C" uint32_t has_cpuid();
@@ -220,6 +221,7 @@ namespace GDT {
 
 namespace PIT {
     void init();
+    extern atomic_int_least64_t timer;
 }
 
 namespace IDT{
