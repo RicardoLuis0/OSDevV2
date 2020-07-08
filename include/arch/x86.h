@@ -218,6 +218,10 @@ namespace GDT {
     void init();
 }
 
+namespace PIT {
+    void init();
+}
+
 namespace IDT{
     enum gate_type {
         G_32_INT=0b1110,

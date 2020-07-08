@@ -157,6 +157,7 @@
 		</Unit>
 		<Unit filename="src/arch/x86/idt.cpp" />
 		<Unit filename="src/arch/x86/paging.cpp" />
+		<Unit filename="src/arch/x86/pit.cpp" />
 		<Unit filename="src/arch/x86/spinlock.cpp" />
 		<Unit filename="src/arch/x86/x86.cpp" />
 		<Unit filename="src/arch/x86/x86_mem.cpp" />

@@ -60,6 +60,7 @@ extern "C" void x86_start(struct multiboot_info * mbd, unsigned int magic){//x86
     Memory::x86_paging_init();//initialize virtual memory
     FPU::init();
     Serial::x86_init();
+    PIT::init();
     ACPI::init();
     Screen::write_s("\n>Calling Global Constructors");
     global_constructors_ran=false;
