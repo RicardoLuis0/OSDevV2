@@ -71,6 +71,9 @@ void ACPI::init(){
     //initialize LAI
     lai_set_acpi_revision(rsdp->revision);
     lai_create_namespace();
+    #if defined(DEBUG) && defined(K_LAI_DEBUG_EXTRA)
+    lai_enable_tracing(LAI_TRACE_OP|LAI_TRACE_IO|LAI_TRACE_NS);
+    #endif // K_LAI_DEBUG_EXTRA
     
     //TODO MADT
     

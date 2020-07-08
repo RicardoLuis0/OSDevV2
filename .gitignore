@@ -15,3 +15,4 @@ img/
 *.tar.gz
 build/
 acpica_src/
+log.txt
