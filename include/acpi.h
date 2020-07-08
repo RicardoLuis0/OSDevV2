@@ -15,8 +15,10 @@ namespace PCI {
 
 namespace ACPI {
     void init();
-    void * map_table(uint32_t addr);
-    void unmap_table(void *);
+    namespace Internal {
+        void * map_table(uint32_t addr);
+        void unmap_table(void *);
+    }
     //TODO
 }
 #endif // ACPI_H_INCLUDED

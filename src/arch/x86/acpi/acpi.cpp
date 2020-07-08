@@ -6,6 +6,7 @@
 #include "acpispec/tables.h"
 
 using namespace ACPI;
+using namespace ACPI::Internal;
 
 acpi_rsdp_t * rsdp;
 acpi_rsdt_t * rsdt;
@@ -17,7 +18,7 @@ acpi_fadt_t * fadt;
 
 lai_rsdp_info rsdp_info;
 
-void * ACPI::map_table(uint32_t addr){
+void * ACPI::Internal::map_table(uint32_t addr){
     acpi_header_t * t=(acpi_header_t*)laihost_map(addr,sizeof(acpi_header_t));
     uint32_t len=t->length;
     laihost_unmap(t,sizeof(acpi_header_t));
@@ -25,7 +26,7 @@ void * ACPI::map_table(uint32_t addr){
     return t;
 }
 
-void ACPI::unmap_table(void * p){
+void ACPI::Internal::unmap_table(void * p){
     acpi_header_t * t=(acpi_header_t*)p;
     laihost_unmap(t,t->length);
 }
@@ -56,11 +57,11 @@ void ACPI::init(){
     
     //setup initial tables
     
-    rsdp=(acpi_rsdp_t*)ACPI::map_table(rsdp_info.rsdp_address);
-    rsdt=(acpi_rsdt_t*)ACPI::map_table(rsdp_info.rsdt_address);
+    rsdp=(acpi_rsdp_t*)map_table(rsdp_info.rsdp_address);
+    rsdt=(acpi_rsdt_t*)map_table(rsdp_info.rsdt_address);
     if(rsdp_info.acpi_version>=2){
         xsdp=(acpi_xsdp_t*)rsdp;
-        xsdt=(acpi_xsdt_t*)ACPI::map_table(rsdp_info.xsdt_address);
+        xsdt=(acpi_xsdt_t*)map_table(rsdp_info.xsdt_address);
     }
     
     fadt=(acpi_fadt_t*)laihost_scan("FACP",0);

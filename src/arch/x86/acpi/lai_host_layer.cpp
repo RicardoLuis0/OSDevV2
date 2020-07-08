@@ -71,35 +71,35 @@ extern "C" {
             if(xsdt){
                 if(fadt->x_dsdt){
                     if(fadt->x_dsdt<4_GB){
-                        return ACPI::map_table(fadt->x_dsdt);
+                        return ACPI::Internal::map_table(fadt->x_dsdt);
                     }else{
                         k_abort_s("X_DSDT too far!");
                     }
                 }
             }
-            return ACPI::map_table(fadt->dsdt);
+            return ACPI::Internal::map_table(fadt->dsdt);
         }
         if(xsdt){
             const uint32_t count=((xsdt->header.length-sizeof(acpi_header_t))/sizeof(uint64_t));
             for(uint32_t i=0;i<count;i++){
-                void * t=ACPI::map_table(xsdt->tables[i]);
+                void * t=ACPI::Internal::map_table(xsdt->tables[i]);
                 if(memcmp(t,sig,4)==0){
                     if(index==0) return t;
                     index--;
                 }
-                ACPI::unmap_table(t);
+                ACPI::Internal::unmap_table(t);
             }
         }else{
             const uint32_t count=((rsdt->header.length-sizeof(acpi_header_t))/sizeof(uint32_t));
             for(uint32_t i=0;i<count;i++){
-                void * t=ACPI::map_table(rsdt->tables[i]);
+                void * t=ACPI::Internal::map_table(rsdt->tables[i]);
                 if(memcmp(t,sig,4)==0){
                     if(index==0){
                         return t;
                     }
                     index--;
                 }
-                ACPI::unmap_table(t);
+                ACPI::Internal::unmap_table(t);
             }
         }
         return nullptr;//couldn't find header
