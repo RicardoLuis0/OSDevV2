@@ -126,6 +126,7 @@
 		<Unit filename="linker.ld" />
 		<Unit filename="src/arch/x86/acpi/acpi.cpp" />
 		<Unit filename="src/arch/x86/acpi/lai_host_layer.cpp" />
+		<Unit filename="src/arch/x86/acpi/pci.cpp" />
 		<Unit filename="src/arch/x86/boot.asm">
 			<Option link="0" />
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o obj/boot.o" />

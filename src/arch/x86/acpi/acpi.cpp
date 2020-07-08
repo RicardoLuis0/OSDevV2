@@ -77,6 +77,8 @@ void ACPI::init(){
     
     //TODO MADT
     
+    PCI::init();
+    
     lai_enable_acpi(0);//enable ACPI in legacy PIC mode
     
     Screen::write_s("\n  .ACPI ");
