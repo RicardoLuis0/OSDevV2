@@ -187,13 +187,13 @@ static void paging_enable(entry_t * pd){
 }
 
 static void page_fault_handler(uint32_t data){
-    Screen::setcolor(Screen::BLACK,Screen::WHITE);
-    Screen::clear();
+//    Screen::setcolor(Screen::BLACK,Screen::WHITE);
+//    Screen::clear();
     Screen::setcolor(Screen::RED,Screen::WHITE);
-    Screen::clear_line(0);
-    Screen::clear_line(1);
-    Screen::move(0,0);
-    Screen::write_s("Page Fault trying to access ( ");
+//    Screen::clear_line(0);
+//    Screen::clear_line(1);
+//    Screen::move(0,0);
+    Screen::write_s("\nPage Fault trying to access ( ");
     Screen::write_h(CR::CR2::get());
     Screen::write_s(" ): ");
     if(data&0x1){
