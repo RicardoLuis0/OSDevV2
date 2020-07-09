@@ -221,7 +221,8 @@ namespace GDT {
 
 namespace PIT {
     void init();
-    extern atomic_int_least64_t timer;
+    extern volatile atomic_int_least64_t timer;
+    extern const uint32_t timer_resolution;//timer resolution in ms
 }
 
 namespace IDT{
