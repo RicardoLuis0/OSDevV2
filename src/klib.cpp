@@ -2,6 +2,7 @@
 #include "util.h"
 #include "print.h"
 #include "kshell/kshell.h"
+#include "arch/x86.h"
 #include <stdio.h>
 #include <errno.h>
 #include <ctype.h>
@@ -23,8 +24,9 @@ void klib_init(){
 
 
 extern "C" {
-    void k_sleep(uint64_t){
-        k_abort_s("k_sleep unimplemented");
+    void k_sleep(uint64_t ms){
+        uint64_t e=PIT::timer+(ms/PIT::timer_resolution);
+        while(PIT::timer<e)asm("pause");
     }
 
     int errno;

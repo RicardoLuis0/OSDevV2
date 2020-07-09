@@ -160,6 +160,11 @@ static void cmd_pagefault(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Memory::cmd_pagefault();
 }
 
+static void cmd_timer(char * cmd,Util::HashTable<kshell_cmd> * commands){
+    Screen::write_s("\ntimer = ");
+    Screen::write_ull(PIT::timer);
+}
+
 void kshell_init(){
     commands=new Util::HashTable<kshell_cmd>();
     (*commands)["cls"]={cmd_cls,"cls","clear the screen","- cls"};
@@ -172,6 +177,7 @@ void kshell_init(){
     (*commands)["lua"]={cmd_lua,"lua","run lua interpreter","- lua"};
     (*commands)["crdump"]={cmd_crdump,"crdump","dump contents of control registers","- crdump"};
     (*commands)["pagefault"]={cmd_pagefault,"pagefault","cause page fault","- pagefault"};
+    (*commands)["timer"]={cmd_timer,"timer","value of PIT timer","- timer"};
 }
 
 void kshell(){
