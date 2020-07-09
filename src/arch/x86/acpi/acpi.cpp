@@ -2,6 +2,7 @@
 #include "klib.h"
 #include "screen.h"
 #include "lai/helpers/pc-bios.h"
+#include "lai/helpers/pm.h"
 #include "lai/helpers/sci.h"
 #include "acpispec/tables.h"
 
@@ -80,6 +81,8 @@ void ACPI::init(){
     
     PCI::init();
     
+    //TODO ACPI STI interrupt
+    
     lai_enable_acpi(0);//enable ACPI in legacy PIC mode
     
     Screen::write_s("\n  .ACPI ");
@@ -87,3 +90,8 @@ void ACPI::init(){
     Screen::write_s("OK");
     Screen::setfgcolor(Screen::WHITE);
 }
+
+void ACPI::shutdown(){
+    lai_enter_sleep(5);//acpi sleep state 5 is soft shutdown
+}
+

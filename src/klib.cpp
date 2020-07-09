@@ -11,7 +11,6 @@
 #include <util/hash_table.h>
 #include <util/smart_ptr.h>
 
-
 Util::HashTable<Util::UniquePtr<char>> * kernel_env=nullptr;
 
 void k_env_init(){

@@ -19,6 +19,7 @@ namespace ACPI {
         void * map_table(uint32_t addr);
         void unmap_table(void *);
     }
+    void shutdown();
     //TODO
 }
 #endif // ACPI_H_INCLUDED

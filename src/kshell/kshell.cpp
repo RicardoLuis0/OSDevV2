@@ -5,6 +5,7 @@
 #include "drivers/keyboard/ps2/keyboard.h"
 #include "util/hash_table.h"
 #include "arch/x86.h"
+#include "acpi.h"
 
 struct kshell_cmd;
 
@@ -160,6 +161,10 @@ static void cmd_pagefault(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Memory::cmd_pagefault();
 }
 
+static void cmd_shutdown(char * cmd,Util::HashTable<kshell_cmd> * commands){
+    ACPI::shutdown();
+}
+
 static void cmd_timer(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Screen::write_s("\ntimer = ");
     Screen::write_ull(PIT::timer);
@@ -178,6 +183,7 @@ void kshell_init(){
     (*commands)["crdump"]={cmd_crdump,"crdump","dump contents of control registers","- crdump"};
     (*commands)["pagefault"]={cmd_pagefault,"pagefault","cause page fault","- pagefault"};
     (*commands)["timer"]={cmd_timer,"timer","value of PIT timer","- timer"};
+    (*commands)["shutdown"]={cmd_shutdown,"shutdown","shutdown","- shutdown"};
 }
 
 void kshell(){
