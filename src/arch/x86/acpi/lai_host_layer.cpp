@@ -26,6 +26,10 @@ extern "C" {
     void laihost_log(int level, const char * msg) {
         switch(level){
         case LAI_DEBUG_LOG:
+#ifdef DEBUG
+            k_logs("\n[LAI/DEBUG] ");
+            k_logs(msg);
+#endif // DEBUG
             break;
         case LAI_WARN_LOG:
             k_puts("\n[LAI/WARN] ");
@@ -82,6 +86,11 @@ extern "C" {
         if(xsdt){
             const uint32_t count=((xsdt->header.length-sizeof(acpi_header_t))/sizeof(uint64_t));
             for(uint32_t i=0;i<count;i++){
+                if(xsdt->tables[i]>4_GB){
+                    char buf[80];
+                    snprintf(buf,79,"XSDT table %u is too far!",i);
+                    k_abort_s(buf);
+                }
                 void * t=ACPI::Internal::map_table(xsdt->tables[i]);
                 if(memcmp(t,sig,4)==0){
                     if(index==0) return t;

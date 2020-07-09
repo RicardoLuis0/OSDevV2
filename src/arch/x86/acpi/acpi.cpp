@@ -5,6 +5,7 @@
 #include "lai/helpers/pm.h"
 #include "lai/helpers/sci.h"
 #include "acpispec/tables.h"
+#include "arch/x86.h"
 
 using namespace ACPI;
 using namespace ACPI::Internal;
@@ -34,6 +35,11 @@ void ACPI::Internal::unmap_table(void * p){
 
 void ACPI::init(){
     Screen::write_s("\n -Initializing ACPI...");
+    
+#ifdef LAI_HOST_IDENTITY_MAP
+    Memory::Internal::map_virtual_page_unsafe(0xC0000,0xC0000,0x40000,true);//identity map PCI memory/etc
+#endif // LAI_HOST_IDENTITY_MAP
+    
     if(lai_bios_detect_rsdp(&rsdp_info)!=LAI_ERROR_NONE){
         Screen::write_s("\n  .ACPI ");
         Screen::setfgcolor(Screen::RED);
@@ -73,9 +79,9 @@ void ACPI::init(){
     lai_set_acpi_revision(rsdp->revision);
     lai_create_namespace();
     
-    #if defined(DEBUG) && defined(K_LAI_DEBUG_EXTRA)
+#if defined(DEBUG) && defined(K_LAI_DEBUG_EXTRA)
     lai_enable_tracing(LAI_TRACE_OP|LAI_TRACE_IO|LAI_TRACE_NS);
-    #endif // K_LAI_DEBUG_EXTRA
+#endif // K_LAI_DEBUG_EXTRA
     
     //TODO MADT
     
