@@ -32,7 +32,7 @@ void ACPI::Internal::unmap_table(void * p){
 }
 
 void ACPI::init(){
-    Screen::write_s("\n -Initializing ACPI");
+    Screen::write_s("\n -Initializing ACPI...");
     if(lai_bios_detect_rsdp(&rsdp_info)!=LAI_ERROR_NONE){
         Screen::write_s("\n  .ACPI ");
         Screen::setfgcolor(Screen::RED);
@@ -83,7 +83,7 @@ void ACPI::init(){
     lai_enable_acpi(0);//enable ACPI in legacy PIC mode
     
     Screen::write_s("\n  .ACPI ");
-    Screen::setfgcolor(Screen::GREEN);
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_s("OK");
     Screen::setfgcolor(Screen::WHITE);
 }
