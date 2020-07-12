@@ -49,16 +49,13 @@ void ACPI::init(){
     }
     Screen::write_s("\n  .ACPI Version ");
     switch(rsdp_info.acpi_version){
+    case 0:
     case 1:
-        Screen::write_s("1.0");
-        break;
-    case 2:
-        Screen::write_s("2.0");
+        Screen::write_s("1");
         break;
     default:
-        Screen::write_s("Unknown (");
-        Screen::write_i(rsdp_info.acpi_version);
-        Screen::write_s(")");
+    case 2:
+        Screen::write_s("2+");
         break;
     }
     
