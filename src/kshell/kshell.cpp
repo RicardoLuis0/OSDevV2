@@ -183,7 +183,7 @@ void kshell_init(){
     (*commands)["crdump"]={cmd_crdump,"crdump","dump contents of control registers","- crdump"};
     (*commands)["pagefault"]={cmd_pagefault,"pagefault","cause page fault","- pagefault"};
     (*commands)["timer"]={cmd_timer,"timer","value of PIT timer","- timer"};
-    (*commands)["shutdown"]={cmd_shutdown,"shutdown","shutdown","- shutdown"};
+    (*commands)["shutdown"]={cmd_shutdown,"shutdown","ACPI Shutdown","- shutdown"};
 }
 
 void kshell(){
