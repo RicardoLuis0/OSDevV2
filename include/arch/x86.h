@@ -260,4 +260,9 @@ namespace IDT{
     }
 }
 
+namespace Tasking{
+    void init();
+    void switch_task();
+}
+
 #endif // X86_H_INCLUDED
