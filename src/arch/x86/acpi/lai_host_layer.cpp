@@ -24,6 +24,7 @@ extern "C" {
     }
     
     void laihost_log(int level, const char * msg) {
+#ifdef LAI_LOG
         switch(level){
         case LAI_DEBUG_LOG:
 #ifdef DEBUG
@@ -39,6 +40,7 @@ extern "C" {
             k_puts("\n[LAI/UNKNOWN] ");
             k_puts(msg);
         }
+#endif // LAI_LOG
     }
 
     void laihost_panic(const char * msg){

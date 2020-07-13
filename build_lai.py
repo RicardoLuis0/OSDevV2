@@ -184,7 +184,7 @@ for runner in runners:
 #run linker
 ar_cmd=ar.get_cmd(
     #final output file
-    "lib/liblai.a"
+    "lib/liblai_i386.a"
 )
 print("running "+ar_cmd)
 subprocess.Popen(ar_cmd).wait()
