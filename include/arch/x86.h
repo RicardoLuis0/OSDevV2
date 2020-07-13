@@ -6,7 +6,6 @@
 #include "extern/multiboot.h"
 #include <stdatomic.h>
 
-
 extern "C" uint32_t has_cpuid();
 
 namespace CPU {
@@ -261,8 +260,19 @@ namespace IDT{
 }
 
 namespace Tasking{
+
+    struct task_data;
+
     void init();
-    void switch_task();
+    
+    void switch_task(task_data * other);
+    
+    uint32_t get_core();
+    
+    void disable_scheduler(uint32_t core);
+    void enable_scheduler(uint32_t core);
+
+    //task_data * schedule(/* ??? */);
 }
 
 #endif // X86_H_INCLUDED

@@ -57,6 +57,7 @@
 		</Linker>
 		<Unit filename="include/acpi.h" />
 		<Unit filename="include/arch/x86.h" />
+		<Unit filename="include/arch/x86/tasking_internal.h" />
 		<Unit filename="include/drivers/keyboard/ps2/keyboard.h" />
 		<Unit filename="include/drivers/keyboard/ps2/keycodes.h" />
 		<Unit filename="include/extern/multiboot.h" />
