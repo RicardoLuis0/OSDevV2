@@ -9,11 +9,13 @@
 extern "C" uint32_t has_cpuid();
 
 namespace CPU {
-    struct cpu_state{
+    class CpuState{
         //TODO implement
+    public:
+        void save();
+        void new_at(void * code,void * stack, void * page_directory);
+        [[noreturn]] void restore();
     };
-    void save(cpu_state*);
-    void restore(cpu_state*);
 }
 
 namespace CR{
@@ -263,14 +265,14 @@ namespace Tasking{
 
     struct task_data;
 
-    void init();
-    
-    void switch_task(task_data * other);
-    
-    uint32_t get_core();
-    
-    void disable_scheduler(uint32_t core);
-    void enable_scheduler(uint32_t core);
+    void init(size_t cpu_count);
+
+    [[noreturn]] void switch_task(task_data * other);
+
+    size_t get_cpu();
+
+    void disable_scheduler(uint32_t cpu);
+    void enable_scheduler(uint32_t cpu);
 
     //task_data * schedule(/* ??? */);
 }

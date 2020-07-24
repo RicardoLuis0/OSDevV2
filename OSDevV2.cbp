@@ -166,9 +166,6 @@
 		<Unit filename="src/arch/x86/init/x86_serial.cpp" />
 		<Unit filename="src/arch/x86/paging.cpp" />
 		<Unit filename="src/arch/x86/spinlock.cpp" />
-		<Unit filename="src/arch/x86/tasking/switch_task.asm">
-			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
-		</Unit>
 		<Unit filename="src/arch/x86/tasking/tasking.cpp" />
 		<Unit filename="src/fs/fs.cpp" />
 		<Unit filename="src/fs/ramfs.cpp" />

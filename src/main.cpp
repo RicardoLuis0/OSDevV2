@@ -2,6 +2,7 @@
 #include "screen.h"
 #include "drivers/keyboard/ps2/keyboard.h"
 #include "kshell/kshell.h"
+#include <setjmp.h>
 
 void klib_init();
 

@@ -4,27 +4,34 @@
 
 using namespace Tasking;
 
+namespace Tasking {
 
-struct TSS {
-    
-};
+    task_data * cpu_current_task;
 
-void Tasking::init(){
-    
-}
+    struct TSS {
+        
+    };
 
-void Tasking::switch_task(task_data * other){
-    k_abort_s("Tasking::switch_task unimplemented");
-}
+    void init(size_t cpu_count){
+        cpu_current_task=new task_data[cpu_count];
+    }
 
-uint32_t Tasking::get_core(){
-    k_abort_s("Tasking::get_core unimplemented");
-}
+    void switch_task(task_data * other){
+        const size_t cpu=get_cpu();
+        cpu_current_task[cpu]=*other;
+        other->cpu.restore();
+    }
 
-void Tasking::disable_scheduler(uint32_t core){
-    k_abort_s("Tasking::disable_scheduler unimplemented");
-}
+    size_t get_cpu(){
+        k_abort_s("Tasking::get_cpu unimplemented");
+    }
 
-void Tasking::enable_scheduler(uint32_t core){
-    k_abort_s("Tasking::enable_scheduler unimplemented");
+    void disable_scheduler(uint32_t core){
+        k_abort_s("Tasking::disable_scheduler unimplemented");
+    }
+
+    void enable_scheduler(uint32_t core){
+        k_abort_s("Tasking::enable_scheduler unimplemented");
+    }
+
 }

@@ -1,10 +1,18 @@
 #include "arch/x86.h"
 #include "klib.h"
 
-void CPU::save(cpu_state*){
-    k_abort_s("CPU::save_state unimplemented");
-}
+namespace CPU {
 
-void CPU::restore(cpu_state*){
-    k_abort_s("CPU::restore_state unimplemented");
+    void CpuState::save(){
+        k_abort_s("CPU::CpuState::save unimplemented");
+    }
+
+    void CpuState::new_at(void * code,void * stack, void * page_directory){
+        k_abort_s("CPU::CpuState::new_at unimplemented");
+    }
+
+    [[noreturn]] void CpuState::restore(){
+        k_abort_s("CPU::CpuState::restore unimplemented");
+    }
+
 }
