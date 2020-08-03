@@ -49,7 +49,7 @@ extern "C" void x86_start(struct multiboot_info * mbd, unsigned int magic){//x86
     Screen::x86_init();
     Screen::disable_cursor();
     fassert(magic==0x2BADB002U);
-    if(!has_cpuid()){
+    if(!CPUID::has_cpuid()){
         k_abort_s("CPUID not supported");
     }
     CPUID::check();

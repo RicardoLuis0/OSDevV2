@@ -58,6 +58,17 @@
 		<Unit filename="include/acpi.h" />
 		<Unit filename="include/arch/x86.h" />
 		<Unit filename="include/arch/x86/tasking_internal.h" />
+		<Unit filename="include/arch/x86/x86_cpu.h" />
+		<Unit filename="include/arch/x86/x86_cpuid.h" />
+		<Unit filename="include/arch/x86/x86_cr.h" />
+		<Unit filename="include/arch/x86/x86_fpu.h" />
+		<Unit filename="include/arch/x86/x86_gdt.h" />
+		<Unit filename="include/arch/x86/x86_idt.h" />
+		<Unit filename="include/arch/x86/x86_mem.h" />
+		<Unit filename="include/arch/x86/x86_pit.h" />
+		<Unit filename="include/arch/x86/x86_screen.h" />
+		<Unit filename="include/arch/x86/x86_serial.h" />
+		<Unit filename="include/arch/x86/x86_tasking.h" />
 		<Unit filename="include/drivers/keyboard/ps2/keyboard.h" />
 		<Unit filename="include/drivers/keyboard/ps2/keycodes.h" />
 		<Unit filename="include/extern/multiboot.h" />
