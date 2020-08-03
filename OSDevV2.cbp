@@ -176,6 +176,9 @@
 		<Unit filename="src/arch/x86/paging.cpp" />
 		<Unit filename="src/arch/x86/pci/pci.cpp" />
 		<Unit filename="src/arch/x86/spinlock.cpp" />
+		<Unit filename="src/arch/x86/tasking/cpu.asm">
+			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
+		</Unit>
 		<Unit filename="src/arch/x86/tasking/cpu.cpp" />
 		<Unit filename="src/arch/x86/tasking/tasking.cpp" />
 		<Unit filename="src/fs/fs.cpp" />

@@ -2,13 +2,11 @@
 #define X86_CPU_H_INCLUDED
 
 namespace CPU {
-    class CpuState{
+    struct CpuState{
         //TODO implement
-    public:
-        void save();
-        void new_at(void * code,void * stack, void * page_directory);
-        [[noreturn]] void restore();
-    };
+    }__attribute__((packed));
+    extern "C" [[noreturn]] void enter_state(CpuState*);
+    void generate_state(CpuState * data,void *(*start)(void*) ,void * stack, void * page_directory);
 }
 
 #endif // X86_CPU_H_INCLUDED
