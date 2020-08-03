@@ -231,41 +231,45 @@ void Memory::free_virt_page(void * p,uint32_t n){
 extern "C" uint64_t liballoc_heap_size();
 extern "C" uint64_t liballoc_used();
 
+constexpr uint32_t STACK_SIZE=32*(1024ULL);
+
+constexpr uint64_t MM=(1024ULL*1024ULL);
+
 void Memory::cmd_meminfo(){
     uint64_t mem_used=count_used_pages()*4096ULL;
     uint64_t mem_heap=liballoc_heap_size();
     uint64_t mem_heap_used=liballoc_used();
     uint64_t real_mem_used=(mem_used-mem_heap)+mem_heap_used;
-    k_puts("\nFree Physical Memory: ");
+    Screen::write_s("\nFree Physical Memory: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
-    k_putmem(usable-mem_used);
+    Screen::write_mem(usable-mem_used);
     Screen::setfgcolor(Screen::WHITE);
-    k_puts("\nUsable Memory (+free heap space): ");
+    Screen::write_s("\nUsable Memory (free phys+free heap): ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
-    k_putmem(usable-real_mem_used);
+    Screen::write_mem(usable-real_mem_used);
     Screen::setfgcolor(Screen::WHITE);
-    k_puts("\nOccupied Physical Memory: ");
+    Screen::write_s("\nOccupied Physical Memory: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
-    k_putmem(mem_used);
+    Screen::write_mem(mem_used);
     Screen::setfgcolor(Screen::WHITE);
-    k_puts("\nKernel Heap Size: ");
+    Screen::write_s("\nKernel Binary Size: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
-    k_putmem(mem_heap);
+    Screen::write_mem((((uint32_t)&kernel_end)-((uint32_t)&kernel_start))-STACK_SIZE);
     Screen::setfgcolor(Screen::WHITE);
-    k_puts("\nKernel Heap In Use: ");
+    Screen::write_s("\nKernel Heap Size: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
-    k_putmem(mem_heap_used);
+    Screen::write_mem(mem_heap);
     Screen::setfgcolor(Screen::WHITE);
-    k_puts("\nNon-Heap In Use: ");
+    Screen::write_s("\nKernel Heap In Use: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
-    k_putmem(mem_used-liballoc_heap_size());
+    Screen::write_mem(mem_heap_used);
+    Screen::setfgcolor(Screen::WHITE);
+    Screen::write_s("\nNon-Heap In Use: ");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_mem(mem_used-liballoc_heap_size());
     Screen::setfgcolor(Screen::WHITE);
     //k_abort_s("meminfo unimplemented");
 }
-
-constexpr uint64_t MM=(1024ULL*1024ULL);
-
-//constexpr uint32_t STACK_SIZE=32*(1024ULL);
 
 void Memory::x86_init(struct multiboot_info * mbd){
     Screen::write_s("\n -Parsing Memory Map...");
@@ -345,20 +349,6 @@ void Memory::x86_init(struct multiboot_info * mbd){
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem(usable);
     Screen::setfgcolor(Screen::WHITE);
-    /*
-    Screen::write_s("\n  .Kernel: ");
-    Screen::setfgcolor(Screen::LIGHT_GREEN);
-    Screen::write_mem((((uint32_t)&kernel_end)-((uint32_t)&kernel_start))-STACK_SIZE);//size of kernel in memory minus stack size
-    Screen::setfgcolor(Screen::WHITE);
-    Screen::write_s(" / Stack:  ");
-    Screen::setfgcolor(Screen::LIGHT_GREEN);
-    Screen::write_mem(STACK_SIZE);//32K
-    Screen::setfgcolor(Screen::WHITE);
-    Screen::write_s(" / Total:  ");
-    Screen::setfgcolor(Screen::LIGHT_GREEN);
-    Screen::write_mem((((uint32_t)&kernel_end)-((uint32_t)&kernel_start)));//??
-    Screen::setfgcolor(Screen::WHITE);
-    */
 }
 
 
