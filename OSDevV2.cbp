@@ -46,6 +46,7 @@
 			<Add option="-std=c++17" />
 			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-rtti -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-exceptions -Werror=implicit-function-declaration -Werror=return-type" />
 			<Add option="-DLAI_HOST_IDENTITY_MAP" />
+			<Add option="-DSERIAL_CRLF" />
 			<Add directory="include/stdc/" />
 			<Add directory="../lai/include" />
 		</Compiler>

@@ -35,5 +35,14 @@ void write_serial(char a) {
 }
 
 void Serial::write_s(const char * s){
+    #ifdef SERIAL_CRLF
+    char pc=0;
+    while(char c=*s++){
+        if(c=='\n'&&pc!='\r'&&s[1]!='\r')write_serial('\r');//convert LF not followed or preceded by CR into CRLF
+        write_serial(c);
+        pc=c;
+    }
+    #else
     while(char c=*s++)write_serial(c);
+    #endif // SERIAL_CRLF
 }

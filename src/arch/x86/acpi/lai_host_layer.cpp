@@ -3,6 +3,7 @@
 #include "acpi.h"
 #include "util.h"
 #include "klib.h"
+#include "serial.h"
 #include <stdio.h>
 #include "lai/host.h"
 #include "acpispec/tables.h"
@@ -25,36 +26,39 @@ extern "C" {
     
     void laihost_log(int level, const char * msg) {
 #ifdef LAI_LOG
+#ifdef LAI_LOG_SCREEN
+#define LOG_OUT k_logs
+#else
+#define LOG_OUT Serial::write_s
+#endif
         switch(level){
         case LAI_DEBUG_LOG:
-#ifdef DEBUG
-            k_logs("\n[LAI/DEBUG] ");
-            k_logs(msg);
-#endif // DEBUG
+            LOG_OUT("\n[LAI/DEBUG] ");
+            LOG_OUT(msg);
             break;
         case LAI_WARN_LOG:
-            k_puts("\n[LAI/WARN] ");
-            k_puts(msg);
+            LOG_OUT("\n[LAI/WARN] ");
+            LOG_OUT(msg);
             break;
         default:
-            k_puts("\n[LAI/UNKNOWN] ");
-            k_puts(msg);
+            LOG_OUT("\n[LAI/UNKNOWN] ");
+            LOG_OUT(msg);
         }
 #endif // LAI_LOG
     }
-
+    
     void laihost_panic(const char * msg){
         k_abort_s(msg);
     }
-
+    
     void * laihost_realloc(void * p, size_t n){
         return realloc(p,n);
     }
-
+    
     void laihost_free(void * p){
         free(p);
     }
-
+    
     void * laihost_map(size_t address, size_t count){
         if(address<4096){
             Memory::Internal::map_null();
@@ -71,7 +75,7 @@ extern "C" {
         }
         return (void*)address;
     }
-
+    
     void * laihost_scan(const char * sig,size_t index){
         if(memcmp("DSDT",sig,4)==0){
             if(xsdt){
@@ -115,7 +119,7 @@ extern "C" {
         }
         return nullptr;//couldn't find header
     }
-
+    
     void laihost_unmap(void *pointer, size_t count){
         if((uint32_t)pointer<4096){
             Memory::Internal::unmap_null();
@@ -131,31 +135,31 @@ extern "C" {
             //lower memory except first page is always mapped, do nothing
         }
     }
-
+    
     void laihost_outb(uint16_t port, uint8_t val){
         outb(port,val);
     }
-
+    
     void laihost_outw(uint16_t port, uint16_t val){
         outw(port,val);
     }
-
+    
     void laihost_outd(uint16_t port, uint32_t val){
         outl(port,val);
     }
-
+    
     uint8_t laihost_inb(uint16_t port){
         return inb(port);
     }
-
+    
     uint16_t laihost_inw(uint16_t port){
         return inw(port);
     }
-
+    
     uint32_t laihost_ind(uint16_t port){
         return inl(port);
     }
-
+    
     void laihost_sleep(uint64_t ms) {
         k_sleep(ms);
     }
@@ -163,25 +167,25 @@ extern "C" {
     void laihost_pci_writeb(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset, uint8_t val){
         PCI::writeb(bus,slot,fun,offset,val);
     }
-
+    
     void laihost_pci_writew(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset, uint16_t val){
         PCI::writew(bus,slot,fun,offset,val);
     }
-
+    
     void laihost_pci_writed(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset, uint32_t val){
         PCI::writed(bus,slot,fun,offset,val);
     }
-
+    
     uint8_t laihost_pci_readb(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset){
         return PCI::readb(bus,slot,fun,offset);
     }
-
+    
     uint16_t laihost_pci_readw(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset){
         return PCI::readw(bus,slot,fun,offset);
     }
-
+    
     uint32_t laihost_pci_readd(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun, uint16_t offset){
         return PCI::readd(bus,slot,fun,offset);
     }
-
+    
 }
