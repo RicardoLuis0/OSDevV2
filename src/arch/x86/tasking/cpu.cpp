@@ -3,6 +3,6 @@
 
 namespace CPU {
     
-    void generate_state(CpuState * data,void *(*start)(void*) ,void * stack, void * page_directory);
+    void generate_state(CpuState * data,void * __attribute__((__noreturn__)) (*start)(void*) ,void * stack, void * page_directory);
     
 }

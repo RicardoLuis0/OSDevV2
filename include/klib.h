@@ -13,7 +13,7 @@
 extern "C" {
 #define NORETURN [[noreturn]]
 #else
-#define NORETURN __attribute__((noreturn))
+#define NORETURN __attribute__((__noreturn__))
 #endif // __cplusplus
 
 #define FOR2(s) s s
