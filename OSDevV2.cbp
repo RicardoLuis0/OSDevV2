@@ -140,19 +140,19 @@
 		<Unit filename="linker.ld" />
 		<Unit filename="src/arch/x86/acpi/acpi.cpp" />
 		<Unit filename="src/arch/x86/acpi/lai_host_layer.cpp" />
-		<Unit filename="src/arch/x86/acpi/pci.cpp" />
 		<Unit filename="src/arch/x86/drivers/keyboard/ps2/keyboard.cpp" />
 		<Unit filename="src/arch/x86/drivers/keyboard/ps2/layout.cpp" />
+		<Unit filename="src/arch/x86/drivers/serial/x86_serial.cpp" />
+		<Unit filename="src/arch/x86/drivers/textmode/x86_screen.cpp" />
+		<Unit filename="src/arch/x86/info/cpuid.asm">
+			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
+		</Unit>
+		<Unit filename="src/arch/x86/info/cpuid.cpp" />
+		<Unit filename="src/arch/x86/info/cr.cpp" />
 		<Unit filename="src/arch/x86/init/boot.asm">
 			<Option link="0" />
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o obj/boot.o" />
 		</Unit>
-		<Unit filename="src/arch/x86/init/cpu.cpp" />
-		<Unit filename="src/arch/x86/init/cpuid.asm">
-			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
-		</Unit>
-		<Unit filename="src/arch/x86/init/cpuid.cpp" />
-		<Unit filename="src/arch/x86/init/cr.cpp" />
 		<Unit filename="src/arch/x86/init/crti.asm">
 			<Option link="0" />
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o obj/crti.o" />
@@ -173,10 +173,10 @@
 		<Unit filename="src/arch/x86/init/pit.cpp" />
 		<Unit filename="src/arch/x86/init/x86.cpp" />
 		<Unit filename="src/arch/x86/init/x86_mem.cpp" />
-		<Unit filename="src/arch/x86/init/x86_screen.cpp" />
-		<Unit filename="src/arch/x86/init/x86_serial.cpp" />
 		<Unit filename="src/arch/x86/paging.cpp" />
+		<Unit filename="src/arch/x86/pci/pci.cpp" />
 		<Unit filename="src/arch/x86/spinlock.cpp" />
+		<Unit filename="src/arch/x86/tasking/cpu.cpp" />
 		<Unit filename="src/arch/x86/tasking/tasking.cpp" />
 		<Unit filename="src/fs/fs.cpp" />
 		<Unit filename="src/fs/ramfs.cpp" />
