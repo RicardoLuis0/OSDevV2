@@ -265,7 +265,7 @@ void Memory::cmd_meminfo(){
 
 constexpr uint64_t MM=(1024ULL*1024ULL);
 
-constexpr uint32_t STACK_SIZE=32*(1024ULL);
+//constexpr uint32_t STACK_SIZE=32*(1024ULL);
 
 void Memory::x86_init(struct multiboot_info * mbd){
     Screen::write_s("\n -Parsing Memory Map...");
