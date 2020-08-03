@@ -12,9 +12,8 @@ using CR::CR0_EM,
 static bool sse;
 
 void FPU::init(){
-    Screen::write_s("\n -Initializing FPU...\n");
+    Screen::write_s("\n -Initializing FPU...");
     if(!CPUID::cpuid_has(0,CPUID_FEAT_EDX_FPU)&&!CR0::hasFlags(CR0_EM)&&CR0::hasFlags(CR0_ET)){
-        Screen::write_s("  .FPU ");
         Screen::setfgcolor(Screen::RED);
         Screen::write_s("FAIL");
         Screen::setfgcolor(Screen::WHITE);
@@ -32,7 +31,6 @@ void FPU::init(){
         CR4::disableFlags(CR4_OSXMMEXCPT);
     }
     asm volatile ("finit");
-    Screen::write_s("  .FPU ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_s("OK");
     Screen::setfgcolor(Screen::WHITE);

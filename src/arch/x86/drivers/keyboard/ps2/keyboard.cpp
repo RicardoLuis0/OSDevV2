@@ -183,9 +183,12 @@ static void kbint(){
 }
 
 void init(){
-    print("\n  .PS/2 Keyboard");
+    print("\n  .PS/2 Keyboard...");
     IDT::set_irq_handler(0x21,kbint,IDT::G_32_INT,IDT::RING_0);
     IDT::pic_enable(1);
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_s("OK");
+    Screen::setfgcolor(Screen::WHITE);
 }
 
 static uint8_t get_scancode_dump(){

@@ -268,7 +268,7 @@ constexpr uint64_t MM=(1024ULL*1024ULL);
 constexpr uint32_t STACK_SIZE=32*(1024ULL);
 
 void Memory::x86_init(struct multiboot_info * mbd){
-    print("\n -Parsing Memory Map...\n");
+    Screen::write_s("\n -Parsing Memory Map...");
     struct blockdata{
         uint32_t start;
         uint32_t end;
@@ -296,17 +296,17 @@ void Memory::x86_init(struct multiboot_info * mbd){
             }
         }
         if(usable==0){
-            print("  .Memory Map ");
+            //Screen::write_s("  .Memory Map ");
             Screen::setfgcolor(Screen::RED);
-            print("FAIL");
+            Screen::write_s("FAIL");
             Screen::setfgcolor(Screen::WHITE);
             k_abort_s("No Usable Memory");
             return;
         }
     }else{
-        print("  .Memory Map ");
+        //Screen::write_s("  .Memory Map ");
         Screen::setfgcolor(Screen::RED);
-        print("FAIL");
+        Screen::write_s("FAIL");
         Screen::setfgcolor(Screen::WHITE);
         k_abort_s("Memory Map not available");
     }
@@ -329,7 +329,7 @@ void Memory::x86_init(struct multiboot_info * mbd){
         if((pages.usage[i/32]>>(i%32))&0x1)page_count++;
     }
     if(page_count_expected!=page_count){
-        print("Expected ",page_count_expected,"Pages, got ",page_count,"Pages\n");
+        print("Expected ",page_count_expected," pages, got ",page_count," pages\n");
     }
     assert(page_count_expected==page_count);
     #endif // DEBUG
@@ -338,14 +338,14 @@ void Memory::x86_init(struct multiboot_info * mbd){
     uint32_t k_start_page=k_start/4096;
     uint32_t k_end_page=(k_end/4096)+1;
     set_phys_free(k_start_page,k_end_page,false);
-    print("  .Memory Map ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
-    print("OK");
+    Screen::write_s("OK\n");
     Screen::setfgcolor(Screen::WHITE);
-    print(", Usable: ");
+    Screen::write_s("  .Usable: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem(usable);
     Screen::setfgcolor(Screen::WHITE);
+    /*
     Screen::write_s("\n  .Kernel: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem((((uint32_t)&kernel_end)-((uint32_t)&kernel_start))-STACK_SIZE);//size of kernel in memory minus stack size
@@ -358,6 +358,7 @@ void Memory::x86_init(struct multiboot_info * mbd){
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_mem((((uint32_t)&kernel_end)-((uint32_t)&kernel_start)));//??
     Screen::setfgcolor(Screen::WHITE);
+    */
 }
 
 

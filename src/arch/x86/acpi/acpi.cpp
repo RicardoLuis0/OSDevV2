@@ -41,22 +41,10 @@ void ACPI::init(){
 #endif // LAI_HOST_IDENTITY_MAP
     
     if(lai_bios_detect_rsdp(&rsdp_info)!=LAI_ERROR_NONE){
-        Screen::write_s("\n  .ACPI ");
         Screen::setfgcolor(Screen::RED);
         Screen::write_s("FAIL");
         Screen::setfgcolor(Screen::WHITE);
         k_abort_s("ACPI Unavailable");
-    }
-    Screen::write_s("\n  .ACPI Version ");
-    switch(rsdp_info.acpi_version){
-    case 0:
-    case 1:
-        Screen::write_s("1");
-        break;
-    default:
-    case 2:
-        Screen::write_s("2+");
-        break;
     }
     
     //setup initial tables
@@ -88,10 +76,20 @@ void ACPI::init(){
     
     lai_enable_acpi(0);//enable ACPI in legacy PIC mode
     
-    Screen::write_s("\n  .ACPI ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_s("OK");
     Screen::setfgcolor(Screen::WHITE);
+    Screen::write_s("\n  .ACPI Version ");
+    switch(rsdp_info.acpi_version){
+    case 0:
+    case 1:
+        Screen::write_s("1+");
+        break;
+    default:
+    case 2:
+        Screen::write_s("2+");
+        break;
+    }
 }
 
 void ACPI::shutdown(){

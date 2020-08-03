@@ -4,10 +4,7 @@
 #include "kshell/kshell.h"
 #include <setjmp.h>
 
-void klib_init();
-
 extern "C" void k_main(){
-    klib_init();
     Screen::write_s("\n>Starting Kernel");
     Screen::write_s("\n -Initializing Drivers");
     Drivers::Keyboard::PS2::init();

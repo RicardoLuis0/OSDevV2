@@ -138,6 +138,9 @@ void IDT::init(){
     init_pic();
     //Load IDT
     loadidt((uint32_t)IDT,sizeof(IDT_entry)*256);
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_s("OK");
+    Screen::setfgcolor(Screen::WHITE);
 }
 
 void IDT::pic_enable(uint8_t irq){

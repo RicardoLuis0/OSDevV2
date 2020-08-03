@@ -4,11 +4,12 @@
 #include "stdc/assert.h"
 #include "acpi.h"
 
+#ifdef DEBUG
 static volatile bool global_constructors_ran;
-
 static __attribute__ ((constructor)) void global_constructors_ok(void) {
     global_constructors_ran=true;
 }
+#endif // DEBUG
 
 extern "C" {
     void outb(uint16_t port, uint8_t val) {
@@ -45,6 +46,8 @@ extern "C" {
 
 extern "C" void _init();
 
+bool klib_init();
+
 extern "C" void x86_start(struct multiboot_info * mbd, unsigned int magic){//x86-specific initialization sequence
     Screen::x86_init();
     Screen::disable_cursor();
@@ -53,7 +56,7 @@ extern "C" void x86_start(struct multiboot_info * mbd, unsigned int magic){//x86
         k_abort_s("CPUID not supported");
     }
     CPUID::check();
-    Screen::write_s(">Initializing x86 System");
+    Screen::write_s(">Initializing x86 Internals");
     GDT::init();
     Memory::x86_init(mbd);//initialize physical memory
     IDT::init();
@@ -62,17 +65,32 @@ extern "C" void x86_start(struct multiboot_info * mbd, unsigned int magic){//x86
     Serial::x86_init();
     PIT::init();
     ACPI::init();
-    Screen::write_s("\n>Calling Global Constructors");
+    Screen::write_s("\n>Global Constructors...");
+    #ifdef DEBUG
     global_constructors_ran=false;
+    #endif // DEBUG
     _init();//only call global constructors after setting up screen, paging, memory management, etc...
-    Screen::write_s("\n -Global Constructors ");
+    #ifdef DEBUG
     if(global_constructors_ran){
+    #endif // DEBUG
+        Screen::setfgcolor(Screen::LIGHT_GREEN);
+        Screen::write_s("OK");
+    #ifdef DEBUG
+    }else{
+        Screen::setfgcolor(Screen::RED);
+        Screen::write_s("FAIL");
+        k_abort_s("Global Constructors Failed to Run");
+    }
+    #endif // DEBUG
+    Screen::setfgcolor(Screen::WHITE);
+    Screen::write_s("\n>Initializing KLib...");
+    if(klib_init()){
         Screen::setfgcolor(Screen::LIGHT_GREEN);
         Screen::write_s("OK");
     }else{
         Screen::setfgcolor(Screen::RED);
         Screen::write_s("FAIL");
-        k_abort_s("Global Constructors Failed to Run");
+        k_abort_s("KLib Initialization Failed");
     }
     Screen::setfgcolor(Screen::WHITE);
     return;

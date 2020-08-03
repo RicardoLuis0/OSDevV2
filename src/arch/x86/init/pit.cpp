@@ -23,16 +23,15 @@ void pit_interrupt(){
 void PIT::init(){
     constexpr uint16_t freq=div_hz(ms_to_hz(timer_resolution));
     Screen::write_s("\n -Initializing PIT...");
-    Screen::write_s("\n  .PIT frequency = ");
-    Screen::write_i(timer_resolution);
-    Screen::write_s("ms");
     IDT::set_irq_handler(0x20,pit_interrupt,IDT::G_32_INT,IDT::RING_0);
     outb(0x43, 0x36);
     outb(0x40,freq&0xFF);
     outb(0x40,(freq>>8)&0xFF);
     IDT::pic_enable(0);
-    Screen::write_s("\n  .PIT ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
-    Screen::write_s("OK");
+    Screen::write_s("OK\n");
     Screen::setfgcolor(Screen::WHITE);
+    Screen::write_s("  .PIT frequency = ");
+    Screen::write_i(timer_resolution);
+    Screen::write_s("ms");
 }

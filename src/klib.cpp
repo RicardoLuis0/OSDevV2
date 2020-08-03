@@ -17,8 +17,9 @@ void k_env_init(){
     kernel_env=new Util::HashTable<Util::UniquePtr<char>>();
 }
 
-void klib_init(){
+bool klib_init(){
     k_env_init();
+    return true;
 }
 
 extern "C" {

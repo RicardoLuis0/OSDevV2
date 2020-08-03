@@ -241,7 +241,7 @@ void Memory::cmd_pagefault(){
 }
 
 void Memory::x86_paging_init(){
-    print("\n -Initializing Paging...\n");
+    print("\n -Initializing Paging...");
     entry_t * pd=reinterpret_cast<entry_t*>(Internal::alloc_phys_page(pages_to_fit(sizeof(entry_t)*1024)));
     for(uint32_t i=0;i<1024;i++){
         entry_t * pt=reinterpret_cast<entry_t*>(Internal::alloc_phys_page(pages_to_fit(sizeof(entry_t)*1024)));
@@ -262,7 +262,6 @@ void Memory::x86_paging_init(){
     paging_enable(pd);
     set_page_table_entry(id_to_page_entry(0,pd),{.present=false,.rw=false,.user=false},0);//mark first page as non-present
     IDT::set_exception_handler(14,page_fault_handler,IDT::G_32_INT,IDT::RING_0);//enable page fault handler
-    print("  .Paging ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     print("OK");
     Screen::setfgcolor(Screen::WHITE);
