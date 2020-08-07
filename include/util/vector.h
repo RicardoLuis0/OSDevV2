@@ -6,19 +6,19 @@
 #include "util/tmp.h"
 
 namespace Util {
-
+    
     template<typename T,auto RV> struct REMOVE {
         static void remove(T&t){
             RV(t);
         }
     };
-
+    
     template<typename T> struct REMOVE<T,nullptr> {
         static void remove(T&t){
             t.~T();
         }
     };
-
+    
     template<typename T,auto VALUE_REMOVE=nullptr>//D is function called on removal of object instead of destructor
     class Vector{
         protected:
@@ -26,13 +26,13 @@ namespace Util {
             size_t len;
             size_t alloc;
             T * vec;
-
+            
         public:
-
+            
             Vector():len(0),alloc(0),vec(nullptr){
             }
-
-
+            
+            
             Vector(const T * arr,size_t n){
                 vec=(T*)calloc(sizeof(T),n);
                 len=n;
@@ -48,21 +48,21 @@ namespace Util {
                 }
                 free(vec);
             }
-
+            
             void push(const T &v){
                 SpinlockGuard guard(lock);
                 grow(1);
                 vec[len]=v;
                 len++;
             }
-
+            
             void push(T && v){
                 SpinlockGuard guard(lock);
                 grow(1);
                 vec[len]=TMP::move(v);
                 len++;
             }
-
+            
             void reserve(size_t num){//reserve space for [num] new elements
                 SpinlockGuard guard(lock);
                 if(alloc<num){
@@ -74,7 +74,7 @@ namespace Util {
                     alloc=num;
                 }
             }
-
+            
             void resize(size_t num,T val){//resize vector and set any new elements to val
                 SpinlockGuard guard(lock);
                 if(len>num){//shrink
@@ -87,42 +87,77 @@ namespace Util {
                     len=num;
                 }
             }
-
+            
+            void resize(size_t num){//resize vector and call default constructor
+                SpinlockGuard guard(lock);
+                if(len>num){//shrink
+                    shrink(len-num);
+                }else if(len<num){//grow
+                    grow(num-len);
+                    for(size_t i=len;i<num;i++){
+                        new(&vec[i])T();
+                    }
+                    len=num;
+                }
+            }
+            
+            void erase(size_t elem){
+                erase(elem,elem+1);
+            }
+            
+            void erase(size_t first,size_t last){
+                if(first>=len||first>last){
+                    return;//invalid arguments
+                }
+                last=min(last,len);
+                for(size_t i=first;i<last;i++){
+                    REMOVE<T,VALUE_REMOVE>::remove(vec[i]);
+                }
+                size_t count=last-first;
+                memmove(vec+first,vec+last,count*sizeof(T));
+                len-=count;
+            }
+            
             T& operator[](size_t i){
                 SpinlockGuard guard(lock);
                 return vec[i];
             }
-
+            
             T& at(size_t i){
                 SpinlockGuard guard(lock);
                 return vec[i];
             }
-
+            
             T& front(){
                 SpinlockGuard guard(lock);
                 return vec[0];
             }
-
+            
             T& back(){
                 SpinlockGuard guard(lock);
                 return vec[len-1];
             }
-
+            
             T* begin(){
                 SpinlockGuard guard(lock);
                 return len>0?&vec[0]:nullptr;
             }
-
+            
+            T* get(){
+                SpinlockGuard guard(lock);
+                return len>0?&vec[0]:nullptr;
+            }
+            
             T* end(){
                 SpinlockGuard guard(lock);
                 return len>0?&vec[len]:nullptr;
             }
-
+            
             size_t size(){
                 SpinlockGuard guard(lock);
                 return len;
             }
-
+            
             void shrink_to_fit(){
                 SpinlockGuard guard(lock);
                 if(alloc>len){
@@ -130,9 +165,9 @@ namespace Util {
                     alloc=len;
                 }
             }
-
+            
         protected:
-
+            
             void grow(size_t min){
                 size_t n=len+min;
                 if(alloc>=n)return;//no need to grow
@@ -147,7 +182,7 @@ namespace Util {
                 }
                 alloc=n;
             }
-
+            
             void shrink(size_t by){
                 size_t n;
                 if(by>len){
@@ -161,7 +196,7 @@ namespace Util {
                 len=n;
             }
             
-
+            
         private:
     };
 }
