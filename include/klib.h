@@ -95,7 +95,46 @@ void outl(uint16_t port, uint32_t val);
 uint32_t inl(uint16_t port);
 
 #ifdef __cplusplus
+
 }
+
+namespace extra {
+    template<typename T> struct always_false : TMP::conditional<TMP::is_same<T,void>::value,TMP::true_type,TMP::false_type>::type {};//a bit ugly but it works
+    template<> struct always_false<void> : TMP::false_type {};
+}
+
+template<typename T> void out(uint16_t port,T val){
+    static_assert(extra::always_false<T>::value,"invalid type, must be uint of size 8/16/32");
+}
+
+template<typename T> T in(uint16_t port){
+    static_assert(extra::always_false<T>::value,"invalid type, must be uint of size 8/16/32");
+}
+
+template<> inline void out<uint8_t>(uint16_t port,uint8_t val){
+    outb(port,val);
+}
+
+template<> inline uint8_t in<uint8_t>(uint16_t port){
+    return inb(port);
+}
+
+template<> inline void out<uint16_t>(uint16_t port,uint16_t val){
+    outw(port,val);
+}
+
+template<> inline uint16_t in<uint16_t>(uint16_t port){
+    return inw(port);
+}
+
+template<> inline void out<uint32_t>(uint16_t port,uint32_t val){
+    outl(port,val);
+}
+
+template<> inline uint32_t in<uint32_t>(uint16_t port){
+    return inl(port);
+}
+
 #endif
 
 #undef NORETURN

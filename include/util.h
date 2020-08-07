@@ -4,6 +4,8 @@
 #include "stdc/stdint.h"
 #include "stdc/stddef.h"
 
+#include "util/tmp.h"
+
 template<typename T> constexpr T min(T a,T b){return a<b?a:b;}
 template<typename T> constexpr T max(T a,T b){return a>b?a:b;}
 template<typename T> constexpr T clamp(T a,T b,T c){return c<a?a:c>b?b:c;}
