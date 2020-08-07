@@ -14,7 +14,7 @@ extern "C" {
         return (c>='A'&&c<='Z')?c-('A'-'a'):c;
     }
 
-    int isspace (int c){
+    int isspace(int c){
         return c==' '||c=='\n'||c=='\t'||c=='\r'||c=='\v'||c=='\f';
     }
 
@@ -353,21 +353,30 @@ extern "C" {
     }
 
     char * strndup(const char * s,size_t n){
-        char * d=(char*)calloc(n+1,sizeof(char));
-        for(size_t i=0;i<n;i++){
+        size_t l=strnlen(s,n);
+        char * d=(char*)calloc(l+1,sizeof(char));
+        for(size_t i=0;i<l;i++){
             d[i]=s[i];
         }
-        d[n]='\0';
+        d[l]='\0';
         return d;
     }
-
+    
     size_t strlen(const char * s){
         size_t count=0;
         while(*s++)count++;
         return count;
     }
-
-
+    
+    size_t strnlen(const char * s,size_t n){
+        size_t count=0;
+        while(*s++){
+            count++;
+            if(count==n)return n;
+        }
+        return count;
+    }
+    
     char * strpbrk( const char * s1, const char * s2 ) {
         const char * p1 = s1;
         const char * p2;

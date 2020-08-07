@@ -16,6 +16,7 @@ char * strndup(const char * s,size_t n);
 char * strcpy(char * d,const char * s);
 char * strcat(char * d,const char * s);
 size_t strlen(const char * s);
+size_t strnlen(const char * s,size_t n);
 char * strchr(const char * str,int c);
 char * strrchr(const char * str,int c);
 char * strstr(const char * s1,const char * s2);
