@@ -1,6 +1,7 @@
 #include "util/string.h"
 #include "util/tmp.h"
 #include <string.h>
+#include <ctype.h>
 
 using namespace Util;
 
@@ -16,7 +17,12 @@ String::String() {
 
 String::String(const char * other){
     data=strdup(other);
-    len=strlen(other);
+    len=strlen(data);
+}
+
+String::String(const char * other,size_t n){
+    data=strndup(other,n);
+    len=strlen(data);
 }
 
 String::String(const String& other){
@@ -32,7 +38,7 @@ String::String(String && other){
 String::~String() {
 }
 
-size_t String::size(){
+size_t String::size() const{
     return len;
 }
 
@@ -78,7 +84,7 @@ char& String::operator[](size_t i){
     }
 }
 
-char String::operator[](size_t i)const{
+char String::operator[](size_t i) const{
     if(i<len){
         return data[i];
     }else{
@@ -102,6 +108,50 @@ String& String::operator=(String && other){
     data=strdup(other.data);
     len=other.len;
     return *this;
+}
+
+const char * String::c_str() const{
+    return data.get();
+}
+
+Vector<String> String::explode(char separator,bool &has_first_separator,bool &has_last_separator) const{
+    Vector<String> vec;
+    if(len==0){
+        has_first_separator=false;
+        has_last_separator=false;
+        return vec;
+    }
+    size_t start=0;
+    enum{
+        READING_START,
+        READING_END,
+    }state=READING_START;
+    has_first_separator=(data[0]==separator);
+    has_last_separator=(data[len-1]==separator);
+    for(size_t i=0;i<len;i++){
+        switch(state){
+        case READING_START:
+            if(data[i]!=separator){
+                start=i;
+                state=READING_END;
+                [[fallthrough]];
+            }else{
+                break;
+            }
+        case READING_END:
+            if(data[i]==separator){
+                vec.push(substr(start,i-start));
+                state=READING_START;
+            }
+            break;
+        }
+    }
+    return vec;
+}
+
+String String::substr(size_t start,size_t n) const{
+    if(start>len)return String();
+    return String(data.get(),min(len-start,n));
 }
 
 
