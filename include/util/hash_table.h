@@ -36,7 +36,7 @@ namespace Util {
              auto KEY_CLONE=strdup,             //key duplication function, required for pointers, if null will use '='
              size_t L=256                       //size of hash table, higher sized lower collision, but increase memory usage
             >
-    class HashTable {
+    class HashTable {//TODO REIMPLEMENT WITH Util::String INSTEAD OF C STRINGS
             Spinlock lock;
             struct Value {
                 Value(CK k2,const T &v2){//copy
@@ -58,7 +58,7 @@ namespace Util {
             HashTable(){
                 static_assert(!TMP::is_null_pointer_v<decltype(KEY_HASH)>,"KEY_HASH must not be nullptr");
             }
-
+            
             bool has(CK k){
                 SpinlockGuard guard(lock);
                 size_t hash=KEY_HASH(k)%L;
@@ -69,11 +69,11 @@ namespace Util {
                 }
                 return false;
             }
-
+            
             T& operator[](CK k){
                 return at(k);
             }
-
+            
             T& at(CK k){
                 SpinlockGuard guard(lock);
                 size_t hash=KEY_HASH(k)%L;
@@ -96,8 +96,19 @@ namespace Util {
                 }
                 return t;
             }
-
-            void set(CK k,T d){
+            
+            T * find(CK k){//if found return pointer, else null
+                SpinlockGuard guard(lock);
+                size_t hash=KEY_HASH(k)%L;
+                for(Value &v:ht[hash]){
+                    if(COMPARE<K,CK,KEY_COMPARE>::compare(v.k,k)){
+                        return &v.v;
+                    }
+                }
+                return nullptr;
+            }
+            
+            void set(CK k,const T &d){
                 SpinlockGuard guard(lock);
                 size_t hash=KEY_HASH(k)%L;
                 for(Value &v:ht[hash]){
@@ -108,28 +119,57 @@ namespace Util {
                 }
                 ht[hash].push(Value(k,d));
             }
-
+            
             void set(CK k,T && d){
                 SpinlockGuard guard(lock);
                 size_t hash=KEY_HASH(k)%L;
                 for(Value &v:ht[hash]){
                     if(COMPARE<K,CK,KEY_COMPARE>::compare(v.k,k)){
-                        v.v=d;
+                        v.v=TMP::move(d);
                         return;
                     }
                 }
-                ht[hash].push(Value(k,d));
+                ht[hash].push(Value(k,TMP::move(d)));
             }
-
-            void unset(CK k){
-                //TODO
-                k_abort_s("HashTable::unset unimplemented");
+            
+            bool unset(CK k){
+                size_t hash=KEY_HASH(k)%L;
+                size_t i=0;
+                auto & vec=ht[hash];
+                for(Value &v:vec){
+                    if(COMPARE<K,CK,KEY_COMPARE>::compare(v.k,k)){
+                        break;
+                    }
+                    i++;
+                }
+                if(i==vec.size())return false;
+                vec.erase(i);
+                return true;
             }
-
-            void foreach(void(*callback)(T&)){
+            
+            template<typename CB>//void(value)
+            void foreach_v(CB && callback){
                 for(uint32_t i=0;i<L;i++){
                     for(Value &v:ht[i]){
                         callback(v.v);
+                    }
+                }
+            }
+            
+            template<typename CB>//void(key)
+            void foreach_k(CB && callback){
+                for(uint32_t i=0;i<L;i++){
+                    for(Value &v:ht[i]){
+                        callback(v.k);
+                    }
+                }
+            }
+            
+            template<typename CB>//void(key,value)
+            void foreach_kv(CB && callback){
+                for(uint32_t i=0;i<L;i++){
+                    for(Value &v:ht[i]){
+                        callback(v.k,v.v);
                     }
                 }
             }

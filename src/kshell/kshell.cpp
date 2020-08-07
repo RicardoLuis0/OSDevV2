@@ -107,7 +107,7 @@ static void cmd_help(char * cmd,Util::HashTable<kshell_cmd> * commands){
             cmd_invalid(arg,commands);
         }
     }else{
-        commands->foreach([](kshell_cmd &h_cmd){
+        commands->foreach_v([](kshell_cmd &h_cmd){
             Screen::write_c('\n');
             Screen::write_s(h_cmd.name);
             Screen::write_s(" - ");
