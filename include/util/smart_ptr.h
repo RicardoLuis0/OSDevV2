@@ -189,9 +189,22 @@ namespace Util {
             return ptr;
         }
         
+        T* get(){
+            return ptr;
+        }
+        
+        const T* get() const{
+            return ptr;
+        }
+        
         T*operator->(){
             return ptr;
         }
+        
+        const T* operator->() const{
+            return ptr;
+        }
+        
     };
 }
 
