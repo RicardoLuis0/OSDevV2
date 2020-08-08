@@ -8,72 +8,72 @@
 #include <ctype.h>
 
 extern "C" {
-
+    
     void putc(char c){
         Screen::write_c(c);
     }
-
+    
     void puts(const char * s){
         Screen::write_s(s);
     }
-
+    
     void k_putc(char c){
         Screen::write_c(c);
     }
-
+    
     void k_puts(const char * s){
         Screen::write_s(s);
     }
-
+    
     void k_logs(const char * s){
         Screen::write_s(s);
         Serial::write_s(s);
     }
-
+    
     void k_putsn(const char * s,size_t n){
         Screen::write_sn(s,n);
     }
-
+    
     void k_cls(){
         Screen::clear();
     }
-
+    
     void k_puti(int32_t i){
         Screen::write_i(i);
     }
-
+    
     void k_putu(int32_t u){
         Screen::write_u(u);
     }
-
+    
     void k_putll(int64_t ll){
         Screen::write_ll(ll);
     }
-
+    
     void k_putull(int64_t ull){
         Screen::write_ull(ull);
     }
-
+    
     void k_puth(uint64_t h){
         Screen::write_h(h);
     }
-
+    
     void k_putmem(uint64_t mem){
         Screen::write_mem(mem,0);
     }
-
+    
     size_t k_get_y(){
         return Screen::getY();
     }
-
+    
     size_t k_get_x(){
         return Screen::getX();
     }
-
+    
     void k_set_xy(size_t x,size_t y){
         Screen::move(x,y);
     }
-
+    
 }
 
 using namespace Screen;
@@ -244,7 +244,7 @@ size_t ansi_saved_pos=0;
 
 bool ansi_intensity=false;
 
-color color_map[]{
+static color ansi_color_map[]{
     BLACK,
     RED,
     GREEN,
@@ -409,9 +409,9 @@ void Screen::write_s(const char * str){
                                 ansi_intensity=true;
                                 setcolor((color)(bg%8),(color)((fg%8)+8));
                             }else if(v>=30&&v<=37){
-                                setcolor(bg,(color)(color_map[v-30]+(ansi_intensity?8:0)));
+                                setcolor(bg,(color)(ansi_color_map[v-30]+(ansi_intensity?8:0)));
                             }else if(v>=40&&v<=47){
-                                setcolor(color_map[(v-40)],fg);
+                                setcolor(ansi_color_map[(v-40)],fg);
                             }
                         }
                     }
