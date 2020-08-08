@@ -1,9 +1,11 @@
 #include "screen.h"
 #include "util.h"
-#include "stdc/stdint.h"
 #include "klib.h"
 #include "arch/x86.h"
 #include "serial.h"
+#include "util/vector.h"
+#include <stdint.h>
+#include <ctype.h>
 
 extern "C" {
 
@@ -152,6 +154,7 @@ void Screen::x86_init(){
     pos |= inb(0x3D5);
     outb(0x3D4, 0x0E);
     pos |= ((uint16_t)inb(0x3D5)) << 8;
+    disable_cursor();
     move(pos);
 }
 
@@ -172,17 +175,23 @@ void Screen::clear_line(size_t line){
 }
 
 static void update_cursor(){
-    uint16_t pos=vga_xy(xpos,ypos);
-    outb(0x3D4, 0x0F);
-    outb(0x3D5, (uint8_t) (pos & 0xFF));
-    outb(0x3D4, 0x0E);
-    outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
+    move(vga_xy(xpos,ypos));
 }
 
-void Screen::move(size_t x,size_t y){
-    xpos=clamp(0u,x,XMAX);
-    ypos=clamp(0u,y,YMAX);
-    update_cursor();
+static void update_xy(int x,int y){
+    xpos=x>0?clamp<size_t>(0u,x,XMAX):0;
+    ypos=y>0?clamp<size_t>(0u,y,YMAX):0;
+}
+
+
+static void update_xy(size_t pos){
+    xpos=pos%XLEN;
+    ypos=pos/XLEN;
+}
+
+void Screen::move(int x,int y){
+    update_xy(x,y);
+    move(vga_xy(xpos,ypos));
 }
 
 void Screen::move(size_t pos){
@@ -231,10 +240,223 @@ static int calcx(int pos){
     return pos%XLEN;
 }
 
+size_t ansi_saved_pos=0;
+
+bool ansi_intensity=false;
+
+color color_map[]{
+    BLACK,
+    RED,
+    GREEN,
+    BROWN,
+    BLUE,
+    MAGENTA,
+    CYAN,
+    LIGHT_GREY,
+};
+
 void Screen::write_s(const char * str){
     int pos=vga_xy(xpos,ypos);
     while(*str!='\0'&&pos<POSLEN){
         switch(*str){
+        case '\e':
+            str++;
+            if(*str=='['){
+                str++;
+                Util::Vector<int> parameters;
+                int val=0;
+                int size=0;
+                while(*str!='\0'&&(*str==';'||(*str>='0'&&*str<='9'))){
+                    if(*str==';'){
+                        if(size==0){
+                            parameters.push(-1);
+                        }else{
+                            parameters.push(val);
+                            val=0;
+                            size=0;
+                        }
+                    }else{
+                        val*=10;
+                        val+=*str-'0';
+                        size++;
+                    }
+                    str++;
+                }
+                if(size!=0){
+                    parameters.push(val);
+                }
+                int n=0,m=0;
+                switch(*str){
+                case 'J':
+                    if(parameters.size()>0){
+                        n=parameters[0];
+                    }
+                    //TODO better 'J' support, n=0 is clear from cursor to end, n=1 is clear from cursor to beginning, n=0 is clear entire screen
+                    clear();
+                    break;
+                case 'K':
+                    if(parameters.size()>0){
+                        n=parameters[0];
+                    }
+                    //TODO better 'K' support, n=0 is clear from cursor to end, n=1 is clear from cursor to beginning, n=0 is clear entire line
+                    clear_line(ypos);
+                    break;
+                case 's':
+                    ansi_saved_pos=pos;
+                    break;
+                case 'u':
+                    pos=ansi_saved_pos;
+                    move(pos);
+                    break;
+                case 'A':
+                    if(parameters.size()>0){
+                        n=parameters[0];
+                    }else{
+                        n=1;
+                    }
+                    update_xy(pos);
+                    move(xpos,ypos-n);
+                    pos=vga_xy(xpos,ypos);
+                    break;
+                case 'B':
+                    if(parameters.size()>0){
+                        n=parameters[0];
+                    }else{
+                        n=1;
+                    }
+                    update_xy(pos);
+                    move(xpos,ypos+n);
+                    pos=vga_xy(xpos,ypos);
+                    break;
+                case 'C':
+                    if(parameters.size()>0){
+                        n=parameters[0];
+                    }else{
+                        n=1;
+                    }
+                    update_xy(pos);
+                    move(xpos+n,ypos);
+                    pos=vga_xy(xpos,ypos);
+                    break;
+                case 'D':
+                    if(parameters.size()>0){
+                        n=parameters[0];
+                    }else{
+                        n=1;
+                    }
+                    update_xy(pos);
+                    move(xpos-n,ypos);
+                    pos=vga_xy(xpos,ypos);
+                    break;
+                case 'E':
+                    if(parameters.size()>0){
+                        n=parameters[0];
+                    }else{
+                        n=1;
+                    }
+                    update_xy(pos);
+                    move(0,ypos+n);
+                    pos=vga_xy(xpos,ypos);
+                    break;
+                case 'F':
+                    if(parameters.size()>0){
+                        n=parameters[0];
+                    }else{
+                        n=1;
+                    }
+                    update_xy(pos);
+                    move(0,ypos-n);
+                    pos=vga_xy(xpos,ypos);
+                    break;
+                case 'G':
+                    if(parameters.size()>0){
+                        n=parameters[0];
+                    }else{
+                        n=1;
+                    }
+                    update_xy(pos);
+                    move(xpos,n);
+                    pos=vga_xy(xpos,ypos);
+                    break;
+                case 'S':
+                    if(parameters.size()>0){
+                        n=parameters[0];
+                    }else{
+                        n=1;
+                    }
+                    scroll(n);
+                    break;
+                case 'T':
+                    if(parameters.size()>0){
+                        n=parameters[0];
+                    }else{
+                        n=1;
+                    }
+                    scroll(-n);
+                    break;
+                case 'm':
+                    n=parameters.size();
+                    if(n==0){
+                        ansi_intensity=false;
+                        setcolor(BLACK,LIGHT_GREY);
+                    }else{
+                        for(int i=0;i<n;i++){
+                            int v=parameters[i];
+                            if(v==0){
+                                ansi_intensity=false;
+                                setcolor(BLACK,LIGHT_GREY);
+                            }else if(v==1){
+                                ansi_intensity=true;
+                                setcolor((color)(bg%8),(color)((fg%8)+8));
+                            }else if(v>=30&&v<=37){
+                                setcolor(bg,(color)(color_map[v-30]+(ansi_intensity?8:0)));
+                            }else if(v>=40&&v<=47){
+                                setcolor(color_map[(v-40)],fg);
+                            }
+                        }
+                    }
+                case 'f':
+                case 'H':
+                    if(parameters.size()>1){
+                        n=parameters[0];
+                        m=parameters[1];
+                    }else if(parameters.size()==1){
+                        n=parameters[0];
+                        m=1;
+                    }else{
+                        n=1;
+                        m=1;
+                    }
+                    if(n<1)n=1;
+                    if(m<1)m=1;
+                    move(n-1,m-1);
+                    break;
+                case '?':
+                    str++;
+                    while(*str!='\0'&&*str>='0'&&*str<='9'){
+                        n*=10;
+                        n+=*str-'0';
+                        str++;
+                    }
+                    if(n==25){
+                        if(*str=='h'){
+                            enable_cursor(14,15);
+                        }else if(*str=='l'){
+                            disable_cursor();
+                        }
+                    }else if(n==1049){
+                        //NOT SUPPORTED
+                    }else if(n==2004){
+                        //NOT SUPPORTED
+                    }
+                    
+                default:
+                    //UNKNOWN ANSI ESCAPE CODE
+                    break;
+                }
+            }
+            str++;
+            break;
         case '\r'://carriage return
             str++;
             pos=((pos/XLEN)+1);
@@ -254,12 +476,24 @@ void Screen::write_s(const char * str){
             str++;
             vga[pos++]=vga_entry(' ');
             while(calcx(pos)%4){//4-space tabs
-                vga[pos++]=vga_entry(' ');
+                if(pos<POSLEN)vga[pos]=vga_entry(' ');
+                pos++;
+            }
+            if(pos>=POSMAX){
+                scroll(1);
+                pos=vga_xy(0,YMAX);
             }
             break;
         default:
-            if(pos>POSMAX)pos=POSMAX;
-            vga[pos++]=vga_entry(*str++);
+            if(isgraph(*str)){
+                if(pos==POSMAX){
+                    scroll(1);
+                    pos=vga_xy(0,YMAX);
+                }
+                vga[pos]=vga_entry(*str);
+            }
+            str++;
+            pos++;
             break;
         }
     }
