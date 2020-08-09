@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from buildsystem import *
 
 lai_path="../lai/"
