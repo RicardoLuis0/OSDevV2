@@ -28,7 +28,7 @@ namespace FS {
         return to_read;
     }
     
-    size_t RamFS::FileHandle::write(void * buf,size_t elem_size,size_t elem_count,size_t offset){
+    size_t RamFS::FileHandle::write(const void * buf,size_t elem_size,size_t elem_count,size_t offset){
         uint32_t to_write=elem_size*elem_count;
         uint32_t needed=to_write+offset;
         if(needed<data.size()){
@@ -46,6 +46,14 @@ namespace FS {
     uint8_t RamFS::FileHandle::getu(size_t offset){
         if(offset>data.size())return EOF;
         return data[offset];
+    }
+    
+    size_t RamFS::FileHandle::size(){
+        return data.size();
+    }
+    
+    void RamFS::FileHandle::clear(){
+        data.resize(0);
     }
     
     Util::Vector<Util::String> RamFS::FolderHandle::listFiles(){

@@ -8,6 +8,8 @@
 
 namespace FS {
     
+    //ALL RETURNED POINTERS ARE NON-OWNING
+    
     class FolderHandle;
     
     class VirtualFileSystem {
@@ -36,9 +38,11 @@ namespace FS {
         virtual bool try_lock()=0;
         virtual void unlock()=0;
         virtual size_t read(void * buf,size_t elem_size,size_t elem_count,size_t offset)=0;
-        virtual size_t write(void * data,size_t elem_size,size_t elem_count,size_t offset)=0;
+        virtual size_t write(const void * data,size_t elem_size,size_t elem_count,size_t offset)=0;
         virtual char getc(size_t offset)=0;
         virtual uint8_t getu(size_t offset)=0;
+        virtual size_t size()=0;
+        virtual void clear()=0;
     };
     
     class FolderHandle : public Handle {
@@ -60,7 +64,13 @@ namespace FS {
     namespace VFSRoot {
         void init(Util::UniquePtr<VirtualFileSystem> && rootfs);//most likely a RamFS
         FileHandle * resolveFilePath(FolderHandle * location,const Util::String &path,bool create=true,bool create_path=false);//if location is null, resolve only absolute paths
+        FileHandle * resolveFilePathCreate(FolderHandle * location,const Util::String &path,bool create_path=false);//if location is null, resolve only absolute paths, if file exists, return null
         FolderHandle * resolveFolderPath(FolderHandle * location,const Util::String &path,bool create=true,bool create_path=false);//if location is null, resolve only absolute paths
+        FolderHandle * resolveFolderPathCreate(FolderHandle * location,const Util::String &path,bool create_path=false);//if location is null, resolve only absolute paths
+        bool removeFile(FolderHandle * location,const Util::String &path);
+        bool renameFile(FolderHandle * location,const Util::String &path,const Util::String &new_name);//TODO support moving
+        bool removeFolder(FolderHandle * location,const Util::String &path);
+        bool renameFolder(FolderHandle * location,const Util::String &path,const Util::String &new_name);//TODO support moving
         FolderHandle * getRoot();
     };
     
