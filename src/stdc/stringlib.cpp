@@ -108,7 +108,7 @@ extern "C" {
             return ( *( unsigned char * )s1 - * ( unsigned char * )s2 );
         }
     }
-
+    
     char * strstr( const char * s1, const char * s2 ) {
         const char * p1 = s1;
         const char * p2;
@@ -126,7 +126,7 @@ extern "C" {
         }
         return NULL;
     }
-
+    
     char * strchr( const char * s, int c ) {
         do {
             if ( *s == ( char ) c ) {
@@ -135,13 +135,13 @@ extern "C" {
         } while ( *s++ );
         return NULL;
     }
-
+    
     char * strcpy( char * s1,const char * s2 ) {
         char * rc = s1;
         while ( ( *s1++ = *s2++ ) );
         return rc;
     }
-
+    
     int memcmp( const void * s1, const void * s2, size_t n ) {
         const unsigned char * p1 = ( const unsigned char * ) s1;
         const unsigned char * p2 = ( const unsigned char * ) s2;
@@ -154,11 +154,7 @@ extern "C" {
         }
         return 0;
     }
-
-
-
-
-
+    
     double strtod(const char *nptr, char **endptr) {
         //Written by Paul Edwards, Released to the Public Domain
         double x = 0.0;
@@ -226,10 +222,10 @@ extern "C" {
         }
         return (x);
     }
-
+    
     extern const char * _digits;
     extern const char * _Xdigits;
-
+    
     static uintmax_t _strtox_main( const char ** p, unsigned int base, uintmax_t error, uintmax_t limval, int limdigit, char * sign ) {
         uintmax_t rc = 0;
         int digit = -1;
@@ -257,7 +253,7 @@ extern "C" {
         }
         return rc;
     }
-
+    
     static const char * _strtox_prelim( const char * p, char * sign, int * base ) {
         /* skipping leading whitespace */
         while ( isspace( *p ) ) {
@@ -298,7 +294,7 @@ extern "C" {
         }
         return ( ( *base >= 2 ) && ( *base <= 36 ) ) ? p : NULL;
     }
-
+    
     long int strtol( const char * s, char ** endptr, int base ) {
         long int rc;
         char sign = '+';
@@ -316,7 +312,7 @@ extern "C" {
         }
         return ( sign == '+' ) ? rc : -rc;
     }
-
+    
     void * memchr( const void * s, int c, size_t n ) {
         const unsigned char * p = ( const unsigned char * ) s;
         while ( n-- ) {
@@ -327,7 +323,7 @@ extern "C" {
         }
         return NULL;
     }
-
+    
     void * memcpy(void *dst, const void *src, size_t n) {
         uint8_t *d=(uint8_t*)dst; 
         const uint8_t *s=(const uint8_t*)src;
@@ -336,7 +332,7 @@ extern "C" {
         }
         return dst;
     }
-
+    
     void * memset(void *src, int data, size_t n) {
         unsigned char * p=(unsigned char *)src;
         while(n-->0)*(p++)=(unsigned char)data;
@@ -351,7 +347,7 @@ extern "C" {
         }
         return d;
     }
-
+    
     char * strndup(const char * s,size_t n){
         size_t l=strnlen(s,n);
         char * d=(char*)calloc(l+1,sizeof(char));

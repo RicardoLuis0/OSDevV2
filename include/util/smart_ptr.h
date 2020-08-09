@@ -175,6 +175,21 @@ namespace Util {
             return *this;
         }
         
+        UniquePtr<T>& swap(UniquePtr<T> & other){
+            T* p=other.ptr;
+            other.ptr=ptr;
+            ptr=p;
+            return *this;
+        }
+        
+        UniquePtr<T>&operator=(T * other){
+            if(ptr){
+                delete ptr;
+            }
+            ptr=other;
+            return *this;
+        }
+        
         ~UniquePtr(){
             if(ptr){
                 delete ptr;
@@ -205,7 +220,15 @@ namespace Util {
             return ptr;
         }
         
+        T* release(){
+            T *p=ptr;
+            ptr=nullptr;
+            return p;
+        }
+        
     };
+    
+    static_assert(sizeof(UniquePtr<void>)==sizeof(void*));//make sure unique_ptr doesn't have overhead
 }
 
 #endif // SHARED_PTR_H_INCLUDED

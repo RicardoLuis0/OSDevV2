@@ -13,6 +13,7 @@ String::String(UniquePtr<char> && d,size_t l){
 
 String::String() {
     data=strdup("");
+    len=0;
 }
 
 String::String(const char * other){
@@ -31,8 +32,10 @@ String::String(const String& other){
 }
 
 String::String(String && other){
-    data=TMP::move(other.data);
+    data=strdup("");//free previous buffer
+    data.swap(other.data);//leave other as empty string
     len=other.len;
+    other.len=0;
 }
 
 String::~String() {
@@ -105,8 +108,10 @@ String& String::operator=(const String & other){
 }
 
 String& String::operator=(String && other){
-    data=strdup(other.data);
+    data=strdup("");//free previous buffer
+    data.swap(other.data);//leave other as empty string
     len=other.len;
+    other.len=0;
     return *this;
 }
 
@@ -152,6 +157,11 @@ Vector<String> String::explode(char separator,bool &has_first_separator,bool &ha
 String String::substr(size_t start,size_t n) const{
     if(start>len)return String();
     return String(data.get(),min(len-start,n));
+}
+
+char * String::release(){
+    len=0;
+    return UniquePtr<char>(strdup("")).swap(data).release();
 }
 
 

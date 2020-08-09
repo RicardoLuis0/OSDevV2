@@ -34,6 +34,8 @@ namespace Util {
             
             const char * c_str() const;
             
+            char * release();
+            
             Vector<String> explode(char separator,bool &has_first_separator,bool &has_last_separator) const;
             
             String substr(size_t start,size_t len=-1) const;
