@@ -2,6 +2,8 @@
 
 #include "klib.h"
 
+#include <stdio.h>
+
 namespace FS {
     
     RamFS::FileHandle::FileHandle(RamFS * f,const Util::String &n):FS::FileHandle(f,n,FSHANDLE_FILE){
@@ -20,6 +22,7 @@ namespace FS {
     }
     
     size_t RamFS::FileHandle::read(void * buf,size_t elem_size,size_t elem_count,size_t offset){
+        if(offset>data.size())return 0;
         uint32_t to_read=min(elem_size*elem_count,data.size()-offset);
         memcpy(buf,data.get()+offset,to_read);
         return to_read;
@@ -33,6 +36,16 @@ namespace FS {
         }
         memcpy(data.get()+offset,buf,to_write);
         return to_write;
+    }
+    
+    char RamFS::FileHandle::getc(size_t offset){
+        if(offset>data.size())return EOF;
+        return *(char*)(data.get()+offset);
+    }
+    
+    uint8_t RamFS::FileHandle::getu(size_t offset){
+        if(offset>data.size())return EOF;
+        return data[offset];
     }
     
     Util::Vector<Util::String> RamFS::FolderHandle::listFiles(){

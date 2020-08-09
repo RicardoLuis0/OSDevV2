@@ -4,6 +4,8 @@
 #include "stdc/assert.h"
 #include "acpi.h"
 
+#include "fs/ramfs.h"
+
 #ifdef DEBUG
 static volatile bool global_constructors_ran;
 static __attribute__ ((constructor)) void global_constructors_ok(void) {
@@ -83,6 +85,11 @@ extern "C" void x86_start(struct multiboot_info * mbd, unsigned int magic){//x86
         k_abort_s("Global Constructors Failed to Run");
     }
     #endif // DEBUG
+    Screen::setfgcolor(Screen::WHITE);
+    Screen::write_s("\n>Initializing VFS...");
+    FS::VFSRoot::init(new FS::RamFS());
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_s("OK");
     Screen::setfgcolor(Screen::WHITE);
     Screen::write_s("\n>Initializing KLib...");
     if(klib_init()){

@@ -19,6 +19,8 @@ namespace FS {
             virtual void unlock() override;
             virtual size_t read(void * buf,size_t elem_size,size_t elem_count,size_t offset) override;
             virtual size_t write(void * data,size_t elem_size,size_t elem_count,size_t offset) override;
+            virtual char getc(size_t offset) override;
+            virtual uint8_t getu(size_t offset) override;
         private:
             Util::Vector<uint8_t> data;
             Util::Spinlock spinlock;
