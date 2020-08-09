@@ -22,7 +22,7 @@ namespace Util {
     template<typename T,auto VALUE_REMOVE=nullptr>//D is function called on removal of object instead of destructor
     class Vector{
         protected:
-            Spinlock lock;
+            mutable Spinlock lock;
             size_t len;
             size_t alloc;
             T * vec;
@@ -134,6 +134,26 @@ namespace Util {
             }
             
             T& back(){
+                SpinlockGuard guard(lock);
+                return vec[len-1];
+            }
+            
+            T& operator[](size_t i) const{
+                SpinlockGuard guard(lock);
+                return vec[i];
+            }
+            
+            T& at(size_t i) const{
+                SpinlockGuard guard(lock);
+                return vec[i];
+            }
+            
+            T& front() const{
+                SpinlockGuard guard(lock);
+                return vec[0];
+            }
+            
+            T& back() const{
                 SpinlockGuard guard(lock);
                 return vec[len-1];
             }
