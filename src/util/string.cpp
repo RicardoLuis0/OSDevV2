@@ -80,7 +80,7 @@ String& String::operator+=(const String & other){
 }
 
 char& String::operator[](size_t i){
-    if(i<len){
+    if(i<=len){//include null terminator
         return data[i];
     }else{
         k_abort_s("accessing invalid string offset");
@@ -88,7 +88,7 @@ char& String::operator[](size_t i){
 }
 
 char String::operator[](size_t i) const{
-    if(i<len){
+    if(i<=len){//include null terminator
         return data[i];
     }else{
         k_abort_s("accessing invalid string offset");
