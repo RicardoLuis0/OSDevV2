@@ -19,14 +19,7 @@ extern "C" {
 
 #define BUFSIZ 512
 
-struct k_FILE {
-    void * f_handle;//FS::FolderHandle
-    size_t index;
-    size_t size;
-    //TODO
-};
-
-typedef struct k_FILE FILE;
+typedef struct k_FILE_HANDLE FILE;
 
 void putc(char c,FILE*);
 void puts(const char * s);

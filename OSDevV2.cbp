@@ -44,7 +44,7 @@
 			<Add option="-Wall" />
 			<Add option="-std=c11" />
 			<Add option="-std=c++17" />
-			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-rtti -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-exceptions -Werror=implicit-function-declaration -Werror=return-type" />
+			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-rtti -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-exceptions -Werror=implicit-function-declaration -Werror=return-type -Wshadow" />
 			<Add option="-DLAI_HOST_IDENTITY_MAP" />
 			<Add option="-DSERIAL_CRLF" />
 			<Add directory="include/stdc/" />
@@ -115,6 +115,7 @@
 		<Unit filename="include/stdc/assert.h" />
 		<Unit filename="include/stdc/ctype.h" />
 		<Unit filename="include/stdc/errno.h" />
+		<Unit filename="include/stdc/file_internal.h" />
 		<Unit filename="include/stdc/float.h" />
 		<Unit filename="include/stdc/inttypes.h" />
 		<Unit filename="include/stdc/limits.h" />
