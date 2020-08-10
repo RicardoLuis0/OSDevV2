@@ -159,9 +159,6 @@ namespace Util {
         }
         
         UniquePtr(UniquePtr<T> && other){
-            if(ptr){
-                delete ptr;
-            }
             ptr=other.ptr;
             other.ptr=nullptr;
         }

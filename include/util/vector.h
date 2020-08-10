@@ -52,14 +52,14 @@ namespace Util {
             void push(const T &v){
                 SpinlockGuard guard(lock);
                 grow(1);
-                vec[len]=v;
+                new(&vec[len])T(v);
                 len++;
             }
             
             void push(T && v){
                 SpinlockGuard guard(lock);
                 grow(1);
-                vec[len]=TMP::move(v);
+                new(&vec[len])T(TMP::move(v));
                 len++;
             }
             
@@ -82,7 +82,7 @@ namespace Util {
                 }else if(len<num){//grow
                     grow(num-len);
                     for(size_t i=len;i<num;i++){
-                        vec[i]=val;
+                        new(&vec[i])T(val);
                     }
                     len=num;
                 }
@@ -192,11 +192,11 @@ namespace Util {
                 size_t n=len+min;
                 if(alloc>=n)return;//no need to grow
                 if(vec){
-                    if(n>(alloc*2)){
-                        vec=(T*)realloc(vec,sizeof(T)*n);
-                    }else{
-                        vec=(T*)realloc(vec,sizeof(T)*alloc*2);//grow by doubling size
+                    size_t n2=(alloc*1.5);
+                    if(n<n2){
+                        n=n2;//geometric growtn
                     }
+                    vec=(T*)realloc(vec,sizeof(T)*n);
                 }else{
                     vec=(T*)calloc(sizeof(T),n);
                 }
