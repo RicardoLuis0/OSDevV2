@@ -10,12 +10,13 @@ namespace Util {
             size_t len;
             String(UniquePtr<char> && data,size_t len);
         public:
+            //TODO reimplement with vector instead of UniquePtr
             String();
             String(const char * other);
             String(const char * other,size_t n);
             String(const String & other);
             String(String && other);
-            virtual ~String();
+            ~String();
             
             size_t size() const;
             
@@ -25,8 +26,12 @@ namespace Util {
             String operator+(const char * other) const;
             String operator+(const String & other) const;
             
+            String operator+(char c) const;
+            
             String& operator+=(const char * other);
             String& operator+=(const String & other);
+            
+            String& operator+=(char c);
             
             String& operator=(const char * other);
             String& operator=(const String & other);

@@ -340,11 +340,12 @@ extern "C" {
     }
 
     char * strdup(const char * s){
-        size_t l=strlen(s)+1;
-        char * d=(char*)calloc(l,sizeof(char));
+        size_t l=strlen(s);
+        char * d=(char*)calloc(l+1,sizeof(char));
         for(size_t i=0;i<l;i++){
             d[i]=s[i];
         }
+        d[l]='\0';
         return d;
     }
     

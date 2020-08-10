@@ -54,10 +54,18 @@ String String::operator+(const char * other) const{
 }
 
 String String::operator+(const String & other) const{
-    char * tmp=(char*)calloc(len+other.len+1,sizeof(char));
+    UniquePtr<char> tmp=(char*)calloc(len+other.len+1,sizeof(char));
     memcpy(tmp,data,len);
     memcpy(tmp+len,other.data,other.len);
-    return String(tmp,len+other.len);
+    return String(TMP::move(tmp),len+other.len);
+}
+
+String String::operator+(char c) const {
+    UniquePtr<char> tmp=(char*)calloc(len+2,sizeof(char));
+    memcpy(tmp,data,len);
+    tmp[len]=c;
+    tmp[len+1]='\0';
+    return String(TMP::move(tmp),len+1);
 }
 
 String& String::operator+=(const char * other){
@@ -67,6 +75,16 @@ String& String::operator+=(const char * other){
     memcpy(tmp+len,other,l2);
     len=len+l2;
     data=tmp;
+    return *this;
+}
+
+String& String::operator+=(char c) {
+    char * tmp=data.release();
+    tmp=(char*)realloc(tmp,len+2);
+    tmp[len]=c;
+    tmp[len+1]='\0';
+    data=tmp;
+    len++;
     return *this;
 }
 
@@ -151,6 +169,9 @@ Vector<String> String::explode(char separator,bool &has_first_separator,bool &ha
             break;
         }
     }
+    if(state==READING_END){
+        vec.push(substr(start,len-start));
+    }
     return vec;
 }
 
@@ -160,8 +181,10 @@ String String::substr(size_t start,size_t n) const{
 }
 
 char * String::release(){
+    char * tmp=data.release();
+    data=strdup("");
     len=0;
-    return UniquePtr<char>(strdup("")).swap(data).release();
+    return tmp;
 }
 
 
