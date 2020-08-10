@@ -15,3 +15,7 @@ template<> void print(unsigned int u){
 template<> void print(const char * s){
     Screen::write_s(s);
 }
+
+template<> void print(char * s){
+    Screen::write_s(s);
+}

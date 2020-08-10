@@ -109,8 +109,7 @@ extern "C" {
     }
 
     int system(const char * cmd){
-        kshell_execute(cmd);
-        return 0;
+        return kshell_execute(cmd);
     }
 
     char * k_gets(char * buf, int n){

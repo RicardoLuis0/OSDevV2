@@ -6,6 +6,10 @@
 #include "util/hash_table.h"
 #include "arch/x86.h"
 #include "acpi.h"
+#include "util/smart_ptr.h"
+#include "util/string.h"
+#include "print.h"
+#include <stdio.h>
 
 struct kshell_cmd;
 
@@ -43,6 +47,29 @@ static void fail_msg(const char * msg){
     Screen::setcolor(Screen::BLACK,Screen::WHITE);
 }
 */
+
+static constexpr char escape_char(char c){
+    switch(c){
+    case 'a':
+        return '\a';
+    case 'b':
+        return '\b';
+    case 'e':
+        return '\e';
+    case 'f':
+        return '\f';
+    case 'n':
+        return '\n';
+    case 'r':
+        return '\r';
+    case 't':
+        return '\t';
+    case 'v':
+        return '\v';
+    default:
+        return c;
+    }
+}
 
 static void cmd_invalid(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Screen::write_c('\n');
@@ -122,35 +149,81 @@ static void cmd_cpuid(char * cmd,Util::HashTable<kshell_cmd> * commands){
 
 extern "C" int lua_main (int argc, char **argv);
 
-static void cmd_lua(char * cmd,Util::HashTable<kshell_cmd> * commands){
-    char * args[]={(char*)"lua"};
-    k_putc('\n');
-    lua_main(1,args);
+
+void cmd_parse(Util::Vector<Util::UniquePtr<char>> &data,const char * cmd){
+    size_t sz=0;
+    const char * start=cmd;
+    bool reading_string=false;
+    bool reading_escape=false;
+    Util::String str;
+    for(size_t i=0;cmd[i]!='\0';i++){
+        char c=cmd[i];
+        if(reading_escape){
+            str+=escape_char(c);
+            reading_escape=false;
+        }else if(reading_string){
+            if(c=='"'){
+                data.push(str.release());
+                reading_string=false;
+            }else if(c=='\\'){
+                reading_escape=true;
+            }else{
+                str+=c;
+            }
+        }else{
+            if(c==' '||c=='"'){
+                if(sz>0){
+                    data.push(strndup(start,sz));
+                    sz=0;
+                }
+                if(c=='"'){
+                    reading_string=true;
+                    reading_escape=false;
+                }
+            }else{
+                if(sz==0){
+                    start=cmd+i;
+                }
+                sz++;
+            }
+        }
+    }
+    if(sz>0){
+        data.push(strndup(start,sz));
+    }
 }
 
-static Util::HashTable<kshell_cmd> * commands=nullptr;
+static void cmd_lua(char * cmd,Util::HashTable<kshell_cmd> * commands){
+    Util::Vector<Util::UniquePtr<char>> args;
+    cmd_parse(args,cmd);
+    k_putc('\n');
+    lua_main(args.size(),(char**)args.get());
+}
 
-void kshell_execute(const char * cmd){
-    if(!commands)return;
+static Util::HashTable<kshell_cmd> * cmds=nullptr;
+
+int kshell_execute(const char * cmd){
+    if(!cmds)return 1;
     char * buf=strdup(cmd);
     char * temp=strchr(buf,' ');
     if(temp){
         *temp='\0';
     }
-    if(commands->has(buf)){
-        kshell_cmd &kcmd=commands->at(buf);
+    if(cmds->has(buf)){
+        kshell_cmd &kcmd=cmds->at(buf);
         if(temp){
             *temp=' ';
         }
-        kcmd.cmd(buf,commands);
+        kcmd.cmd(buf,cmds);
         if(kcmd.cmd!=cmd_cls){
             Screen::write_c('\n');
         }
+        free(buf);
+        return 0;
     }else{
-        cmd_invalid(buf,commands);
-        Screen::write_c('\n');
+        free(buf);
+        return 1;
     }
-    free(buf);
 }
 
 static void cmd_crdump(char * cmd,Util::HashTable<kshell_cmd> * commands){
@@ -170,20 +243,37 @@ static void cmd_timer(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Screen::write_ull(PIT::timer);
 }
 
+static void cmd_fappendline(char * cmd,Util::HashTable<kshell_cmd> * commands){
+    Util::Vector<Util::UniquePtr<char>> args;
+    cmd_parse(args,cmd);
+    if(args.size()<3){
+        Screen::write_s("\nmissing arguments");
+        return;
+    }
+    FILE * f=fopen(args[1],"a");
+    if(!f){
+        print("\nCould not open '",args[1].get(),"'");
+        return;
+    }
+    fputs(args[2],f);
+    fclose(f);
+}
+
 void kshell_init(){
-    commands=new Util::HashTable<kshell_cmd>();
-    (*commands)["cls"]={cmd_cls,"cls","clear the screen","- cls"};
-    (*commands)["halt"]={cmd_halt,"halt","halt the system","- halt"};
-    (*commands)["help"]={cmd_help,"help [command]","displays help","- help : list all commands\n- help [command] : show command usage"};
-    (*commands)["abort"]={cmd_abort,"abort","abort kernel","- abort"};
-    (*commands)["cpuid"]={cmd_cpuid,"cpuid","check cpu features","- cpuid"};
-    (*commands)["kbdump"]={cmd_kbdump,"kbdump","test keyboard mapping","- kbdump"};
-    (*commands)["meminfo"]={cmd_meminfo,"meminfo","display memory information","- meminfo"};
-    (*commands)["lua"]={cmd_lua,"lua","run lua interpreter","- lua"};
-    (*commands)["crdump"]={cmd_crdump,"crdump","dump contents of control registers","- crdump"};
-    (*commands)["pagefault"]={cmd_pagefault,"pagefault","cause page fault","- pagefault"};
-    (*commands)["timer"]={cmd_timer,"timer","value of PIT timer","- timer"};
-    (*commands)["shutdown"]={cmd_shutdown,"shutdown","ACPI Shutdown","- shutdown"};
+    cmds=new Util::HashTable<kshell_cmd>();
+    (*cmds)["cls"]={cmd_cls,"cls","clear the screen","- cls"};
+    (*cmds)["halt"]={cmd_halt,"halt","halt the system","- halt"};
+    (*cmds)["help"]={cmd_help,"help [command]","displays help","- help : list all commands\n- help [command] : show command usage"};
+    (*cmds)["abort"]={cmd_abort,"abort","abort kernel","- abort"};
+    (*cmds)["cpuid"]={cmd_cpuid,"cpuid","check cpu features","- cpuid"};
+    (*cmds)["kbdump"]={cmd_kbdump,"kbdump","test keyboard mapping","- kbdump"};
+    (*cmds)["meminfo"]={cmd_meminfo,"meminfo","display memory information","- meminfo"};
+    (*cmds)["lua"]={cmd_lua,"lua","run lua interpreter","- lua"};
+    (*cmds)["crdump"]={cmd_crdump,"crdump","dump contents of control registers","- crdump"};
+    (*cmds)["pagefault"]={cmd_pagefault,"pagefault","cause page fault","- pagefault"};
+    (*cmds)["timer"]={cmd_timer,"timer","value of PIT timer","- timer"};
+    (*cmds)["shutdown"]={cmd_shutdown,"shutdown","ACPI Shutdown","- shutdown"};
+    (*cmds)["fappendline"]={cmd_fappendline,"fappendline","append line to file","- fappendline file \"line\""};
 }
 
 void kshell(){
@@ -222,7 +312,10 @@ void kshell(){
             }
             break;
         case '\n':{
-                kshell_execute(cmdbuf);
+                if(kshell_execute(cmdbuf)){
+                    cmd_invalid(cmdbuf,cmds);
+                    Screen::write_c('\n');
+                }
                 line=Screen::getY();
                 ptrpos=0;
                 cmdsize=0;

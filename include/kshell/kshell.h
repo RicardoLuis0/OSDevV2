@@ -3,6 +3,6 @@
 
 void kshell();
 void kshell_init();
-void kshell_execute(const char *);
+int kshell_execute(const char *);
 
 #endif // KSHELL_H
