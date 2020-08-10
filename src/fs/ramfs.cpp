@@ -31,7 +31,7 @@ namespace FS {
     size_t RamFS::FileHandle::write(const void * buf,size_t elem_size,size_t elem_count,size_t offset){
         uint32_t to_write=elem_size*elem_count;
         uint32_t needed=to_write+offset;
-        if(needed<data.size()){
+        if(needed>data.size()){
             data.resize(needed);
         }
         memcpy(data.get()+offset,buf,to_write);
