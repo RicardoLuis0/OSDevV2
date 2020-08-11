@@ -8,8 +8,8 @@
 namespace Util {
     template<typename T,size_t N=20,bool discard_if_full=false>
     class LFQ {//fixed size lock-free queue
-        atomic_size_t location=0;
-        atomic_size_t size=0;
+        volatile atomic_size_t location=0;
+        volatile atomic_size_t size=0;
         T * data;
         LFQ(LFQ && other)=delete;
         LFQ& operator=(LFQ && other)=delete;
@@ -31,16 +31,16 @@ namespace Util {
             free(data);
         }
         
-        T && pop(){
+        T pop(){
             if(size==0){
                 k_abort_s("trying to pop empty queue");
             }
             const size_t ol=location;
             adv_loc();
             size--;
-            T tmp=move(data[ol]);
+            T tmp=TMP::move(data[ol]);
             data[ol].~T();
-            return tmp;
+            return TMP::move(tmp);
         }
         
         void push(T && val){
@@ -55,6 +55,24 @@ namespace Util {
                 data[ol].~T();
                 new(data+ol)T(move(val));
             }
+        }
+        
+        void push(const T & val){
+            if(size<N){
+                new(data+location+size)T(val);
+                size++;
+            }else if constexpr(discard_if_full){
+                return;
+            }else{
+                const size_t ol=location;
+                adv_loc();
+                data[ol].~T();
+                new(data+ol)T(val);
+            }
+        }
+        
+        bool is_empty(){
+            return size==0;
         }
         
     };
