@@ -39,7 +39,7 @@ extern "C" {
         }
     }
     
-    int getc(FILE * f){
+    int fgetc(FILE * f){
         if(f==stdin){
             return k_getch();
         }else if(f==stdout||f==stderr||!(f->flags&FLAG_READ)){
@@ -51,6 +51,10 @@ extern "C" {
                 k_abort_s("ungetc support unimplemented");
             }
         }
+    }
+    
+    int getc(FILE * f){
+        return fgetc(f);
     }
     
     char * fgets(char * str, int n, FILE * f){
@@ -108,6 +112,17 @@ extern "C" {
         }else{
             size_t n=strlen(str);
             return fwrite(str,1,n,f);
+        }
+    }
+    
+    int fputc(char c,FILE * f){
+        if(f==stdout||f==stderr){
+            k_putc(c);
+            return 0;
+        }else if(f==stdin||!(f->flags&(FLAG_WRITE|FLAG_APPEND))){
+            k_abort_s("Trying to write into read mode file");
+        }else{
+            return fwrite(&c,1,1,f);
         }
     }
     
