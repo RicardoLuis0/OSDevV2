@@ -47,7 +47,9 @@ namespace Screen {
     color getfgcolor();
     void clear();
     void clear_line(size_t line);
+    void fill_line(size_t line,char c);
     void clear_line_multi(size_t linestart,size_t lineend);
+    void fill_line_multi(size_t linestart,size_t lineend,char c);
     size_t getX();
     size_t getY();
 }

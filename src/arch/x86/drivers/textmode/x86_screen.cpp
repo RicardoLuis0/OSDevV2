@@ -129,10 +129,15 @@ void Screen::disable_cursor(){
 }
 
 void Screen::clear_line_multi(size_t linestart,size_t lineend){
+    fill_line_multi(linestart,lineend,' ');
+}
+
+
+void Screen::fill_line_multi(size_t linestart,size_t lineend,char c){
     size_t start_pos=linestart*XLEN;
     size_t end_pos=lineend*XLEN;
     for(size_t pos=start_pos;pos<end_pos;pos++){
-        vga[pos]=vga_entry(' ');
+        vga[pos]=vga_entry(c);
     }
 }
 
@@ -166,10 +171,14 @@ void Screen::clear(){
 }
 
 void Screen::clear_line(size_t line){
+    fill_line(line,' ');
+}
+
+void Screen::fill_line(size_t line,char c){
     size_t start_pos=line*XLEN;
     size_t end_pos=(line+1)*XLEN;
     for(size_t pos=start_pos;pos<end_pos;pos++){
-        vga[pos]=vga_entry(' ');
+        vga[pos]=vga_entry(c);
     }
     move(start_pos);
 }
@@ -485,7 +494,7 @@ void Screen::write_s(const char * str){
             }
             break;
         default:
-            if(isgraph(*str)){
+            if(isgraph(*str)||*str==' '){
                 if(pos==POSMAX){
                     scroll(1);
                     pos=vga_xy(0,YMAX);
@@ -528,7 +537,11 @@ void Screen::write_sn(const char * str,size_t n){
             }
             break;
         default:
-            vga[pos++]=vga_entry(*str++);
+            if(isgraph(*str)||*str==' '){
+                vga[pos]=vga_entry(*str);
+            }
+            str++;
+            pos++;
             break;
         }
         i++;
