@@ -14,6 +14,7 @@ void * memchr(const void *s, int c, size_t n);
 char * strdup(const char * s);
 char * strndup(const char * s,size_t n);
 char * strcpy(char * d,const char * s);
+char * strncpy(char * d,const char * s,size_t n);
 char * strcat(char * d,const char * s);
 size_t strlen(const char * s);
 size_t strnlen(const char * s,size_t n);

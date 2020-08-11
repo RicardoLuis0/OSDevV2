@@ -142,6 +142,14 @@ extern "C" {
         return rc;
     }
     
+    char * strncpy(char * s1,const char * s2,size_t n) {
+        for(size_t i=0;i<n;i++){
+            s1[i]=s2[i];
+            if(s1[i]=='\0'||s2[i]=='\0')break;
+        }
+        return s1;
+    }
+    
     int memcmp( const void * s1, const void * s2, size_t n ) {
         const unsigned char * p1 = ( const unsigned char * ) s1;
         const unsigned char * p2 = ( const unsigned char * ) s2;
