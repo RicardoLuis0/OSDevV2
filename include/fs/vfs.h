@@ -41,6 +41,7 @@ namespace FS {
         virtual size_t write(const void * data,size_t elem_size,size_t elem_count,size_t offset)=0;
         virtual char getc(size_t offset)=0;
         virtual uint8_t getu(size_t offset)=0;
+        virtual size_t putc(char c,size_t offset)=0;
         virtual size_t size()=0;
         virtual void clear()=0;
     };

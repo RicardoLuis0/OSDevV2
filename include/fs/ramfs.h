@@ -21,6 +21,7 @@ namespace FS {
             virtual size_t write(const void * data,size_t elem_size,size_t elem_count,size_t offset) override;
             virtual char getc(size_t offset) override;
             virtual uint8_t getu(size_t offset) override;
+            virtual size_t putc(char c,size_t offset) override;
             virtual size_t size() override;
             virtual void clear() override;
         private:

@@ -38,6 +38,10 @@ namespace FS {
         return to_write;
     }
     
+    size_t RamFS::FileHandle::putc(char c,size_t offset){
+        return write(&c,1,1,offset);
+    }
+    
     char RamFS::FileHandle::getc(size_t offset){
         if(offset>data.size())return EOF;
         return *(char*)(data.get()+offset);
