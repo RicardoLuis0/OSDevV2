@@ -147,8 +147,6 @@ static void cmd_cpuid(char * cmd,Util::HashTable<kshell_cmd> * commands){
     CPUID::cmd_cpuid();
 }
 
-extern "C" int lua_main (int argc, char **argv);
-
 
 void cmd_parse(Util::Vector<Util::UniquePtr<char>> &data,const char * cmd){
     size_t sz=0;
@@ -192,6 +190,8 @@ void cmd_parse(Util::Vector<Util::UniquePtr<char>> &data,const char * cmd){
         data.push(strndup(start,sz));
     }
 }
+
+extern "C" int lua_main (int argc, char **argv);
 
 static void cmd_lua(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Util::Vector<Util::UniquePtr<char>> args;
