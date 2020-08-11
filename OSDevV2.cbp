@@ -47,6 +47,7 @@
 			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-rtti -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-exceptions -Werror=implicit-function-declaration -Werror=return-type -Wshadow" />
 			<Add option="-DLAI_HOST_IDENTITY_MAP" />
 			<Add option="-DSERIAL_CRLF" />
+			<Add option="-D__OSDEV_V2__" />
 			<Add directory="include/stdc/" />
 			<Add directory="../lai/include" />
 		</Compiler>
