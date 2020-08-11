@@ -2,15 +2,19 @@
 #include "klib.h"
 #include "print.h"
 #include "arch/x86.h"
-#include "stdc/stdatomic.h"
+#include <stdatomic.h>
 #include "util/spinlock.h"
+#include "util/lfq.h"
+
 
 namespace Drivers {
 namespace Keyboard {
 namespace PS2 {
 // https://wiki.osdev.org/PS/2_Keyboard
 
-static atomic_bool wait_for_key=false;
+static volatile atomic_bool wait_for_key=false;
+
+Util::LFQ<keycode> * key_queue;
 
 constexpr const uint8_t KEYCODES_US_QWERTY_SET1_LEN=0xE0;
 constexpr const uint8_t KEYCODES_US_QWERTY_SET1_EXTRA_LEN=0xEE;
@@ -47,15 +51,17 @@ static inline keycode get_keycode(){
 
 static Util::Spinlock get_key_lock;
 
-static keycode last_key;
+//static keycode last_key;
 
 keycode getKey(){
     Util::SpinlockGuard guard(get_key_lock);//only allow one call to getKey at a time
-    wait_for_key=true;
-    while(wait_for_key){
-        asm("pause");
+    if(key_queue->is_empty()){
+        wait_for_key=true;
+        while(wait_for_key){
+            asm("pause");
+        }
     }
-    return last_key;
+    return key_queue->pop();
 }
 
 static bool left_shift_down=false;
@@ -178,14 +184,16 @@ void update_state(keycode key){
 
 static void kbint(){
     if(has_scancode()){
-        last_key=get_keycode();
+        keycode last_key=get_keycode();
         update_state(last_key);
+        key_queue->push(last_key);
         wait_for_key=false;
     }
 }
 
 void init(){
     print("\n  .PS/2 Keyboard...");
+    key_queue=new Util::LFQ<keycode>();
     IDT::set_irq_handler(0x21,kbint,IDT::G_32_INT,IDT::RING_0);
     IDT::pic_enable(1);
     Screen::setfgcolor(Screen::LIGHT_GREEN);
