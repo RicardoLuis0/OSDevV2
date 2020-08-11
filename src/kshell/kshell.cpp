@@ -13,8 +13,7 @@
 
 struct kshell_cmd;
 
-/*unused
-static bool is_int(char * s){
+[[maybe_unused]] static bool is_int(char * s){
     size_t len=0;
     if(*s=='-')s++;
     while(*s>='0'&&*s<='9'){
@@ -24,7 +23,7 @@ static bool is_int(char * s){
     return len>0&&*s=='\0';
 }
 
-static int parse_int(char * s){
+[[maybe_unused]] static int parse_int(char * s){
     bool neg=false;
     if(*s=='-'){
         ++s;
@@ -39,14 +38,13 @@ static int parse_int(char * s){
     return neg?-num:num;
 }
 
-static void fail_msg(const char * msg){
+[[maybe_unused]] static void fail_msg(const char * msg){
     Screen::write_c('\n');
     Screen::setcolor(Screen::RED,Screen::WHITE);
     Screen::clear_line(Screen::getY());
     Screen::write_s(msg);
     Screen::setcolor(Screen::BLACK,Screen::WHITE);
 }
-*/
 
 static constexpr char escape_char(char c){
     switch(c){
@@ -243,20 +241,16 @@ static void cmd_timer(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Screen::write_ull(PIT::timer);
 }
 
-static void cmd_fappendline(char * cmd,Util::HashTable<kshell_cmd> * commands){
+namespace TEdit {
+    int tedit_main(int argc,char **argv);
+}
+
+void cmd_tedit(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Util::Vector<Util::UniquePtr<char>> args;
     cmd_parse(args,cmd);
-    if(args.size()<3){
-        Screen::write_s("\nmissing arguments");
-        return;
-    }
-    FILE * f=fopen(args[1],"a");
-    if(!f){
-        print("\nCould not open '",args[1].get(),"'");
-        return;
-    }
-    fputs(args[2],f);
-    fclose(f);
+    k_putc('\n');
+    Screen::clear();
+    TEdit::tedit_main(args.size(),(char**)args.get());
 }
 
 void kshell_init(){
@@ -273,7 +267,7 @@ void kshell_init(){
     (*cmds)["pagefault"]={cmd_pagefault,"pagefault","cause page fault","- pagefault"};
     (*cmds)["timer"]={cmd_timer,"timer","value of PIT timer","- timer"};
     (*cmds)["shutdown"]={cmd_shutdown,"shutdown","ACPI Shutdown","- shutdown"};
-    (*cmds)["fappendline"]={cmd_fappendline,"fappendline","append line to file","- fappendline file \"line\""};
+    (*cmds)["tedit"]={cmd_tedit,"tedit","simple text editor","- tedit [file]"};
 }
 
 void kshell(){

@@ -292,6 +292,23 @@
 		<Unit filename="src/kshell/lua/lzio.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="src/kshell/tedit/IOLayer.cpp" />
+		<Unit filename="src/kshell/tedit/IOLayer.h" />
+		<Unit filename="src/kshell/tedit/IOLayerOsDevV2.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="src/kshell/tedit/MenuEngine.cpp" />
+		<Unit filename="src/kshell/tedit/MenuEngine.h" />
+		<Unit filename="src/kshell/tedit/Text.cpp" />
+		<Unit filename="src/kshell/tedit/Text.h" />
+		<Unit filename="src/kshell/tedit/TextEngine.cpp" />
+		<Unit filename="src/kshell/tedit/TextEngine.h" />
+		<Unit filename="src/kshell/tedit/TextLine.cpp" />
+		<Unit filename="src/kshell/tedit/TextLine.h" />
+		<Unit filename="src/kshell/tedit/Util.cpp" />
+		<Unit filename="src/kshell/tedit/Util.h" />
+		<Unit filename="src/kshell/tedit/tedit_main.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/new.cpp" />
 		<Unit filename="src/print.cpp" />
