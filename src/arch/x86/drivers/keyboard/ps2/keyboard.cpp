@@ -118,9 +118,11 @@ extern "C" int k_getch_extended(){
         case KEY_RIGHT_PRESSED:
             return K_GETCH_EXT_RIGHT;
         case KEY_LEFT_CONTROL_PRESSED:
-            return K_GETCH_EXT_CTRL;
         case KEY_RIGHT_CONTROL_PRESSED:
             return K_GETCH_EXT_CTRL;
+        case KEY_LEFT_ALT_PRESSED:
+        case KEY_RIGHT_ALT_PRESSED:
+            return K_GETCH_EXT_ALT;
         default:
             if(keycode<128){//if is ascii, return
                 return convert_ascii(keycode);

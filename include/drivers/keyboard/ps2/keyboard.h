@@ -7,6 +7,7 @@ namespace Drivers::Keyboard::PS2{
     void init();
     void cmd_kbdump();
     keycode getKey();
+    int convert_ascii(int key);//handle shift down
     const char * keycode_name(keycode c);
     char simple_getch();//doesn't use interrupts, for pre-driver init use only
 }

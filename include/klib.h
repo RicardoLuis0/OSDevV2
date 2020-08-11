@@ -79,6 +79,7 @@ enum k_getch_ext_keys{
     K_GETCH_EXT_LEFT,
     K_GETCH_EXT_RIGHT,
     K_GETCH_EXT_CTRL,
+    K_GETCH_EXT_ALT,
 };
 int k_getch_extended();
 

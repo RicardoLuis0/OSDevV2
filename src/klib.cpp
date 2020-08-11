@@ -113,6 +113,7 @@ extern "C" {
     }
 
     char * k_gets(char * buf, int n){
+        //TODO FIX???
         buf[0]='\0';
         size_t y=k_get_y();
         size_t x=k_get_x();
