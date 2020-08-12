@@ -68,6 +68,7 @@ namespace TEdit {
         MenuEngine::quit();
         IOLayer::fillLine(0,25,' ',IOLayer::WHITE,IOLayer::BLACK);
         IOLayer::moveCursor(0,0);
+        IOLayer::setColor(IOLayer::WHITE,IOLayer::BLACK);
         return 0;
     }
     

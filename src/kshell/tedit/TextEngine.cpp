@@ -23,6 +23,7 @@ namespace TEdit::TextEngine {
     static void redraw_line(size_t i){
         IOLayer::moveCursor(0,i);
         IOLayer::fillLine(i,1,' ',IOLayer::WHITE,IOLayer::BLACK);
+        IOLayer::setColor(IOLayer::WHITE,IOLayer::BLACK);
         size_t max=data->size();
         if((i+view_y)>max)return;
         auto &l=data->get(i+view_y);
@@ -34,6 +35,7 @@ namespace TEdit::TextEngine {
     
     void redraw_full(){//FULL REDRAW, SLOW
         IOLayer::fillLine(0,y_mmax,' ',IOLayer::WHITE,IOLayer::BLACK);
+        IOLayer::setColor(IOLayer::WHITE,IOLayer::BLACK);
         size_t max=data->size();
         for(int i=0;i<y_mmax;i++){
             if((i+view_y)>=max)break;

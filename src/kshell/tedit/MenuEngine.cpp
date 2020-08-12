@@ -50,8 +50,8 @@ namespace TEdit::MenuEngine {
     
     void draw(bool focused){
         if(focused){
-            IOLayer::fillLine(line,height,' ',IOLayer::BLACK,IOLayer::WHITE);
-            IOLayer::setColor(IOLayer::DARK_GREY,IOLayer::WHITE);
+            IOLayer::fillLine(line,height,' ',IOLayer::LIGHT_CYAN,IOLayer::CYAN);
+            IOLayer::setColor(IOLayer::LIGHT_CYAN,IOLayer::CYAN);
             IOLayer::moveCursor(0,line);
             switch(state){
             case STATE_NONE:
@@ -66,8 +66,8 @@ namespace TEdit::MenuEngine {
                 return;
             }
         }else{
-            IOLayer::fillLine(line,height,' ',IOLayer::BLACK,IOLayer::DARK_GREY);
-            IOLayer::setColor(IOLayer::WHITE,IOLayer::DARK_GREY);
+            IOLayer::fillLine(line,height,' ',IOLayer::WHITE,IOLayer::LIGHT_GREY);
+            IOLayer::setColor(IOLayer::WHITE,IOLayer::LIGHT_GREY);
             IOLayer::moveCursor(0,line);
             IOLayer::writeStr("File: ");
             if(filename_len>0){
