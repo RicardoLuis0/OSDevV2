@@ -27,7 +27,6 @@ namespace Util {
             Vector():len(0),alloc(0),vec(nullptr){
             }
             
-            
             Vector(const T * arr,size_t n){
                 vec=(T*)calloc(sizeof(T),n);
                 len=n;

@@ -99,17 +99,13 @@ uint32_t inl(uint16_t port);
 
 }
 
-namespace extra {
-    template<typename T> struct always_false : TMP::conditional<TMP::is_same<T,void>::value,TMP::true_type,TMP::false_type>::type {};//a bit ugly but it works
-    template<> struct always_false<void> : TMP::false_type {};
-}
 
 template<typename T> void out(uint16_t port,T val){
-    static_assert(extra::always_false<T>::value,"invalid type, must be uint of size 8/16/32");
+    static_assert(sizeof(T) == 0,"invalid type, must be uint of size 8/16/32");
 }
 
 template<typename T> T in(uint16_t port){
-    static_assert(extra::always_false<T>::value,"invalid type, must be uint of size 8/16/32");
+    static_assert(sizeof(T) == 0,"invalid type, must be uint of size 8/16/32");
 }
 
 template<> inline void out<uint8_t>(uint16_t port,uint8_t val){
