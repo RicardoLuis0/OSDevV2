@@ -36,6 +36,12 @@ namespace TMP {
     constexpr bool is_null_pointer_v = is_null_pointer<T>::value;
     
     template<typename T>
+    constexpr bool is_pointer_v = is_pointer<T>::value;
+    
+    template<auto V>
+    constexpr bool is_null_pointer_dv = is_null_pointer<decltype(V)>::value;
+    
+    template<typename T>
     constexpr T&& forward(typename remove_reference<T>::type& t) noexcept {
         return static_cast<T&&>(t);
     }

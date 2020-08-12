@@ -7,20 +7,15 @@
 
 namespace Util {
     
-    template<typename T,auto RV> struct REMOVE {
-        static void remove(T&t){
-            RV(t);
-        }
-    };
-    
-    template<typename T> struct REMOVE<T,nullptr> {
-        static void remove(T&t){
-            t.~T();
-        }
-    };
-    
     template<typename T,auto VALUE_REMOVE=nullptr>//D is function called on removal of object instead of destructor
     class Vector{
+            static void remove(T & t){
+                if constexpr(TMP::is_null_pointer_dv<VALUE_REMOVE>){
+                    t.~T();
+                }else{
+                    VALUE_REMOVE(t);
+                }
+            }
         protected:
             mutable Spinlock lock;
             size_t len;
@@ -44,7 +39,7 @@ namespace Util {
             
             virtual ~Vector(){
                 for(size_t i=0;i<len;i++){
-                    REMOVE<T,VALUE_REMOVE>::remove(vec[i]);
+                    remove(vec[i]);
                 }
                 free(vec);
             }
@@ -111,7 +106,7 @@ namespace Util {
                 }
                 last=min(last,len);
                 for(size_t i=first;i<last;i++){
-                    REMOVE<T,VALUE_REMOVE>::remove(vec[i]);
+                    remove(vec[i]);
                 }
                 size_t count=last-first;
                 memmove(vec+first,vec+last,count*sizeof(T));
@@ -211,7 +206,7 @@ namespace Util {
                     n=len-by;
                 }
                 for(size_t i=n;i<len;i++){
-                    REMOVE<T,VALUE_REMOVE>::remove(vec[i]);
+                    remove(vec[i]);
                 }
                 len=n;
             }

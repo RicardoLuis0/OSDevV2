@@ -6,64 +6,74 @@
 #include "klib.h"
 
 namespace Util {
-    template<typename T,typename U,auto KC> struct COMPARE {
-        static bool compare(T&t,U&u){
-            return KC(t,u);
-        }
-    };
-    template<typename T,typename U> struct COMPARE<T,U,nullptr> {
-        static bool remove(T&t,U&u){
-            return t==u;
-        }
-    };
-    template<typename T,typename U,auto CV> struct CLONE {
-        static void clone(T&t,U&u){
-            t=CV(u);
-        }
-    };
-    template<typename T,typename U> struct CLONE<T,U,nullptr> {
-        static void clone(T&t,U&u){
-            t=u;
-        }
-    };
+    
     //if you change key type, you need to also change the compare,remove,hash,clone functions
     template<typename T,                        //type
              typename K=char *,                 //internal key type
              typename CK=const char *,          //input key type
-             auto KEY_COMPARE=k_strcmp_bool,    //key comparsion function, required for pointers, if null will use '=='
-             auto KEY_REMOVE=free,              //key removal function, required for pointers, if null will use destructor
+             auto KEY_COMPARE=k_strcmp_bool,    //key comparsion function, required for pointers, if nullptr will use '=='
+             auto KEY_REMOVE=free,              //key removal function, required for pointers
              auto KEY_HASH=k_hash_s,            //key hash function, required
-             auto KEY_CLONE=strdup,             //key duplication function, required for pointers, if null will use '='
+             auto KEY_CLONE=strdup,             //key duplication function, required for pointers, if nullptr will use '='
              size_t L=256                       //size of hash table, higher sized lower collision, but increase memory usage
             >
     class HashTable {//TODO REIMPLEMENT WITH Util::String INSTEAD OF C STRINGS
             Spinlock lock;
+            static bool compare(K&k,CK&ck){
+                if constexpr(TMP::is_null_pointer_dv<KEY_COMPARE>){
+                    return (k==ck);
+                }else{
+                    return KEY_COMPARE(k,ck);
+                }
+            }
+            static void clone(K&k,CK&ck){
+                if constexpr(TMP::is_null_pointer_dv<KEY_CLONE>){
+                    k=ck;
+                }else{
+                    k=KEY_CLONE(ck);
+                }
+            }
             struct Value {
                 Value(CK k2,const T &v2){//copy
-                    CLONE<K,CK,KEY_CLONE>::clone(k,k2);
+                    clone(k,k2);
                     v=v2;
                 }
                 Value(CK k2,T && v2){//move
-                    CLONE<K,CK,KEY_CLONE>::clone(k,k2);
+                    clone(k,k2);
                     v=TMP::move(v2);
                 }
-                static void VALUE_REMOVE(Value &v){
-                    REMOVE<K,KEY_REMOVE>::remove(v.k);
+                
+                Value(const Value &other){
+                    clone(k,other.k);
+                    v=other.v;
+                }
+                
+                Value(Value && other){
+                    k=TMP::move(other.k);
+                    if constexpr(TMP::is_pointer_v<K>){
+                        other.k=nullptr;
+                    }
+                    v=TMP::move(other.v);
+                }
+                ~Value(){
+                    if constexpr(!TMP::is_null_pointer_dv<KEY_REMOVE>){
+                        KEY_REMOVE(k);
+                    }
                 }
                 K k;
                 T v;
             };
-            Util::Vector<Value,Value::VALUE_REMOVE> ht[L];
+            Util::Vector<Value> ht[L];
         public:
             HashTable(){
-                static_assert(!TMP::is_null_pointer_v<decltype(KEY_HASH)>,"KEY_HASH must not be nullptr");
+                static_assert(!TMP::is_null_pointer_dv<KEY_HASH>,"KEY_HASH must not be nullptr");
             }
             
             bool has(CK k){
                 SpinlockGuard guard(lock);
                 size_t hash=KEY_HASH(k)%L;
                 for(Value &v:ht[hash]){
-                    if(COMPARE<K,CK,KEY_COMPARE>::compare(v.k,k)){
+                    if(compare(v.k,k)){
                         return true;
                     }
                 }
@@ -78,7 +88,7 @@ namespace Util {
                 SpinlockGuard guard(lock);
                 size_t hash=KEY_HASH(k)%L;
                 for(Value &v:ht[hash]){
-                    if(COMPARE<K,CK,KEY_COMPARE>::compare(v.k,k)){
+                    if(compare(v.k,k)){
                         return v.v;
                     }
                 }
@@ -90,7 +100,7 @@ namespace Util {
                 SpinlockGuard guard(lock);
                 size_t hash=KEY_HASH(k)%L;
                 for(Value &v:ht[hash]){
-                    if(COMPARE<K,CK,KEY_COMPARE>::compare(v.k,k)){
+                    if(compare(v.k,k)){
                         return v.v;
                     }
                 }
@@ -101,7 +111,7 @@ namespace Util {
                 SpinlockGuard guard(lock);
                 size_t hash=KEY_HASH(k)%L;
                 for(Value &v:ht[hash]){
-                    if(COMPARE<K,CK,KEY_COMPARE>::compare(v.k,k)){
+                    if(compare(v.k,k)){
                         return &v.v;
                     }
                 }
@@ -112,7 +122,7 @@ namespace Util {
                 SpinlockGuard guard(lock);
                 size_t hash=KEY_HASH(k)%L;
                 for(Value &v:ht[hash]){
-                    if(COMPARE<K,CK,KEY_COMPARE>::compare(v.k,k)){
+                    if(compare(v.k,k)){
                         v.v=d;
                         return;
                     }
@@ -124,7 +134,7 @@ namespace Util {
                 SpinlockGuard guard(lock);
                 size_t hash=KEY_HASH(k)%L;
                 for(Value &v:ht[hash]){
-                    if(COMPARE<K,CK,KEY_COMPARE>::compare(v.k,k)){
+                    if(compare(v.k,k)){
                         v.v=TMP::move(d);
                         return;
                     }
@@ -137,7 +147,7 @@ namespace Util {
                 size_t i=0;
                 auto & vec=ht[hash];
                 for(Value &v:vec){
-                    if(COMPARE<K,CK,KEY_COMPARE>::compare(v.k,k)){
+                    if(compare(v.k,k)){
                         break;
                     }
                     i++;
