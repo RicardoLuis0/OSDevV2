@@ -62,7 +62,7 @@ namespace FS {
     
     Util::Vector<Util::String> RamFS::FolderHandle::listFiles(){
         Util::Vector<Util::String> file_names;
-        files.foreach_k([&file_names](char * k){
+        files.foreach_k([&file_names](const char * k){
             file_names.push(k);
         });
         return file_names;
@@ -70,7 +70,7 @@ namespace FS {
     
     Util::Vector<Util::String> RamFS::FolderHandle::listFolders(){
         Util::Vector<Util::String> folder_names;
-        folders.foreach_k([&folder_names](char * k){
+        folders.foreach_k([&folder_names](const char * k){
             folder_names.push(k);
         });
         return folder_names;
