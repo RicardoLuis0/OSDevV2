@@ -96,7 +96,7 @@ constexpr size_t POSMAX=(XLEN*YLEN)-1;
 volatile uint16_t * vga;
 
 static inline void update_color() {
-    color_value=(fg|(bg<<4));
+    color_value=(fg|((bg&0b111)<<4));
 }
 
 static inline uint16_t vga_entry(uint8_t uc) {

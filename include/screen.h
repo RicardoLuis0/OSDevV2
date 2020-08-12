@@ -6,22 +6,22 @@
 
 namespace Screen {
     enum color {
-        BLACK = 0,
-        BLUE = 1,
-        GREEN = 2,
-        CYAN = 3,
-        RED = 4,
-        MAGENTA = 5,
-        BROWN = 6,
-        LIGHT_GREY = 7,
-        DARK_GREY = 8,
-        LIGHT_BLUE = 9,
-        LIGHT_GREEN = 10,
-        LIGHT_CYAN = 11,
-        LIGHT_RED = 12,
-        LIGHT_MAGENTA = 13,
-        LIGHT_BROWN = 14,
-        WHITE = 15,
+        BLACK = 0,          //0b0000
+        BLUE = 1,           //0b0001
+        GREEN = 2,          //0b0010
+        CYAN = 3,           //0b0011
+        RED = 4,            //0b0100
+        MAGENTA = 5,        //0b0101
+        BROWN = 6,          //0b0110
+        LIGHT_GREY = 7,     //0b0111
+        DARK_GREY = 8,      //0b1000
+        LIGHT_BLUE = 9,     //0b1001
+        LIGHT_GREEN = 10,   //0b1010
+        LIGHT_CYAN = 11,    //0b1011
+        LIGHT_RED = 12,     //0b1100
+        LIGHT_MAGENTA = 13, //0b1101
+        LIGHT_BROWN = 14,   //0b1110
+        WHITE = 15,         //0b1111
     };
     void newline();
     void move(int x,int y);
