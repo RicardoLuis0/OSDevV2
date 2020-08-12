@@ -133,6 +133,19 @@ String& String::operator=(String && other){
     return *this;
 }
 
+
+bool String::operator==(const char * other){
+    return k_strcmp_bool(data,other);
+}
+
+bool String::operator==(const String & other){
+    return k_strcmp_bool(data,other.data);
+}
+
+String::operator const char *() const{
+    return data;
+}
+
 const char * String::c_str() const{
     return data.get();
 }
