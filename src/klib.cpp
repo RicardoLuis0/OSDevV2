@@ -23,46 +23,47 @@ bool klib_init(){
 }
 
 extern "C" {
+    
     void k_sleep(uint64_t ms){
         uint64_t e=PIT::timer+(ms/PIT::timer_resolution);
         while(PIT::timer<e)asm("pause");
     }
-
+    
     int errno;
-
+    
     time_t time(time_t* timer){
         //k_abort_s("time unimplemented");
         return 0;
     }
-
+    
     clock_t clock(void){
         return (clock_t)(-1);
     }
-
+    
     time_t mktime(tm *time){
         k_abort_s("mktime unimplemented");
     }
-
+    
     tm * gmtime(const time_t *timer){
         k_abort_s("gmtime unimplemented");
     }
-
+    
     tm * localtime(const time_t *timer){
         k_abort_s("localtime unimplemented");
     }
-
+    
     size_t strftime(char *s, size_t n,const char *fmt,const struct tm *){
         k_abort_s("strftime unimplemented");
     }
-
+    
     double difftime(time_t time_end,time_t time_beg){
         k_abort_s("difftime unimplemented");
     }
-
+    
     char * getenv(const char* name){
         return kernel_env->at_else(name,NULL);
     }
-
+    
     void (*signal( int sig, void (*handler) (int))) (int){
         return SIG_ERR;
     }
@@ -90,28 +91,28 @@ extern "C" {
     int atexit(void(*func)(void)){
         return __cxa_atexit((void (*)(void*))func,NULL,NULL);
     }
-
+    
     const char * err_unknown = "unknown error";
     char * errstr=(char*)err_unknown;
-
+    
     char * strerror(int errnum) {
         return errstr;
     }
-
+    
     [[noreturn]] void abort() {
         k_abort();
     }
-
+    
     [[noreturn]] void exit(int c) {
         char buf[256]={0};
         snprintf(buf,255,"Exit Called with Code %d",c);
         k_abort_s(buf);
     }
-
+    
     int system(const char * cmd){
         return kshell_execute(cmd);
     }
-
+    
     char * k_gets(char * buf, int n){
         //TODO FIX???
         buf[0]='\0';
@@ -171,25 +172,25 @@ extern "C" {
             }
         }
     }
-
+    
     [[noreturn]] void hang();
-
+    
     [[noreturn]] void k_halt(){
         //TODO clean up system before hang
         hang();
     }
-
+    
     [[noreturn]] static inline void k_abort_main(){
         Screen::disable_cursor();
         k_halt();
     }
-
+    
     void k_abort(){
         Screen::setcolor(Screen::RED,Screen::WHITE);
         print("\nKernel Aborted!");
         k_abort_main();
     }
-
+    
     void k_abort_fullscreen(){
         Screen::setcolor(Screen::BLACK,Screen::WHITE);
         Screen::clear();
@@ -199,49 +200,49 @@ extern "C" {
         print("Kernel Aborted!");
         k_abort_main();
     }
-
+    
     void k_abort_i(int code){
         Screen::setcolor(Screen::RED,Screen::WHITE);
         print("\nKernel Aborted! Error code '",code,"'");
         k_abort_main();
     }
-
+    
     void k_abort_s(const char * msg){
         Screen::setcolor(Screen::RED,Screen::WHITE);
         print("\nKernel Aborted! ",msg,"");
         k_abort_main();
     }
-
+    
     void k_abort_s_i_s(const char * s1,int i,const char * s2){
         Screen::setcolor(Screen::RED,Screen::WHITE);
         print("\nKernel Aborted! ",s1,i,s2,"");
         k_abort_main();
     }
-
+    
     void k_abort_assert(const char * condition,const char * name,uint32_t line){
         Screen::setcolor(Screen::RED,Screen::WHITE);
         print("\nKernel Aborted! In ",name,":",line,", Assertion ",condition," failed.");
         k_abort_main();
     }
-
+    
     void k_abort_massert(const char * condition,const char * msg,const char * name,uint32_t line){
         Screen::setcolor(Screen::RED,Screen::WHITE);
         print("\nKernel Aborted! In ",name,":",line,", Assertion ",condition," failed.\n",msg);
         k_abort_main();
     }
-
+    
     int k_strcmp_bool(const char * s1,const char * s2){
         while(*s1||*s2){
             if(*s1++!=*s2++)return false;
         }
         return true;
     }
-
+    
     //source http://www.cse.yorku.ca/~oz/hash.html
     size_t k_hash_s(const char * s){
         size_t hash = 5381;
         while(*s++)hash = ((hash << 5) + hash) + ((size_t)*s); /* hash * 33 + c */
         return hash;
     }
-
+    
 }

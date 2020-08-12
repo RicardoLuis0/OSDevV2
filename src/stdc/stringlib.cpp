@@ -346,7 +346,7 @@ extern "C" {
         while(n-->0)*(p++)=(unsigned char)data;
         return src;
     }
-
+    
     char * strdup(const char * s){
         size_t l=strlen(s);
         char * d=(char*)calloc(l+1,sizeof(char));
