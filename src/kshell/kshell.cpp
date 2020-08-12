@@ -187,6 +187,7 @@ void cmd_parse(Util::Vector<Util::UniquePtr<char>> &data,const char * cmd){
     if(sz>0){
         data.push(strndup(start,sz));
     }
+    data.push(nullptr);//argv is null terminated
 }
 
 extern "C" int lua_main (int argc, char **argv);
@@ -195,7 +196,7 @@ static void cmd_lua(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Util::Vector<Util::UniquePtr<char>> args;
     cmd_parse(args,cmd);
     k_putc('\n');
-    lua_main(args.size(),(char**)args.get());
+    lua_main(args.size()-1,(char**)args.get());
 }
 
 static Util::HashTable<kshell_cmd> * cmds=nullptr;
@@ -250,7 +251,7 @@ void cmd_tedit(char * cmd,Util::HashTable<kshell_cmd> * commands){
     cmd_parse(args,cmd);
     k_putc('\n');
     Screen::clear();
-    TEdit::tedit_main(args.size(),(char**)args.get());
+    TEdit::tedit_main(args.size()-1,(char**)args.get());
 }
 
 void kshell_init(){
