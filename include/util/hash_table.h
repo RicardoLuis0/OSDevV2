@@ -4,20 +4,31 @@
 #include "util/vector.h"
 #include "util/tmp.h"
 #include "klib.h"
+#include "string.h"
 
 namespace Util {
     
+    template<typename T>
+    size_t Hash(const T&){
+        static_assert(sizeof(T) == 0,"Hash function unimplemented for type");
+    }
+    
+    template<>
+    inline size_t Hash<Util::String>(const Util::String &s){
+        return k_hash_s(s.c_str());
+    }
+    
     //if you change key type, you need to also change the compare,remove,hash,clone functions
     template<typename T,                        //type
-             typename K=char *,                 //internal key type
-             typename CK=const char *,          //input key type
-             auto KEY_COMPARE=k_strcmp_bool,    //key comparsion function, required for pointers, if nullptr will use '=='
-             auto KEY_REMOVE=free,              //key removal function, required for pointers
-             auto KEY_HASH=k_hash_s,            //key hash function, required
-             auto KEY_CLONE=strdup,             //key duplication function, required for pointers, if nullptr will use '='
-             size_t L=256                       //size of hash table, higher sized lower collision, but increase memory usage
+             typename K=String,                 //internal key type
+             size_t L=256,                      //size of hash table, higher size means lower collision, but increases memory usage
+             auto KEY_HASH=Hash<K>,             //key hash function, required
+             auto KEY_COMPARE=nullptr,          //key comparsion function, required for pointers, if nullptr will use '=='
+             auto KEY_REMOVE=nullptr,           //key removal function, required for pointers
+             auto KEY_CLONE=nullptr,            //key duplication function, required for pointers, if nullptr will use '='
+             typename CK=const K &              //input key type
             >
-    class HashTable {//TODO REIMPLEMENT WITH Util::String INSTEAD OF C STRINGS
+    class HashTable {
             Spinlock lock;
             static bool compare(K&k,CK&ck){
                 if constexpr(TMP::is_null_pointer_dv<KEY_COMPARE>){
