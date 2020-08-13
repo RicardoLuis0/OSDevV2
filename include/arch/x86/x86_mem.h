@@ -22,7 +22,8 @@ namespace Memory{
     
     uint32_t get_mapping_virt(uint32_t v);//get physical mapping of virtual address
     
-    uint32_t next_free_virt_page(uint32_t n);//get a free unused virtual address ( to pass to map_virtual_page ) that can fit 'n' pages
+    uint32_t next_free_virt_page(uint32_t n);//get a free unused virtual address ( to pass to map_virtual_page ) that can fit 'n' pages, abort on fail
+    uint32_t next_free_virt_page_allow_fail(uint32_t n);//get a free unused virtual address ( to pass to map_virtual_page ) that can fit 'n' pages, return 0 on fail
     
     void x86_paging_init();
     
@@ -31,11 +32,12 @@ namespace Memory{
     }
     
     namespace Internal {
-        void pages_for(uint32_t addr,uint32_t len,uint32_t &p_id,uint32_t &n);
+        void pages_for(uint32_t addr,uint32_t len,uint32_t &p_id,uint32_t &n);//calculate pages and initial page position needed for len bytes at addr phys location
         extern physical_pages_t pages;
         bool is_phys_page_free(uint32_t page_id);//check if page with id
         void * phys_id_to_ptr(uint32_t page_id);
-        void * alloc_phys_page(uint32_t n);//get 'n' new physical pages (and mark as used)
+        void * alloc_phys_page(uint32_t n);//get 'n' new physical pages (and mark as used), abort on fail
+        void * alloc_phys_page_allow_fail(uint32_t n);//get 'n' new physical pages (and mark as used), return null on fail
         void free_phys_page(void*,uint32_t n);//mark 'n' physical pages as unused
         void set_phys_free(uint32_t page_id_start,uint32_t page_id_end,bool new_free);
         uint32_t count_used_pages();//counts number of non-free physical pages
@@ -45,7 +47,8 @@ namespace Memory{
         void map_null();
         void unmap_null();
     }
-    void * alloc_virt_page(uint32_t n);//get 'n' new virtual pages (and mark as used)
+    void * alloc_virt_page(uint32_t n);//get 'n' new virtual pages (and mark as used), abort on fail
+    void * alloc_virt_page_allow_fail(uint32_t n);//get 'n' new virtual pages (and mark as used), return null on fail
     void free_virt_page(void*,uint32_t n);//mark 'n' virtual pages as unused
     
 }

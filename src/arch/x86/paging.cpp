@@ -156,7 +156,7 @@ uint32_t Memory::get_mapping_virt(uint32_t v){
     return 0;//can't find address
 }
 
-uint32_t Memory::next_free_virt_page(uint32_t n){
+uint32_t Memory::next_free_virt_page_allow_fail(uint32_t n){
     if(!Internal::current_page_directory) k_abort_s("trying to call Memory::next_free_virt_page while paging is disabled");
     constexpr uint32_t last=1<<20;
     uint32_t c=0;
@@ -173,7 +173,13 @@ uint32_t Memory::next_free_virt_page(uint32_t n){
             c=0;
         }
     }
-    k_abort_s("Out of Virtual Memory");
+    return 0;
+}
+
+uint32_t Memory::next_free_virt_page(uint32_t n){
+    uint32_t p=next_free_virt_page_allow_fail(n);
+    if(!p) k_abort_s("Out of Virtual Memory");
+    return p;
 }
 
 extern uint8_t kernel_start;

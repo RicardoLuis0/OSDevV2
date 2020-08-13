@@ -149,6 +149,12 @@ static inline void * register_phys_page(void * p,size_t n){
     return p;
 }
 
+static inline void * map_virt_allow_fail(void * p,uint32_t n){
+    uint32_t vp=next_free_virt_page_allow_fail(n);
+    if(!vp)return nullptr;
+    return to_ptr(map_virtual_page(to_page_id(p),vp,n));
+}
+
 static inline void * map_virt(void * p,uint32_t n){
     return to_ptr(map_virtual_page(to_page_id(p),next_free_virt_page(n),n));
 }
@@ -167,11 +173,10 @@ static inline void * next_free_phys_page(){
             }
         }
     }
-    k_abort_s("OUT OF MEMORY");
     return nullptr;
 }
 
-static inline void * next_free_phys_pages(size_t n){
+static inline void * next_free_phys_pages_allow_fail(size_t n){
     if(n==1)return next_free_phys_page();
     for(uint16_t i=0;i<phys_page_segment;i++){
         if(has_free(i)){
@@ -190,12 +195,23 @@ static inline void * next_free_phys_pages(size_t n){
             }
         }
     }
-    k_abort_s("OUT OF MEMORY");
     return nullptr;
+}
+
+static inline void * next_free_phys_pages(size_t n){
+    void * p=next_free_phys_pages_allow_fail(n);
+    if(!p) k_abort_s("Out of Physical Memory");
+    return p;
 }
 
 void * Memory::Internal::alloc_phys_page(uint32_t n){
     return register_phys_page(next_free_phys_pages(n),n);
+}
+
+void * Memory::Internal::alloc_phys_page_allow_fail(uint32_t n){
+    void * p=next_free_phys_pages_allow_fail(n);
+    if(!p)return nullptr;
+    return register_phys_page(p,n);
 }
 
 void Memory::Internal::free_phys_page(void * p,uint32_t n){
@@ -221,6 +237,12 @@ uint32_t Memory::Internal::count_used_pages(){//highest index of used page
 
 void * Memory::alloc_virt_page(uint32_t n){
     return map_virt(Internal::alloc_phys_page(n),n);
+}
+
+void * Memory::alloc_virt_page_allow_fail(uint32_t n){
+    void * p=Internal::alloc_phys_page_allow_fail(n);
+    if(!p)return nullptr;
+    return map_virt_allow_fail(p,n);
 }
 
 void Memory::free_virt_page(void * p,uint32_t n){
@@ -370,7 +392,11 @@ extern "C" {
     }
     
     void * liballoc_alloc(size_t n){
-        return alloc_virt_page(n);
+        #ifdef LIBALLOC_ALLOW_NULL
+            return alloc_virt_page_allow_fail(n);
+        #else
+            return alloc_virt_page(n);
+        #endif // LIBALLOC_ALLOW_NULL
     }
     
     int liballoc_free(void * p,size_t n){
