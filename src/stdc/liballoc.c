@@ -578,15 +578,18 @@ void PREFIX(free)(void *ptr)
 
 void* PREFIX(calloc)(size_t nobj, size_t size)
 {
+       if(nobj==0)return malloc(1);
+       
        int real_size;
        void *p;
-
        real_size = nobj * size;
        
        p = PREFIX(malloc)( real_size );
-
+       
+       if(!p)return NULL;
+        
        liballoc_memset( p, 0, real_size );
-
+        
        return p;
 }
 
@@ -659,6 +662,9 @@ void*   PREFIX(realloc)(void *p, size_t size)
 
     // If we got here then we're reallocating to a block bigger than us.
     ptr = PREFIX(malloc)( size );					// We need to allocate new memory
+    
+    if(!ptr)return NULL;//NOT ENOUGH MEMORY RETURN NULLPTR
+    
     liballoc_memcpy( ptr, p, real_size );
     PREFIX(free)( p );
 
