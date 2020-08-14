@@ -23,26 +23,31 @@ constexpr const uint8_t KEYCODES_US_QWERTY_SET1_EXTRA_LEN=0xEE;
 //https://wiki.osdev.org/%228042%22_PS/2_Controller
 
 static inline bool has_scancode(){
-    return (inb(0x64) & 1);//read status register, check if 
+    return (inb(0x64)&1);//read status register, check if 
 }
 
 static inline uint8_t get_scancode(){
     return inb(0x60);
 }
 
+static inline uint8_t get_scancode_wait(){
+    while(!(inb(0x64)&1))asm("pause");
+    return inb(0x60);
+}
+
 static inline keycode get_keycode(){
     uint8_t scancode=get_scancode();
     if(scancode==0xE0){
-        scancode=get_scancode();
+        scancode=get_scancode_wait();
         if(scancode==0x2A){
-            if(get_scancode()==0xE0&&get_scancode()==0x37)return KEY_PRINTSCR_PRESSED;
+            if(get_scancode_wait()==0xE0&&get_scancode_wait()==0x37)return KEY_PRINTSCR_PRESSED;
         }else if(scancode==0xB7){
-            if(get_scancode()==0xE0&&get_scancode()==0xAA)return KEY_PRINTSCR_RELEASED;
+            if(get_scancode_wait()==0xE0&&get_scancode_wait()==0xAA)return KEY_PRINTSCR_RELEASED;
         }else if(scancode<KEYCODES_US_QWERTY_SET1_EXTRA_LEN){
             return (keycode)keycodes_extra1[scancode];
         }
     }else if(scancode==0xE1){
-        if(get_scancode()==0x1D&&get_scancode()==0x45&&get_scancode()==0xE1&&get_scancode()==0x9D&&get_scancode()==0xC5)return KEY_PAUSE;
+        if(get_scancode_wait()==0x1D&&get_scancode_wait()==0x45&&get_scancode_wait()==0xE1&&get_scancode_wait()==0x9D&&get_scancode_wait()==0xC5)return KEY_PAUSE;
     }else if(scancode<KEYCODES_US_QWERTY_SET1_LEN){
         return (keycode)keycodes[scancode];
     }
@@ -50,8 +55,6 @@ static inline keycode get_keycode(){
 }
 
 static Util::Spinlock get_key_lock;
-
-//static keycode last_key;
 
 keycode getKey(){
     Util::SpinlockGuard guard(get_key_lock);//only allow one call to getKey at a time
@@ -202,7 +205,15 @@ void init(){
 }
 
 static uint8_t get_scancode_dump(){
-    uint8_t scancode=get_scancode();
+    uint8_t scancode=inb(0x60);
+    print("\nKBD:");
+    Screen::write_h(scancode);
+    return scancode;
+}
+
+static uint8_t get_scancode_dump_wait(){
+    while(!(inb(0x64)&1))asm("pause");
+    uint8_t scancode=inb(0x60);
     print("\nKBD:");
     Screen::write_h(scancode);
     return scancode;
@@ -211,16 +222,16 @@ static uint8_t get_scancode_dump(){
 static inline keycode get_keycode_dump(){
     uint8_t scancode=get_scancode_dump();
     if(scancode==0xE0){
-        scancode=get_scancode_dump();
+        scancode=get_scancode_dump_wait();
         if(scancode==0x2A){
-            if(get_scancode_dump()==0xE0&&get_scancode_dump()==0x37)return KEY_PRINTSCR_PRESSED;
+            if(get_scancode_dump_wait()==0xE0&&get_scancode_dump_wait()==0x37)return KEY_PRINTSCR_PRESSED;
         }else if(scancode==0xB7){
-            if(get_scancode_dump()==0xE0&&get_scancode_dump()==0xAA)return KEY_PRINTSCR_RELEASED;
+            if(get_scancode_dump_wait()==0xE0&&get_scancode_dump_wait()==0xAA)return KEY_PRINTSCR_RELEASED;
         }else if(scancode<KEYCODES_US_QWERTY_SET1_EXTRA_LEN){
             return (keycode)keycodes_extra1[scancode];
         }
     }else if(scancode==0xE1){
-        if(get_scancode_dump()==0x1D&&get_scancode_dump()==0x45&&get_scancode_dump()==0xE1&&get_scancode_dump()==0x9D&&get_scancode_dump()==0xC5)return KEY_PAUSE;
+        if(get_scancode_dump_wait()==0x1D&&get_scancode_dump_wait()==0x45&&get_scancode_dump_wait()==0xE1&&get_scancode_dump_wait()==0x9D&&get_scancode_dump_wait()==0xC5)return KEY_PAUSE;
     }else if(scancode<KEYCODES_US_QWERTY_SET1_LEN){
         return (keycode)keycodes[scancode];
     }
@@ -236,7 +247,7 @@ void kbint_dump(){
         if((left_ctrl_down||right_ctrl_down)&&k==KEY_C_PRESSED){
             kbdump_continue=false;
         }
-        print("(");
+        print("\n(");
         print(keycode_name(k));
         print(")");
     }
