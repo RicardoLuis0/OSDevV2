@@ -50,7 +50,8 @@ namespace TEdit::TextEngine {
     
     static void x_line(bool always_redraw=false){
         if(data->size()>(view_y+y)){
-            size_t pos=min<size_t>(data->get(view_y+y).len(),lpos);
+            size_t pos=data->get(view_y+y).len();
+            if(lpos>-1) pos=min<size_t>(pos,lpos);
             auto view_x_old=view_x;
             while(!(pos>=view_x)&&pos<(view_x+x_max)){
                 if(pos>=view_x){
@@ -68,14 +69,17 @@ namespace TEdit::TextEngine {
     }
     
     static void y_plus(){
-        if(y<y_max){
-            if(virtual_whitespace||(data->size()>0&&(y+view_y)<(data->size()-1))){
+        if(virtual_whitespace||(data->size()>0&&(y+view_y)<(data->size()-1))){
+            if(y<y_max){
                 y++;
                 x_line();
+            }else{
+                view_y++;
+                x_line(true);
             }
         }else{
-            view_y++;
-            x_line(true);
+            lpos=-1;
+            x_line();
         }
         IOLayer::moveCursor(x,y);
     }
@@ -87,6 +91,9 @@ namespace TEdit::TextEngine {
         }else if(view_y>0){
             view_y--;
             x_line(true);
+        }else{//y==y_min&&view_y==0
+            x=0;
+            view_x=0;
         }
         IOLayer::moveCursor(x,y);
     }
@@ -95,13 +102,15 @@ namespace TEdit::TextEngine {
         if(data->size()>(view_y+y)&&(data->get(view_y+y).len()>(x+view_x))){
             x++;
         }else{
-            x=0;
-            view_x=0;
-            if(y<y_max){
-                y++;
-            }else{
-                view_y++;
-                redraw_full();
+            if(virtual_whitespace||(data->size()>0&&(y+view_y)<(data->size()-1))){
+                x=0;
+                view_x=0;
+                if(y<y_max){
+                    y++;
+                }else{
+                    view_y++;
+                    redraw_full();
+                }
             }
         }
         lpos=x+view_x;
@@ -113,7 +122,7 @@ namespace TEdit::TextEngine {
             x--;
         }else if(y>y_min){
             y--;
-            if(data->size()>(view_y+y))lpos=data->get(view_y+y).len();
+            if(data->size()>(view_y+y))lpos=-1;
             x_line();
         }
         lpos=x+view_x;
@@ -145,9 +154,8 @@ namespace TEdit::TextEngine {
                     y_minus();
                     x_line(true);
                 }else{
-                    lpos=data->get(view_y+y-1).len();
+                    lpos=-1;
                     y_minus();
-                    x_line();
                 }
             }
         }else{
