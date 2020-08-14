@@ -52,34 +52,27 @@ static const char * CR4_flags_str[32] {
 };
 
 void CR::cmd_crdump(){
-    k_putc('\n');
-    uint32_t lines=k_get_y();
-    if(lines>20){
-        k_cls();
-        lines=0;
-    }
+    uint32_t lines=0;
     Screen::setfgcolor(Screen::LIGHT_CYAN);
-    k_puts("CR0\n");
+    k_puts("\nCR0");
     Screen::setfgcolor(Screen::WHITE);
     lines++;
     uint32_t cr0=CR0::get();
     for(uint32_t i=0;i<32;i++){
         if(cr0&(1<<i)){
             if(lines==24){
-                k_puts("press any key to continue...");
+                k_puts("\npress any key to continue...");
                 k_getch_extended();
-                k_cls();
                 lines=0;
             }
             lines++;
-            k_puts(CR0_flags_str[i]);
             k_putc('\n');
+            k_puts(CR0_flags_str[i]);
         }
     }
     if(lines>20){
-        k_puts("press any key to continue...");
+        k_puts("\npress any key to continue...");
         k_getch_extended();
-        k_cls();
         lines=0;
     }
     Screen::setfgcolor(Screen::LIGHT_CYAN);
@@ -89,21 +82,20 @@ void CR::cmd_crdump(){
     k_puth(CR3::get());
     k_putc('\n');
     Screen::setfgcolor(Screen::LIGHT_CYAN);
-    k_puts("CR4\n");
+    k_puts("CR4");
     Screen::setfgcolor(Screen::WHITE);
     lines++;
     uint32_t cr4=CR4::get();
     for(uint32_t i=0;i<32;i++){
         if(cr4&(1<<i)){
             if(lines==24){
-                k_puts("press any key to continue...");
+                k_puts("\npress any key to continue...");
                 k_getch_extended();
-                k_cls();
                 lines=0;
             }
             lines++;
-            k_puts(CR4_flags_str[i]);
             k_putc('\n');
+            k_puts(CR4_flags_str[i]);
         }
     }
 }

@@ -75,51 +75,42 @@ static const char * cpuid_features_edx_str[32] {
 };
 
 void print_features(uint32_t ecx,uint32_t edx){
-    //k_cls();
-    k_putc('\n');
-    uint32_t lines=k_get_y();
-    if(lines>20){
-        k_cls();
-        lines=0;
-    }
+    uint32_t lines=0;
     Screen::setfgcolor(Screen::LIGHT_CYAN);
-    k_puts("ECX\n");
+    k_puts("\nECX");
     Screen::setfgcolor(Screen::WHITE);
     lines++;
     for(uint32_t i=0;i<32;i++){
         if(ecx&(1<<i)){
             if(lines==24){
-                k_puts("press any key to continue...");
+                k_puts("\npress any key to continue...");
                 k_getch_extended();
-                k_cls();
                 lines=0;
             }
             lines++;
-            k_puts(cpuid_features_ecx_str[i]);
             k_putc('\n');
+            k_puts(cpuid_features_ecx_str[i]);
         }
     }
     if(lines>20){
-        k_puts("press any key to continue...");
+        k_puts("\npress any key to continue...");
         k_getch_extended();
-        k_cls();
         lines=0;
     }
     Screen::setfgcolor(Screen::LIGHT_CYAN);
-    k_puts("EDX\n");
+    k_puts("\nEDX");
     Screen::setfgcolor(Screen::WHITE);
     lines++;
     for(uint32_t i=0;i<32;i++){
         if(edx&(1<<i)){
             if(lines==24){
-                k_puts("press any key to continue...");
+                k_puts("\npress any key to continue...");
                 k_getch_extended();
-                k_cls();
                 lines=0;
             }
             lines++;
-            k_puts(cpuid_features_edx_str[i]);
             k_putc('\n');
+            k_puts(cpuid_features_edx_str[i]);
         }
     }
 }

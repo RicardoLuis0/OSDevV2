@@ -176,8 +176,8 @@
 		<Unit filename="src/arch/x86/init/idt.cpp" />
 		<Unit filename="src/arch/x86/init/pit.cpp" />
 		<Unit filename="src/arch/x86/init/x86.cpp" />
-		<Unit filename="src/arch/x86/init/x86_mem.cpp" />
-		<Unit filename="src/arch/x86/paging.cpp" />
+		<Unit filename="src/arch/x86/memory/paging.cpp" />
+		<Unit filename="src/arch/x86/memory/x86_mem.cpp" />
 		<Unit filename="src/arch/x86/pci/pci.cpp" />
 		<Unit filename="src/arch/x86/spinlock.cpp" />
 		<Unit filename="src/arch/x86/tasking/cpu.asm">
