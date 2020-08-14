@@ -69,7 +69,7 @@ namespace TEdit::TextEngine {
     
     static void y_plus(){
         if(y<y_max){
-            if(virtual_whitespace||(y+view_y)<(data->size()-1)){
+            if(virtual_whitespace||(data->size()>0&&(y+view_y)<(data->size()-1))){
                 y++;
                 x_line();
             }

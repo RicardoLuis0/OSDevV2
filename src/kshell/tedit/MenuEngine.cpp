@@ -62,7 +62,7 @@ namespace TEdit::MenuEngine {
                 IOLayer::writeChars(filename,filename_len);
                 return;
             case STATE_QUITCONFIRM:
-                IOLayer::writeStr("Quit? (Y/N)");
+                IOLayer::writeStr("Unsaved changes will be lost, Quit? (Y/N)");
                 return;
             }
         }else{
@@ -106,7 +106,7 @@ namespace TEdit::MenuEngine {
             }
             return true;
         case STATE_QUITCONFIRM:
-            if(key.key=='y'||key.key=='Y'||key.key=='\n'||key.key=='\r'){
+            if(key.key=='y'||key.key=='Y'||key.key=='q'||key.key=='Q'||key.key=='\n'||key.key=='\r'){
                 do_loop=false;
                 return false;
             }else if(key.key=='n'||key.key=='N'||key.key=='\e'){
