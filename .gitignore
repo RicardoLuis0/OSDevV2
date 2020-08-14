@@ -19,3 +19,4 @@ log.txt
 *.save_failed
 *.a
 __pycache__/
+VBoxSerialLog.txt

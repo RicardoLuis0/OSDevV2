@@ -29,7 +29,7 @@ int is_transmit_empty() {
     return inb(PORT + 5) & 0x20;
 }
 
-void write_serial(char a) {
+static void write_serial(char a) {
     while (is_transmit_empty() == 0);
     outb(PORT,a);
 }
@@ -45,4 +45,17 @@ void Serial::write_s(const char * s){
     #else
     while(char c=*s++)write_serial(c);
     #endif // SERIAL_CRLF
+}
+
+static void write_h_rec(uint64_t h){
+    if(h>15){
+        write_h_rec(h/16);
+        h%=16;
+    }
+    write_serial((h<10)?(h+'0'):((h-10)+'A'));
+}
+
+void Serial::write_h(uint64_t h){
+    write_s("0x");
+    write_h_rec(h);
 }
