@@ -41,6 +41,9 @@ namespace IDT{
              "i"(irq));
     }
     
+    void enable_interrupts();//safe to call if interrupts were already enabled/disabled
+    void disable_interrupts();//safe to call if interrupts were already enabled/disabled
+    
 }
 
 #endif // X86_IDT_H_INCLUDED

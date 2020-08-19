@@ -102,6 +102,26 @@ constexpr void * idtx[256]{//array of asm idt entrypoints
 
 extern "C" void loadidt(uint32_t base,uint16_t limit);
 
+
+atomic_size_t int_en_count=0;
+
+void IDT::enable_interrupts(){
+    if(int_en_count==1){
+        asm volatile("sti");
+    }
+    if(int_en_count>0){
+        int_en_count--;
+    }
+}
+
+void IDT::disable_interrupts(){
+    if(int_en_count==0){
+        asm volatile("cli");
+    }
+    int_en_count++;
+}
+
+
 void IDT::init(){
     Screen::write_s("\n -Loading IDT...");
     IDT=(IDT_entry*)Memory::Internal::alloc_phys_page(Memory::pages_to_fit(sizeof(IDT_entry)*256));
