@@ -13,7 +13,6 @@ loadidt:
     mov   ax, [esp + 8]
     mov   [idtr], ax
     lidt  [idtr]
-    sti
     ret
 
 %macro IDTES 1 ;exception handler irq no parameter

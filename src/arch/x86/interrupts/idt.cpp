@@ -140,8 +140,9 @@ void IDT::init(){
         }
         IDT[i].encode((uint32_t)idtx[i],ta);//encode address
     }
-    PIC::init();
     loadidt((uint32_t)IDT,sizeof(IDT_entry)*256);
+    PIC::init();
+    asm("sti");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_s("OK");
     Screen::setfgcolor(Screen::WHITE);
