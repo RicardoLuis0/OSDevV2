@@ -44,6 +44,9 @@ namespace IDT{
     void enable_interrupts();//safe to call if interrupts were already enabled/disabled
     void disable_interrupts();//safe to call if interrupts were already enabled/disabled
     
+    void enable_nmi();
+    void disable_nmi();
+    
     class interrupt_guard {
         interrupt_guard(const interrupt_guard& other)=delete;
         interrupt_guard(interrupt_guard&& other)=delete;
@@ -54,6 +57,22 @@ namespace IDT{
             disable_interrupts();
         }
         inline ~interrupt_guard(){
+            enable_interrupts();
+        }
+    };
+    
+    class nmi_guard {
+        nmi_guard(const nmi_guard& other)=delete;
+        nmi_guard(nmi_guard&& other)=delete;
+        nmi_guard& operator=(const nmi_guard& other)=delete;
+        nmi_guard& operator=(nmi_guard&& other)=delete;
+    public:
+        inline nmi_guard(){
+            disable_interrupts();
+            disable_nmi();
+        }
+        inline ~nmi_guard(){
+            enable_nmi();
             enable_interrupts();
         }
     };

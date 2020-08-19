@@ -108,7 +108,7 @@ void IDT::enable_interrupts(){
     if(int_en_count==1){
         asm volatile("sti");
     }
-    if(int_en_count>0){
+    if(int_en_count>0){//prevent negative overflow
         int_en_count--;
     }
 }
@@ -118,6 +118,24 @@ void IDT::disable_interrupts(){
         asm volatile("cli");
     }
     int_en_count++;
+}
+
+atomic_size_t nmi_en_count=0;
+
+void IDT::enable_nmi(){
+    if(nmi_en_count==1){
+        outb(0x70,inb(0x70)&0x7F);
+    }
+    if(nmi_en_count>0){//prevent negative overflow
+        nmi_en_count--;
+    }
+}
+
+void IDT::disable_nmi(){
+    if(nmi_en_count==0){
+        outb(0x70,inb(0x70)|0x80);
+    }
+    nmi_en_count++;
 }
 
 void IDT::init(){
