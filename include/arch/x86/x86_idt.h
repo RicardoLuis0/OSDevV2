@@ -2,6 +2,7 @@
 #define X86_IDT_H_INCLUDED
 
 #include <stdint.h>
+#include "util.h"
 
 namespace IDT{
     
@@ -47,36 +48,21 @@ namespace IDT{
     void enable_nmi();
     void disable_nmi();
     
-    class interrupt_guard {
-        interrupt_guard(const interrupt_guard& other)=delete;
-        interrupt_guard(interrupt_guard&& other)=delete;
-        interrupt_guard& operator=(const interrupt_guard& other)=delete;
-        interrupt_guard& operator=(interrupt_guard&& other)=delete;
-    public:
-        inline interrupt_guard(){
-            disable_interrupts();
-        }
-        inline ~interrupt_guard(){
-            enable_interrupts();
-        }
-    };
+    //guards
     
-    class nmi_guard {
-        nmi_guard(const nmi_guard& other)=delete;
-        nmi_guard(nmi_guard&& other)=delete;
-        nmi_guard& operator=(const nmi_guard& other)=delete;
-        nmi_guard& operator=(nmi_guard&& other)=delete;
-    public:
-        inline nmi_guard(){
-            disable_interrupts();
-            disable_nmi();
-        }
-        inline ~nmi_guard(){
-            enable_nmi();
-            enable_interrupts();
-        }
-    };
+    using interrupt_guard=Util::simple_generic_guard<disable_interrupts,enable_interrupts>;
     
+    inline void __nmi_guard_acq(){
+        disable_interrupts();
+        disable_nmi();
+    }
+    
+    inline void __nmi_guard_rel(){
+        enable_nmi();
+        enable_interrupts();
+    }
+    
+    using nmi_guard=Util::simple_generic_guard<__nmi_guard_acq,__nmi_guard_rel>;
 }
 
 #endif // X86_IDT_H_INCLUDED
