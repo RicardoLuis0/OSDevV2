@@ -102,7 +102,6 @@ constexpr void * idtx[256]{//array of asm idt entrypoints
 
 extern "C" void loadidt(uint32_t base,uint16_t limit);
 
-
 atomic_size_t int_en_count=0;
 
 void IDT::enable_interrupts(){
@@ -120,7 +119,6 @@ void IDT::disable_interrupts(){
     }
     int_en_count++;
 }
-
 
 void IDT::init(){
     Screen::write_s("\n -Loading IDT...");
