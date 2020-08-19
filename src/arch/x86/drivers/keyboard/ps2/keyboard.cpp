@@ -198,7 +198,7 @@ void init(){
     print("\n  .PS/2 Keyboard...");
     key_queue=new Util::LFQ<keycode>();
     IDT::set_irq_handler(0x21,kbint,IDT::G_32_INT,IDT::RING_0);
-    IDT::pic_enable(1);
+    IDT::irq_enable(1);
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_s("OK");
     Screen::setfgcolor(Screen::WHITE);

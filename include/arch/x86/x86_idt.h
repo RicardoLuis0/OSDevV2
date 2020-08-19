@@ -29,8 +29,9 @@ namespace IDT{
     void set_exception_handler(uint8_t num,void(*)(uint32_t),gate_type,ring_type);//receives data
     void set_exception_handler(uint8_t num,void(*)(uint32_t,uint32_t),gate_type,ring_type);//receives data and irq number (for multi-irq handlers)
     void set_raw_exception_handler(uint8_t irq,void * h,gate_type g,ring_type t);//h must be a pointer to an interrupt handler (that preserves register state and returns with iret)
-    void pic_enable(uint8_t irq);
-    void pic_disable(uint8_t irq);
+    
+    void irq_enable(uint8_t irq);
+    void irq_disable(uint8_t irq);
     
     template<uint32_t irq>
     void call_interrupt(uint32_t data){//call user-defined interrupt

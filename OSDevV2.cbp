@@ -67,6 +67,7 @@
 		<Unit filename="include/arch/x86/x86_gdt.h" />
 		<Unit filename="include/arch/x86/x86_idt.h" />
 		<Unit filename="include/arch/x86/x86_mem.h" />
+		<Unit filename="include/arch/x86/x86_pic.h" />
 		<Unit filename="include/arch/x86/x86_pit.h" />
 		<Unit filename="include/arch/x86/x86_screen.h" />
 		<Unit filename="include/arch/x86/x86_serial.h" />
@@ -170,12 +171,13 @@
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>
 		<Unit filename="src/arch/x86/init/gdt.cpp" />
-		<Unit filename="src/arch/x86/init/idt.asm">
-			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
-		</Unit>
-		<Unit filename="src/arch/x86/init/idt.cpp" />
 		<Unit filename="src/arch/x86/init/pit.cpp" />
 		<Unit filename="src/arch/x86/init/x86.cpp" />
+		<Unit filename="src/arch/x86/interrupts/idt.asm">
+			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
+		</Unit>
+		<Unit filename="src/arch/x86/interrupts/idt.cpp" />
+		<Unit filename="src/arch/x86/interrupts/pic.cpp" />
 		<Unit filename="src/arch/x86/memory/paging.cpp" />
 		<Unit filename="src/arch/x86/memory/x86_mem.cpp" />
 		<Unit filename="src/arch/x86/pci/pci.cpp" />

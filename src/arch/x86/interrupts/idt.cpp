@@ -1,6 +1,6 @@
 #include "arch/x86.h"
-#include "stdc/stdint.h"
-#include "stdc/assert.h"
+#include <stdint.h>
+#include <assert.h>
 #include "klib.h"
 #include "screen.h"
 
@@ -102,21 +102,6 @@ constexpr void * idtx[256]{//array of asm idt entrypoints
 
 extern "C" void loadidt(uint32_t base,uint16_t limit);
 
-static void init_pic(){
-    //remap PIC
-    outb(0x20, 0x11);//initialize PIC1
-    outb(0xA0, 0x11);//initialize PIC2
-    outb(0x21, 0x20);//set PIC1 vector offset (0-7)->(32-39)
-    outb(0xA1, 0x28);//set PIC2 vector offset (8-15)->(40-47)
-    outb(0x21, 0x04);//configure master PIC
-    outb(0xA1, 0x02);//configure slave PIC
-    outb(0x21, 0x01);//set 8086 mode
-    outb(0xA1, 0x01);//set 8086 mode
-    //mask all interrupts
-    outb(0x21, 0xfb);
-    outb(0xA1, 0xff);
-}
-
 void IDT::init(){
     Screen::write_s("\n -Loading IDT...");
     IDT=(IDT_entry*)Memory::Internal::alloc_phys_page(Memory::pages_to_fit(sizeof(IDT_entry)*256));
@@ -135,36 +120,19 @@ void IDT::init(){
         }
         IDT[i].encode((uint32_t)idtx[i],ta);//encode address
     }
-    init_pic();
-    //Load IDT
+    PIC::init();
     loadidt((uint32_t)IDT,sizeof(IDT_entry)*256);
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_s("OK");
     Screen::setfgcolor(Screen::WHITE);
 }
 
-void IDT::pic_enable(uint8_t irq){
-    uint8_t port;
-    if(irq<8){
-        port=0x21;
-    }else{
-        port=0xA1;
-        irq-=8;
-    }
-    uint8_t data=inb(port)&~(1<<irq);
-    outb(port,data);
+void IDT::irq_enable(uint8_t irq){
+    PIC::unmask(irq);
 }
 
-void IDT::pic_disable(uint8_t irq){
-    uint8_t port;
-    if(irq<8){
-        port=0x21;
-    }else{
-        port=0xA1;
-        irq-=8;
-    }
-    uint8_t data=inb(port)|(1<<irq);
-    outb(port,data);
+void IDT::irq_disable(uint8_t irq){
+    PIC::mask(irq);
 }
 
 void IDT::set_irq_handler(uint8_t irq,void(*c)(void),gate_type g,ring_type t){

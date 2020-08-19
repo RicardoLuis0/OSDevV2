@@ -27,7 +27,7 @@ void PIT::init(){
     outb(0x43, 0x36);
     outb(0x40,freq&0xFF);
     outb(0x40,(freq>>8)&0xFF);
-    IDT::pic_enable(0);
+    IDT::irq_enable(0);
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_s("OK\n");
     Screen::setfgcolor(Screen::WHITE);
