@@ -44,6 +44,20 @@ namespace IDT{
     void enable_interrupts();//safe to call if interrupts were already enabled/disabled
     void disable_interrupts();//safe to call if interrupts were already enabled/disabled
     
+    class interrupt_guard {
+        interrupt_guard(const interrupt_guard& other)=delete;
+        interrupt_guard(interrupt_guard&& other)=delete;
+        interrupt_guard& operator=(const interrupt_guard& other)=delete;
+        interrupt_guard& operator=(interrupt_guard&& other)=delete;
+    public:
+        inline interrupt_guard(){
+            disable_interrupts();
+        }
+        inline ~interrupt_guard(){
+            enable_interrupts();
+        }
+    };
+    
 }
 
 #endif // X86_IDT_H_INCLUDED
