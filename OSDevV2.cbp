@@ -141,6 +141,8 @@
 		<Unit filename="include/util/spinlock.h" />
 		<Unit filename="include/util/string.h" />
 		<Unit filename="include/util/tmp.h" />
+		<Unit filename="include/util/tmp/base.h" />
+		<Unit filename="include/util/tmp/is_function.h" />
 		<Unit filename="include/util/vector.h" />
 		<Unit filename="linker.ld" />
 		<Unit filename="src/arch/x86/acpi/acpi.cpp" />
