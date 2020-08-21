@@ -58,6 +58,12 @@ namespace TMP {
       return static_cast<typename remove_reference<T>::type&&>(t);
     }
     
+    template<typename T> struct remove_pointer:type_container<T>{};
+    template<typename T> struct remove_pointer<T*>:type_container<T>{};
+    template<typename T> struct remove_pointer<T* const>:type_container<T>{};
+    template<typename T> struct remove_pointer<T* volatile>:type_container<T>{};
+    template<typename T> struct remove_pointer<T* const volatile>:type_container<T>{};
+    
     template<bool,typename T=void> struct enable_if {};
     template<typename T> struct enable_if<true, T> {using type=T;};
     
