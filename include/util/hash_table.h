@@ -103,7 +103,7 @@ namespace Util {
                         return v.v;
                     }
                 }
-                ht[hash].push(Value(k,T()));
+                ht[hash].push_back(Value(k,T()));
                 return ht[hash].back().v;
             }
             
@@ -138,7 +138,7 @@ namespace Util {
                         return;
                     }
                 }
-                ht[hash].push(Value(k,d));
+                ht[hash].push_back(Value(k,d));
             }
             
             void set(CK k,T && d){
@@ -150,7 +150,7 @@ namespace Util {
                         return;
                     }
                 }
-                ht[hash].push(Value(k,TMP::move(d)));
+                ht[hash].push_back(Value(k,TMP::move(d)));
             }
             
             bool unset(CK k){

@@ -176,14 +176,14 @@ Vector<String> String::explode(char separator,bool &has_first_separator,bool &ha
             }
         case READING_END:
             if(data[i]==separator){
-                vec.push(substr(start,i-start));
+                vec.push_back(substr(start,i-start));
                 state=READING_START;
             }
             break;
         }
     }
     if(state==READING_END){
-        vec.push(substr(start,len-start));
+        vec.push_back(substr(start,len-start));
     }
     return vec;
 }

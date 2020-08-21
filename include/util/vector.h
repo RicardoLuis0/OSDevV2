@@ -4,6 +4,7 @@
 #include "klib.h"
 #include "util/spinlock.h"
 #include "util/tmp.h"
+#include "util.h"
 
 namespace Util {
     
@@ -29,6 +30,7 @@ namespace Util {
             
             Vector(const T * arr,size_t n){
                 vec=(T*)calloc(sizeof(T),n);
+                if(!vec)k_abort_s("Not Enough Memory for Vector::Vector");
                 len=n;
                 alloc=n;
                 for(size_t i=0;i<n;i++){
@@ -43,14 +45,14 @@ namespace Util {
                 free(vec);
             }
             
-            void push(const T &v){
+            void push_back(const T &v){
                 SpinlockGuard guard(lock);
                 grow(1);
                 new(&vec[len])T(v);
                 len++;
             }
             
-            void push(T && v){
+            void push_back(T && v){
                 SpinlockGuard guard(lock);
                 grow(1);
                 new(&vec[len])T(TMP::move(v));
@@ -100,6 +102,7 @@ namespace Util {
             }
             
             void erase(size_t first,size_t last){
+                SpinlockGuard guard(lock);
                 if(first>=len||first>last){
                     return;//invalid arguments
                 }
@@ -132,26 +135,6 @@ namespace Util {
                 return vec[len-1];
             }
             
-            T& operator[](size_t i) const{
-                SpinlockGuard guard(lock);
-                return vec[i];
-            }
-            
-            T& at(size_t i) const{
-                SpinlockGuard guard(lock);
-                return vec[i];
-            }
-            
-            T& front() const{
-                SpinlockGuard guard(lock);
-                return vec[0];
-            }
-            
-            T& back() const{
-                SpinlockGuard guard(lock);
-                return vec[len-1];
-            }
-            
             T* begin(){
                 SpinlockGuard guard(lock);
                 return len>0?&vec[0]:nullptr;
@@ -167,7 +150,42 @@ namespace Util {
                 return len>0?&vec[len]:nullptr;
             }
             
-            size_t size(){
+            const T& operator[](size_t i) const{
+                SpinlockGuard guard(lock);
+                return vec[i];
+            }
+            
+            const T& at(size_t i) const{
+                SpinlockGuard guard(lock);
+                return vec[i];
+            }
+            
+            const T& front() const{
+                SpinlockGuard guard(lock);
+                return vec[0];
+            }
+            
+            const T& back() const{
+                SpinlockGuard guard(lock);
+                return vec[len-1];
+            }
+            
+            const T* begin() const{
+                SpinlockGuard guard(lock);
+                return len>0?&vec[0]:nullptr;
+            }
+            
+            const T* get() const{
+                SpinlockGuard guard(lock);
+                return len>0?&vec[0]:nullptr;
+            }
+            
+            const T* end() const{
+                SpinlockGuard guard(lock);
+                return len>0?&vec[len]:nullptr;
+            }
+            
+            size_t size() const{
                 SpinlockGuard guard(lock);
                 return len;
             }
@@ -176,24 +194,23 @@ namespace Util {
                 SpinlockGuard guard(lock);
                 if(alloc>len){
                     vec=(T*)realloc(vec,sizeof(T)*len);
+                    if(!vec)k_abort_s("Not Enough Memory for Vector::shrink_to_fit");
                     alloc=len;
                 }
             }
             
         protected:
             
-            void grow(size_t min){
-                size_t n=len+min;
+            void grow(size_t at_least){
+                size_t n=len+at_least;
                 if(alloc>=n)return;//no need to grow
                 if(vec){
-                    size_t n2=(alloc*1.5);
-                    if(n<n2){
-                        n=n2;//geometric growtn
-                    }
+                    n=max(n,(alloc*3u)/2u);
                     vec=(T*)realloc(vec,sizeof(T)*n);
                 }else{
                     vec=(T*)calloc(sizeof(T),n);
                 }
+                if(!vec)k_abort_s("Not Enough Memory for Vector::grow");
                 alloc=n;
             }
             
@@ -209,7 +226,6 @@ namespace Util {
                 }
                 len=n;
             }
-            
             
         private:
     };

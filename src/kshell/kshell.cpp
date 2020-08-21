@@ -159,7 +159,7 @@ void cmd_parse(Util::Vector<Util::UniquePtr<char>> &data,const char * cmd){
             reading_escape=false;
         }else if(reading_string){
             if(c=='"'){
-                data.push(str.release());
+                data.push_back(str.release());
                 reading_string=false;
             }else if(c=='\\'){
                 reading_escape=true;
@@ -169,7 +169,7 @@ void cmd_parse(Util::Vector<Util::UniquePtr<char>> &data,const char * cmd){
         }else{
             if(c==' '||c=='"'){
                 if(sz>0){
-                    data.push(strndup(start,sz));
+                    data.push_back(strndup(start,sz));
                     sz=0;
                 }
                 if(c=='"'){
@@ -185,9 +185,9 @@ void cmd_parse(Util::Vector<Util::UniquePtr<char>> &data,const char * cmd){
         }
     }
     if(sz>0){
-        data.push(strndup(start,sz));
+        data.push_back(strndup(start,sz));
     }
-    data.push(nullptr);//argv is null terminated
+    data.push_back(nullptr);//argv is null terminated
 }
 
 extern "C" int lua_main (int argc, char **argv);

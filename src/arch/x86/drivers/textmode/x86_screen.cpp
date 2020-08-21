@@ -278,9 +278,9 @@ void Screen::write_s(const char * str){
                 while(*str!='\0'&&(*str==';'||(*str>='0'&&*str<='9'))){
                     if(*str==';'){
                         if(size==0){
-                            parameters.push(-1);
+                            parameters.push_back(-1);
                         }else{
-                            parameters.push(val);
+                            parameters.push_back(val);
                             val=0;
                             size=0;
                         }
@@ -292,7 +292,7 @@ void Screen::write_s(const char * str){
                     str++;
                 }
                 if(size!=0){
-                    parameters.push(val);
+                    parameters.push_back(val);
                 }
                 int n=0,m=0;
                 switch(*str){
