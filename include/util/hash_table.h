@@ -14,7 +14,7 @@ namespace Util {
     }
     
     template<>
-    inline size_t Hash<Util::String>(const Util::String &s){
+    inline size_t Hash<const Util::String &>(const Util::String &s){
         return k_hash_s(s.c_str());
     }
     
@@ -22,14 +22,17 @@ namespace Util {
     template<typename T,                        //type
              typename K=String,                 //internal key type
              size_t L=256,                      //size of hash table, higher size means lower collision, but increases memory usage
-             auto KEY_HASH=Hash<K>,             //key hash function, required
-             auto KEY_COMPARE=nullptr,          //key comparsion function, required for pointers, if nullptr will use '=='
-             auto KEY_REMOVE=nullptr,           //key removal function, required for pointers
-             auto KEY_CLONE=nullptr,            //key duplication function, required for pointers, if nullptr will use '='
-             typename CK=const K &              //input key type
+             typename CK=const K &,             //input key type
+             auto KEY_HASH=Hash<CK>,            //key hash function, required
+             auto KEY_COMPARE=nullptr           //key comparsion function, required for pointers, if nullptr will use '=='
             >
     class HashTable {
+            //asserts
+            static_assert(TMP::is_function<typename TMP::remove_pointer<decltype(KEY_HASH)>::type>::value,"KEY_HASH must be a function");
+            static_assert(TMP::is_null_pointer_dv<KEY_COMPARE>||TMP::is_function<typename TMP::remove_pointer<decltype(KEY_COMPARE)>::type>::value,"KEY_COMPARE must be nullptr or a function");
+            
             Spinlock lock;
+            
             static bool compare(K&k,CK&ck){
                 if constexpr(TMP::is_null_pointer_dv<KEY_COMPARE>){
                     return (k==ck);
@@ -37,47 +40,34 @@ namespace Util {
                     return KEY_COMPARE(k,ck);
                 }
             }
-            static void clone(K&k,CK&ck){
-                if constexpr(TMP::is_null_pointer_dv<KEY_CLONE>){
-                    k=ck;
-                }else{
-                    k=KEY_CLONE(ck);
-                }
-            }
+            
             struct Value {
                 Value(CK k2,const T &v2){//copy
-                    clone(k,k2);
+                    k=k2;
                     v=v2;
                 }
+                
                 Value(CK k2,T && v2){//move
-                    clone(k,k2);
+                    k=k2;
                     v=TMP::move(v2);
                 }
                 
                 Value(const Value &other){
-                    clone(k,other.k);
+                    k=other.k;
                     v=other.v;
                 }
                 
                 Value(Value && other){
                     k=TMP::move(other.k);
-                    if constexpr(TMP::is_pointer_v<K>){
-                        other.k=nullptr;
-                    }
                     v=TMP::move(other.v);
                 }
-                ~Value(){
-                    if constexpr(!TMP::is_null_pointer_dv<KEY_REMOVE>){
-                        KEY_REMOVE(k);
-                    }
-                }
+                
                 K k;
                 T v;
             };
             Util::Vector<Value> ht[L];
         public:
             HashTable(){
-                static_assert(!TMP::is_null_pointer_dv<KEY_HASH>,"KEY_HASH must not be nullptr");
             }
             
             bool has(CK k){
