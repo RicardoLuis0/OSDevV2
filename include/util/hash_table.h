@@ -21,7 +21,7 @@ namespace Util {
     //if you change key type, you need to also change the compare,remove,hash,clone functions
     template<typename T,                        //type
              typename K=String,                 //internal key type
-             size_t L=256,                      //size of hash table, higher size means lower collision, but increases memory usage
+             size_t N=256,                      //size of hash table, higher size means lower collision, but increases memory usage
              typename CK=const K &,             //input key type
              auto KEY_HASH=Hash<CK>,            //key hash function, required
              auto KEY_COMPARE=nullptr           //key comparsion function, required for pointers, if nullptr will use '=='
@@ -65,15 +65,15 @@ namespace Util {
                 K k;
                 T v;
             };
-            Util::Vector<Value> ht[L];
+            Util::Vector<Value> ht[N];
         public:
             HashTable(){
             }
             
             bool has(CK k){
                 SpinlockGuard guard(lock);
-                size_t hash=KEY_HASH(k)%L;
-                for(Value &v:ht[hash]){
+                auto & vec=ht[KEY_HASH(k)%N];
+                for(Value &v:vec){
                     if(compare(v.k,k)){
                         return true;
                     }
@@ -87,31 +87,20 @@ namespace Util {
             
             T& at(CK k){
                 SpinlockGuard guard(lock);
-                size_t hash=KEY_HASH(k)%L;
-                for(Value &v:ht[hash]){
+                auto & vec=ht[KEY_HASH(k)%N];
+                for(Value &v:vec){
                     if(compare(v.k,k)){
                         return v.v;
                     }
                 }
-                ht[hash].push_back(Value(k,T()));
-                return ht[hash].back().v;
-            }
-            
-            T& at_else(CK k,T&&t){
-                SpinlockGuard guard(lock);
-                size_t hash=KEY_HASH(k)%L;
-                for(Value &v:ht[hash]){
-                    if(compare(v.k,k)){
-                        return v.v;
-                    }
-                }
-                return t;
+                vec.push_back(Value(k,T()));
+                return vec.back().v;
             }
             
             T * find(CK k){//if found return pointer, else null
                 SpinlockGuard guard(lock);
-                size_t hash=KEY_HASH(k)%L;
-                for(Value &v:ht[hash]){
+                auto & vec=ht[KEY_HASH(k)%N];
+                for(Value &v:vec){
                     if(compare(v.k,k)){
                         return &v.v;
                     }
@@ -121,38 +110,33 @@ namespace Util {
             
             void set(CK k,const T &d){
                 SpinlockGuard guard(lock);
-                size_t hash=KEY_HASH(k)%L;
-                for(Value &v:ht[hash]){
+                auto & vec=ht[KEY_HASH(k)%N];
+                for(Value &v:vec){
                     if(compare(v.k,k)){
                         v.v=d;
                         return;
                     }
                 }
-                ht[hash].push_back(Value(k,d));
+                vec.push_back(Value(k,d));
             }
             
             void set(CK k,T && d){
                 SpinlockGuard guard(lock);
-                size_t hash=KEY_HASH(k)%L;
-                for(Value &v:ht[hash]){
+                auto & vec=ht[KEY_HASH(k)%N];
+                for(Value &v:vec){
                     if(compare(v.k,k)){
                         v.v=TMP::move(d);
                         return;
                     }
                 }
-                ht[hash].push_back(Value(k,TMP::move(d)));
+                vec.push_back(Value(k,TMP::move(d)));
             }
             
             bool unset(CK k){
-                size_t hash=KEY_HASH(k)%L;
+                auto & vec=ht[KEY_HASH(k)%N];
                 size_t i=0;
-                auto & vec=ht[hash];
-                for(Value &v:vec){
-                    if(compare(v.k,k)){
-                        break;
-                    }
-                    i++;
-                }
+                const size_t len=vec.size();
+                for(i=0;i<len&&!compare(vec[i].k,k);i++);
                 if(i==vec.size())return false;
                 vec.erase(i);
                 return true;
@@ -160,7 +144,7 @@ namespace Util {
             
             template<typename CB>//void(value)
             void foreach_v(CB && callback){
-                for(uint32_t i=0;i<L;i++){
+                for(uint32_t i=0;i<N;i++){
                     for(Value &v:ht[i]){
                         callback(v.v);
                     }
@@ -169,7 +153,7 @@ namespace Util {
             
             template<typename CB>//void(key)
             void foreach_k(CB && callback){
-                for(uint32_t i=0;i<L;i++){
+                for(uint32_t i=0;i<N;i++){
                     for(Value &v:ht[i]){
                         callback(v.k);
                     }
@@ -178,7 +162,7 @@ namespace Util {
             
             template<typename CB>//void(key,value)
             void foreach_kv(CB && callback){
-                for(uint32_t i=0;i<L;i++){
+                for(uint32_t i=0;i<N;i++){
                     for(Value &v:ht[i]){
                         callback(v.k,v.v);
                     }

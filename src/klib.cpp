@@ -61,7 +61,8 @@ extern "C" {
     }
     
     char * getenv(const char* name){
-        return kernel_env->at_else(name,NULL);
+        auto * p=kernel_env->find(name);
+        return p?p->get():NULL;
     }
     
     void (*signal( int sig, void (*handler) (int))) (int){
