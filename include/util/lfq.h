@@ -10,6 +10,7 @@ namespace Util {
     class LFQ {//fixed size lock-free queue
         volatile atomic_size_t location=0;
         volatile atomic_size_t size=0;
+        uint8_t data_raw[N*sizeof(T)];
         T * data;
         LFQ(LFQ && other)=delete;
         LFQ& operator=(LFQ && other)=delete;
@@ -24,7 +25,7 @@ namespace Util {
     public:
         
         LFQ(){
-            data=(T*)calloc(N,sizeof(T));
+            data=(T*)data_raw;
         }
         
         ~LFQ(){
