@@ -10,6 +10,8 @@ namespace Util {
     
     template<typename T,auto VALUE_REMOVE=nullptr>//D is function called on removal of object instead of destructor
     class Vector{
+            static_assert(TMP::is_null_pointer_dv<VALUE_REMOVE>||TMP::is_function<typename TMP::remove_pointer<decltype(VALUE_REMOVE)>::type>::value,"VALUE_REMOVE must be nullptr or a function");
+            
             static void remove(T & t){
                 if constexpr(TMP::is_null_pointer_dv<VALUE_REMOVE>){
                     t.~T();
