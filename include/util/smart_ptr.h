@@ -223,6 +223,11 @@ namespace Util {
             return p;
         }
         
+        void reset(){
+            delete ptr;
+            ptr=nullptr;
+        }
+        
     };
     
     static_assert(sizeof(UniquePtr<void>)==sizeof(void*));//make sure unique_ptr doesn't have overhead
