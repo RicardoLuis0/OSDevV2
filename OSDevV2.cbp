@@ -135,6 +135,7 @@
 		<Unit filename="include/stdc/time.h" />
 		<Unit filename="include/tdraw.h" />
 		<Unit filename="include/util.h" />
+		<Unit filename="include/util/avl_tree.h" />
 		<Unit filename="include/util/hash_table.h" />
 		<Unit filename="include/util/lfq.h" />
 		<Unit filename="include/util/smart_ptr.h" />
