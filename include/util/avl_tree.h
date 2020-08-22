@@ -5,7 +5,7 @@
 #include "util/smart_ptr.h"
 
 namespace Util {
-    template<typename T,typename F=T,auto VALUE_COMPARE_LT=nullptr,auto VALUE_REMOVE=nullptr,auto VALUE_FIND_COMPARE_LT_RIGHT=VALUE_COMPARE_LT,auto VALUE_FIND_COMPARE_LT_LEFT=VALUE_COMPARE_LT>
+    template<typename T,typename F=T,auto VALUE_COMPARE_LT=nullptr,auto VALUE_REMOVE=nullptr,auto CONVERT_VAL_TO_COMP=nullptr,auto VALUE_FIND_COMPARE_LT_RIGHT=VALUE_COMPARE_LT,auto VALUE_FIND_COMPARE_LT_LEFT=VALUE_COMPARE_LT>
     class AVLTree {
         
         static bool compare_lt(T &a,T &b){
@@ -16,7 +16,7 @@ namespace Util {
             }
         }
         
-        static bool compare_find_lt_right(T &a,F &b){
+        static bool compare_find_lt_right(T &a,const F &b){
             if constexpr(TMP::is_null_pointer_dv<VALUE_FIND_COMPARE_LT_RIGHT>){
                 return (a<b);
             }else{
@@ -24,7 +24,7 @@ namespace Util {
             }
         }
         
-        static bool compare_find_lt_left(F &a,T &b){
+        static bool compare_find_lt_left(const F &a,T &b){
             if constexpr(TMP::is_null_pointer_dv<VALUE_FIND_COMPARE_LT_LEFT>){
                 return (a<b);
             }else{
@@ -115,6 +115,7 @@ namespace Util {
                 }
                 return nullptr;//couldn't find
             }
+            
             static bool insert(UniquePtr<Node> & p,Node * n){
                 if(!p){
                     p=n;
@@ -132,6 +133,7 @@ namespace Util {
                     return false;//duplicate values not allowed
                 }
                 p->update_height();
+                //balance
                 int32_t bal=calc_balance(p);
                 if(bal>1){
                     if(compare_lt(n->v,p->left->v)){//n<left
@@ -140,9 +142,64 @@ namespace Util {
                         rotateRL(p);
                     }
                 }else if(bal<-1){
-                    if(compare_lt(n->v,p->right->v)){//n<right
+                    if(compare_lt(p->right->v,n->v)){//n>right
+                        rotateLL(p);
+                    }else if(compare_lt(n->v,p->right->v)){//n<right
                         rotateLR(p);
-                    }else if(compare_lt(p->right->v,n->v)){//n>right
+                    }
+                }
+                return true;
+            }
+            
+            static UniquePtr<Node> & minNode(UniquePtr<Node> & n){
+                UniquePtr<Node> * p=&n;
+                while((*p)->left)p=&(*p)->left;
+                return *p;
+            }
+            
+            static bool remove(UniquePtr<Node> & p,const F& data,bool del=true){
+                if(p==nullptr){
+                    return false;
+                }
+                if(compare_find_lt_right(p->v,data)){//p<data
+                    if(!remove(p->right,data)){
+                        return false;
+                    }
+                }else if(compare_find_lt_left(data,p->v)){//p>data
+                    if(!remove(p->left,data)){
+                        return false;
+                    }
+                }else{//v==data
+                    if(!p->left||!p->right){
+                        Node * t=p.release();
+                        p=TMP::move(t->left?:t->right);
+                        if(del){
+                            delete t;
+                        }
+                    }else{
+                        Node * mn=minNode(p->right).get();
+                        //this remove will never go to this block again since mn has null left child, so no need to check for del
+                        if constexpr(TMP::is_null_pointer_dv<CONVERT_VAL_TO_COMP>){
+                            remove(p->right,mn->v,false);
+                        }else{
+                            remove(p->right,CONVERT_VAL_TO_COMP(mn->v),false);
+                        }
+                        p->v=TMP::move(mn->v);
+                        delete mn;
+                    }
+                }
+                //balance
+                int32_t bal=calc_balance(p);
+                if(bal>1){
+                    if(calc_balance(p->right)<0){
+                        rotateRL(p);
+                    }else{
+                        rotateRR(p);
+                    }
+                }else if(bal<-1){
+                    if(calc_balance(p->left)>0){
+                        rotateLR(p);
+                    }else{
                         rotateLL(p);
                     }
                 }
@@ -159,9 +216,13 @@ namespace Util {
             return Node::find(root,data);
         }
         
+        bool remove(const F &data){
+            return Node::remove(root,data);
+        }
+        
         bool insert(const T &data){
             Node * n=new Node(data);
-            if(!insert(root,n)){
+            if(!Node::insert(root,n)){
                 delete n;
                 return false;
             }
@@ -170,7 +231,7 @@ namespace Util {
         
         bool insert(T && data){
             Node * n=new Node(data);
-            if(!insert(root,n)){
+            if(!Node::insert(root,n)){
                 data=TMP::move(n->v);
                 delete n;
                 return false;
