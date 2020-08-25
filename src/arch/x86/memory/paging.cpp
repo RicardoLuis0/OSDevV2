@@ -20,25 +20,31 @@ namespace Memory{
         uint32_t unused         :  3;
         uint32_t address        : 20;
     };
-
+    
+    struct page_directory_root_t {
+        entry_t pd[1024];
+        int16_t free[1024];
+    };
+    
     struct page_table_entry_flags_t {
         bool present;//is entry present?
         bool rw;//is entry writable? else is read-only
         bool user;//does the entry belong to a user? else belongs to the system
     };
-
+    
     struct page_directory_entry_flags_t {
         bool present;//is entry present?
         bool rw;//is entry writable? else is read-only
         bool user;//does the entry belong to a user? else belongs to the system
     };
-
+    
     namespace Internal {
         extern uint64_t total;
         extern uint64_t usable;
         extern uint64_t phys_mem_in_use;
-        entry_t * current_page_directory=nullptr;
+        page_directory_root_t * current_page_directory=nullptr;
     }
+    
 }
 
 static inline entry_t * id_to_page_entry(uint32_t page_id,entry_t * pd_a){
@@ -59,6 +65,29 @@ static inline void set_page_table_entry(entry_t * pte,page_table_entry_flags_t f
     pte->page_size=0;
     pte->global=0;
     pte->unused=0;
+}
+
+static inline bool set_page_entry_table_used(page_directory_root_t * pd,uint32_t virt_page_id,page_table_entry_flags_t flags,uint32_t phys_page_id){
+    auto * pte=id_to_page_entry(virt_page_id,pd->pd);
+    flags.present=true;
+    if(!pte->present){
+        pd->free[virt_page_id/1024]--;
+    }else{
+        return false;
+    }
+    set_page_table_entry(pte,flags,phys_page_id);
+    return true;
+}
+
+static inline bool set_page_entry_table_free(page_directory_root_t * pd,uint32_t virt_page_id){
+    auto * pte=id_to_page_entry(virt_page_id,pd->pd);
+    if(pte->present){
+        pd->free[virt_page_id/1024]++;
+    }else{
+        return false;
+    }
+    set_page_table_entry(pte,{.present=false,.rw=false,.user=false},0);
+    return true;
 }
 
 static inline void set_page_directory_entry(entry_t * pde,page_directory_entry_flags_t flags,void * tables){
@@ -84,10 +113,8 @@ uint32_t Memory::Internal::map_virtual_page_unsafe(uint32_t p,uint32_t v,uint32_
         k_abort_s("can't map invalid virtual address");
     }
     for(uint32_t i=0;i<n;i++){
-        entry_t * pte=id_to_page_entry(v+i,Internal::current_page_directory);
-        if(!pte->present){
-            set_page_table_entry(pte,{.present=true,.rw=true,.user=false},p+i);
-        }else{
+        if(!set_page_entry_table_used(Internal::current_page_directory,v+i,{.present=true,.rw=true,.user=false},p+i)){
+            entry_t * pte=id_to_page_entry(v+i,Internal::current_page_directory->pd);
             if(allow_remap_if_same&&(pte->address==(p+i)))continue;//allow 'remapping' already mapped pages to same address
             k_abort_s("can't map mapped virtual address");
         }
@@ -96,9 +123,6 @@ uint32_t Memory::Internal::map_virtual_page_unsafe(uint32_t p,uint32_t v,uint32_
 }
 
 uint32_t Memory::map_virtual_page(uint32_t p,uint32_t v,uint32_t n){
-    if(v==0){
-        k_abort_s("can't map invalid virtual address");
-    }
     if(p>=Internal::pages.last_usable){
         k_abort_s("can't map invalid physical address");
     }
@@ -110,10 +134,7 @@ void Memory::unmap_virtual_page(uint32_t v,uint32_t n){
         k_abort_s("can't unmap invalid virtual address");
     }
     for(uint32_t i=0;i<n;i++){
-        entry_t * pte=id_to_page_entry(v+i,Internal::current_page_directory);
-        if(pte->present){
-            set_page_table_entry(pte,{.present=false,.rw=false,.user=false},0);
-        }else{
+        if(!set_page_entry_table_free(Internal::current_page_directory,v+i)){
             k_abort_s("can't unmap unmapped virtual address");
         }
     }
@@ -131,17 +152,17 @@ void Memory::Internal::pages_for(uint32_t addr,uint32_t len,uint32_t &p_id,uint3
 }
 
 void Memory::Internal::map_null(){
-    set_page_table_entry(id_to_page_entry(0,current_page_directory),{.present=true,.rw=true,.user=true},0);
+    set_page_table_entry(id_to_page_entry(0,current_page_directory->pd),{.present=true,.rw=true,.user=true},0);
 }
 
 void Memory::Internal::unmap_null(){
-    set_page_table_entry(id_to_page_entry(0,current_page_directory),{.present=false,.rw=false,.user=false},0);
+    set_page_table_entry(id_to_page_entry(0,current_page_directory->pd),{.present=false,.rw=false,.user=false},0);
 }
 
 uint32_t Memory::get_mapping_phys(uint32_t p){
     constexpr uint32_t last=1<<20;
     for(uint32_t i=1;i<last;i++){
-        entry_t * pte=id_to_page_entry(i,Internal::current_page_directory);
+        entry_t * pte=id_to_page_entry(i,Internal::current_page_directory->pd);
         if(pte->address==p){
             return i;
         }
@@ -150,7 +171,7 @@ uint32_t Memory::get_mapping_phys(uint32_t p){
 }
 
 uint32_t Memory::get_mapping_virt(uint32_t v){
-    entry_t * pte=id_to_page_entry(v,Internal::current_page_directory);
+    entry_t * pte=id_to_page_entry(v,Internal::current_page_directory->pd);
     if(pte->present){
         return pte->address;
     }
@@ -162,8 +183,14 @@ uint32_t Memory::next_free_virt_page_allow_fail(uint32_t n){
     constexpr uint32_t last=1<<20;
     uint32_t c=0;
     uint32_t s=0;
-    for(uint32_t i=1;i<last;i++){
-        entry_t * pte=id_to_page_entry(i,Internal::current_page_directory);
+    for(uint32_t i=Internal::current_page_directory->free[0]==0?1024:1;i<last;i++){
+        if(i%1024==0){
+            while(Internal::current_page_directory->free[i/1024]==0){
+                i+=1024;
+                c=0;
+            }
+        }
+        entry_t * pte=id_to_page_entry(i,Internal::current_page_directory->pd);
         if(!pte->present){
             if(c==0){
                 s=i;
@@ -187,7 +214,7 @@ extern uint8_t kernel_start;
 
 extern uint8_t kernel_end;
 
-static void paging_enable(entry_t * pd){
+static void paging_enable(page_directory_root_t * pd){
     CR3::set((uint32_t)pd);
     CR0::enableFlags(CR0::PG);
     Internal::current_page_directory=pd;
@@ -228,8 +255,8 @@ void Memory::cmd_pagefault(){
     *((uint32_t*)p)=0;
 }
 
-constexpr size_t entry_arr_pages=pages_to_fit(sizeof(entry_t)*1024);
-constexpr size_t mem_needed=entry_arr_pages*1025u*4096u;
+constexpr size_t entry_arr_pages=pages_to_fit(sizeof(entry_t)*1024u);
+constexpr size_t mem_needed=(entry_arr_pages*1024u+pages_to_fit(sizeof(page_directory_root_t)))*4096;
 
 namespace Memory::Internal {
     extern uint64_t free_mem;
@@ -246,25 +273,25 @@ void Memory::x86_paging_init(){
         snprintf(buf,80,"Not enough memory for page tables\nNeed %s, have %s",buf_mnstr,buf_mfstr);
         k_abort_s(buf);
     }
-    entry_t * pd=reinterpret_cast<entry_t*>(Internal::alloc_phys_page(entry_arr_pages));
+    page_directory_root_t * pd=reinterpret_cast<page_directory_root_t*>(Internal::alloc_phys_page(pages_to_fit(sizeof(page_directory_root_t))));
     for(uint32_t i=0;i<1024;i++){
         entry_t * pt=reinterpret_cast<entry_t*>(Internal::alloc_phys_page(entry_arr_pages));
+        pd->free[i]=1024;
         for(uint32_t j=0;j<1024;j++){
             set_page_table_entry(pt+j,{.present=false,.rw=false,.user=false},0);
         }
-        set_page_directory_entry(pd+i,{.present=true,.rw=true,.user=false},pt);
+        set_page_directory_entry(pd->pd+i,{.present=true,.rw=true,.user=false},pt);
     }
-    uint32_t i;
     Internal::phys_mem_in_use=0;
-    for(i=0;i<=Internal::pages.last_usable;i++){//map all non-free pages
+    for(uint32_t i=0;i<=Internal::pages.last_usable;i++){//map all non-free pages
         if(!Internal::is_phys_page_free(i)){
-            set_page_table_entry(id_to_page_entry(i,pd),{.present=true,.rw=true,.user=false},i);
+            set_page_entry_table_used(pd,i,{.present=true,.rw=true,.user=false},i);
             Internal::phys_mem_in_use++;
         }
     }
     Internal::phys_mem_in_use*=4096;
+    set_page_table_entry(id_to_page_entry(0,pd->pd),{.present=false,.rw=false,.user=false},0);//mark first page as non-present
     paging_enable(pd);
-    set_page_table_entry(id_to_page_entry(0,pd),{.present=false,.rw=false,.user=false},0);//mark first page as non-present
     IDT::set_exception_handler(14,page_fault_handler,IDT::G_32_INT,IDT::RING_0);//enable page fault handler
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     print("OK");
