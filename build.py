@@ -11,7 +11,7 @@ config={
     ),
     ".cpp":clang(
         #flags
-        ["-std=c++17","-DDEBUG","-g","-Iinclude","-I\"include/stdc\"","-I\""+lai_path+"include\"","--target=i686-pc-none-elf","-march=i686","-ffreestanding","-fno-builtin","-nostdlib","-nostdinc","-nostdinc++","-fno-rtti","-fno-exceptions","-Wall","-Werror=implicit-function-declaration","-Werror=return-type"],
+        ["-std=c++20","-DDEBUG","-g","-Iinclude","-I\"include/stdc\"","-I\""+lai_path+"include\"","--target=i686-pc-none-elf","-march=i686","-ffreestanding","-fno-builtin","-nostdlib","-nostdinc","-nostdinc++","-fno-rtti","-fno-exceptions","-Wall","-Werror=implicit-function-declaration","-Werror=return-type","-Wshadow"],
         
         #c++
         True
