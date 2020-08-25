@@ -673,7 +673,7 @@ void Screen::write_mem(uint64_t mem,int depth){
         if(!last){
             write_c(' ');//whitespace between numbers
         }
-        write_u(mem%1024ULL);
+        write_u(mem);
         write_c(id);
     }
 }

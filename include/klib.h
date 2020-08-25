@@ -68,6 +68,9 @@ void k_putull(int64_t);//print unsigned long long
 void k_puth(uint64_t);//print unsigned long long as hex
 void k_putmem(uint64_t);//print unsigned long long as memory (ex. 10M 2K 10B)
 
+size_t k_format_ull_str(char * str,size_t n,uint64_t u);//writes up to n+1 bytes
+size_t k_format_mem_str(char * str,size_t n,uint64_t mem,size_t depth);//writes up to n+1 bytes
+
 void k_sleep(uint64_t);
 
 int k_getch();

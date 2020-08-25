@@ -246,4 +246,67 @@ extern "C" {
         return hash;
     }
     
+    size_t k_format_ull_str(char * str,size_t n,uint64_t u){
+        size_t w=0;
+        if(u>9){
+            w=k_format_ull_str(str,n,u/10);
+            u%=10;
+        }
+        if(w<n){
+            str[w]=u+'0';
+            w++;
+            str[w]='\0';
+        }
+        return w;
+    }
+    
+    size_t k_format_mem_str(char * s,size_t n,uint64_t m,size_t depth){
+        char id;
+        switch(depth){
+        case 0:
+            id='B';
+            break;
+        case 1:
+            id='K';
+            break;
+        case 2:
+            id='M';
+            break;
+        case 3:
+            id='G';
+            break;
+        case 4:
+            id='T';
+            break;
+        default:
+            id='?';
+            break;
+        }
+        bool last=false;
+        size_t w=0;
+        if(m>=1024ULL){
+            w=k_format_mem_str(s,n,m/1024ULL,depth+1);
+        }else{
+            last=true;
+        }
+        m%=1024ULL;
+        if(m!=0||last){
+            if(!last){
+                if(w<n){
+                    s[w]=' ';
+                    w++;
+                    s[w]='\0';
+                }
+            }
+            if(w<n){
+                w+=k_format_ull_str(s+w,n-w,m);
+            }
+            if(w<n){
+                s[w]=id;
+                w++;
+                s[w]='\0';
+            }
+        }
+        return w;
+    }
 }
