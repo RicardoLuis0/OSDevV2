@@ -17,7 +17,9 @@ namespace Memory{
         uint32_t dirty          :  1;//has the page been written to? CPU doesn't modifty this flag, OS must set and clear it if needed, zero for page directory entry
         uint32_t page_size      :  1;//are the pages 4MiB? else 4KiB, needs PSE, zero for page table entry
         uint32_t global         :  1;//???, unused for page directory entry
-        uint32_t unused         :  3;
+        uint32_t unused_1       :  1;
+        uint32_t unused_2       :  1;
+        uint32_t unused_3       :  1;
         uint32_t address        : 20;
     };
     
@@ -64,7 +66,9 @@ static inline void set_page_table_entry(entry_t * pte,page_table_entry_flags_t f
     pte->dirty=0;
     pte->page_size=0;
     pte->global=0;
-    pte->unused=0;
+    pte->unused_1=0;
+    pte->unused_2=0;
+    pte->unused_3=0;
 }
 
 static inline bool set_page_entry_table_used(page_directory_root_t * pd,uint32_t virt_page_id,page_table_entry_flags_t flags,uint32_t phys_page_id){
@@ -105,7 +109,9 @@ static inline void set_page_directory_entry(entry_t * pde,page_directory_entry_f
     pde->dirty=0;
     pde->page_size=0;
     pde->global=0;
-    pde->unused=0;
+    pde->unused_1=0;
+    pde->unused_2=0;
+    pde->unused_3=0;
 }
 
 uint32_t Memory::Internal::map_virtual_page_unsafe(uint32_t p,uint32_t v,uint32_t n,bool allow_remap_if_same){
