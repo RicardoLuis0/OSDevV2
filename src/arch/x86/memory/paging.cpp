@@ -1,6 +1,7 @@
 #include "arch/x86.h"
 #include "klib.h"
 #include "print.h"
+#include <stdio.h>
 
 using namespace Memory;
 
@@ -227,11 +228,27 @@ void Memory::cmd_pagefault(){
     *((uint32_t*)p)=0;
 }
 
+constexpr size_t entry_arr_pages=pages_to_fit(sizeof(entry_t)*1024);
+constexpr size_t mem_needed=entry_arr_pages*1025u*4096u;
+
+namespace Memory::Internal {
+    extern uint64_t free_mem;
+}
+
 void Memory::x86_paging_init(){
     print("\n -Initializing Paging...");
-    entry_t * pd=reinterpret_cast<entry_t*>(Internal::alloc_phys_page(pages_to_fit(sizeof(entry_t)*1024)));
+    if(Internal::free_mem<mem_needed){
+        char buf[80];
+        char buf_mnstr[21];
+        char buf_mfstr[21];
+        k_format_mem_str(buf_mnstr,20,mem_needed,0);
+        k_format_mem_str(buf_mfstr,20,Internal::free_mem,0);
+        snprintf(buf,80,"Not enough memory for page tables\nNeed %s, have %s",buf_mnstr,buf_mfstr);
+        k_abort_s(buf);
+    }
+    entry_t * pd=reinterpret_cast<entry_t*>(Internal::alloc_phys_page(entry_arr_pages));
     for(uint32_t i=0;i<1024;i++){
-        entry_t * pt=reinterpret_cast<entry_t*>(Internal::alloc_phys_page(pages_to_fit(sizeof(entry_t)*1024)));
+        entry_t * pt=reinterpret_cast<entry_t*>(Internal::alloc_phys_page(entry_arr_pages));
         for(uint32_t j=0;j<1024;j++){
             set_page_table_entry(pt+j,{.present=false,.rw=false,.user=false},0);
         }
