@@ -1,9 +1,7 @@
 (not in any particular order)
 
-port stack unwinding library, implement exceptions
-integrate ACPICA into kernel
+(maybe) port stack unwinding library, implement exceptions
 IDE driver
 AHCI driver
 VGA driver
-Serial driver
-
+APIC support
