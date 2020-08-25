@@ -6,13 +6,11 @@
 
 namespace PIC {
     
-    void init(){
-        Screen::write_s("\n -Remapping PIC...");
-        //remap PIC
+    void reset(uint8_t off1,uint8_t off2){
         outb(0x20, 0x11);//initialize PIC1
         outb(0xA0, 0x11);//initialize PIC2
-        outb(0x21, 0x20);//set PIC1 vector offset (0-7)->(32-39)
-        outb(0xA1, 0x28);//set PIC2 vector offset (8-15)->(40-47)
+        outb(0x21, off1);//set PIC1 vector offset
+        outb(0xA1, off2);//set PIC2 vector offset
         outb(0x21, 0x04);//configure master PIC
         outb(0xA1, 0x02);//configure slave PIC
         outb(0x21, 0x01);//set 8086 mode
@@ -20,6 +18,13 @@ namespace PIC {
         //mask all interrupts
         outb(0x21, 0xff);
         outb(0xA1, 0xff);
+        
+    }
+    
+    void init(){
+        Screen::write_s("\n -Initializing PIC...");
+        //remap PIC
+        reset(0x20,0x28);
         Screen::setfgcolor(Screen::LIGHT_GREEN);
         Screen::write_s("OK");
         Screen::setfgcolor(Screen::WHITE);

@@ -11,5 +11,5 @@ extern "C" void k_main(){
     Screen::write_s("\n>Loading Kernel Shell");
     kshell_init();
     kshell();
-    k_abort_s("Kernel Shell Returned!");
+    k_abort_s("unreachable");
 }

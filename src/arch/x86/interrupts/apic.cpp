@@ -5,6 +5,7 @@
 namespace APIC {
     void init(){
         Screen::write_s("\n -Enabling APIC...");
+        PIC::reset(0x20,0x28);
         k_abort_s("APIC::init unimplemented");
     }
     
