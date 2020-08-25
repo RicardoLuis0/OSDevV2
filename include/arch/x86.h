@@ -10,6 +10,7 @@
 #include "arch/x86/x86_mem.h"
 #include "arch/x86/x86_gdt.h"
 #include "arch/x86/x86_pic.h"
+#include "arch/x86/x86_apic.h"
 #include "arch/x86/x86_idt.h"
 #include "arch/x86/x86_screen.h"
 #include "arch/x86/x86_serial.h"

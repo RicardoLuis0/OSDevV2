@@ -21,6 +21,7 @@ namespace IDT{
         RING_3=0b11,
     };
     
+    void setup();
     void init();
     void set_irq_handler(uint8_t num,void(*)(void),gate_type,ring_type);//ignores data
     void set_irq_handler(uint8_t num,void(*)(uint32_t),gate_type,ring_type);//receives data
@@ -33,6 +34,8 @@ namespace IDT{
     
     void irq_enable(uint8_t irq);
     void irq_disable(uint8_t irq);
+    
+    uint8_t irq_get_mapping(uint8_t irq);
     
     template<uint32_t irq>
     void call_interrupt(uint32_t data){//call user-defined interrupt

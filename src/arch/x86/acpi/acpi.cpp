@@ -72,23 +72,24 @@ void ACPI::init(){
     
     PCI::init();
     
-    //TODO ACPI STI interrupt
-    
-    lai_enable_acpi(0);//enable ACPI in legacy PIC mode
+    //TODO handle ACPI STI interrupt
     
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_s("OK");
     Screen::setfgcolor(Screen::WHITE);
-    Screen::write_s("\n  .ACPI Version ");
-    switch(rsdp_info.acpi_version){
-    case 0:
-    case 1:
-        Screen::write_s("1+");
-        break;
-    default:
-    case 2:
-        Screen::write_s("2+");
-        break;
+}
+
+void ACPI::enable(){
+    Screen::write_s("\n -Entering ACPI Mode...");
+    if(lai_enable_acpi(APIC::supported()?1:0)==0){//enable ACPI, returns 0 on success
+        Screen::setfgcolor(Screen::LIGHT_GREEN);
+        Screen::write_s("OK");
+        Screen::setfgcolor(Screen::WHITE);
+    }else{
+        Screen::setfgcolor(Screen::RED);
+        Screen::write_s("FAIL");
+        Screen::setfgcolor(Screen::WHITE);
+        k_abort_s("Could not enter ACPI Mode");
     }
 }
 

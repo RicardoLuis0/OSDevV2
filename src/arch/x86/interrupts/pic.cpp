@@ -1,11 +1,13 @@
 #include "arch/x86.h"
 #include <stdint.h>
 #include "klib.h"
+#include "screen.h"
 
 
 namespace PIC {
     
     void init(){
+        Screen::write_s("\n -Remapping PIC...");
         //remap PIC
         outb(0x20, 0x11);//initialize PIC1
         outb(0xA0, 0x11);//initialize PIC2
@@ -18,6 +20,9 @@ namespace PIC {
         //mask all interrupts
         outb(0x21, 0xff);
         outb(0xA1, 0xff);
+        Screen::setfgcolor(Screen::LIGHT_GREEN);
+        Screen::write_s("OK");
+        Screen::setfgcolor(Screen::WHITE);
     }
     
     void unmask(uint8_t irq){
@@ -42,6 +47,10 @@ namespace PIC {
         }
         uint8_t data=inb(port)|(1<<irq);
         outb(port,data);
+    }
+    
+    uint8_t get_mapping(uint8_t irq){
+        return (irq<16)?irq+32:irq;
     }
     
 }

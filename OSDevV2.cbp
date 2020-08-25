@@ -60,6 +60,7 @@
 		<Unit filename="include/acpi.h" />
 		<Unit filename="include/arch/x86.h" />
 		<Unit filename="include/arch/x86/tasking_internal.h" />
+		<Unit filename="include/arch/x86/x86_apic.h" />
 		<Unit filename="include/arch/x86/x86_cpu.h" />
 		<Unit filename="include/arch/x86/x86_cpuid.h" />
 		<Unit filename="include/arch/x86/x86_cr.h" />
@@ -176,6 +177,7 @@
 		<Unit filename="src/arch/x86/init/gdt.cpp" />
 		<Unit filename="src/arch/x86/init/pit.cpp" />
 		<Unit filename="src/arch/x86/init/x86.cpp" />
+		<Unit filename="src/arch/x86/interrupts/apic.cpp" />
 		<Unit filename="src/arch/x86/interrupts/idt.asm">
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o $object" />
 		</Unit>

@@ -14,7 +14,8 @@ namespace PCI {
 }
 
 namespace ACPI {
-    void init();
+    void init();//initialize acpi
+    void enable();//enter acpi mode
     namespace Internal {
         void * map_table(uint32_t addr);
         void unmap_table(void *);

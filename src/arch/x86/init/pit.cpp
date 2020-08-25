@@ -29,9 +29,6 @@ void PIT::init(){
     outb(0x40,(freq>>8)&0xFF);
     IDT::irq_enable(0);
     Screen::setfgcolor(Screen::LIGHT_GREEN);
-    Screen::write_s("OK\n");
+    Screen::write_s("OK");
     Screen::setfgcolor(Screen::WHITE);
-    Screen::write_s("  .PIT frequency = ");
-    Screen::write_i(timer_resolution);
-    Screen::write_s("ms");
 }

@@ -138,8 +138,8 @@ void IDT::disable_nmi(){
     nmi_en_count++;
 }
 
-void IDT::init(){
-    Screen::write_s("\n -Loading IDT...");
+void IDT::setup(){
+    Screen::write_s("\n -Creating IDT...");
     IDT=(IDT_entry*)Memory::Internal::alloc_phys_page(Memory::pages_to_fit(sizeof(IDT_entry)*256));
     for(uint32_t i=0;i<256;i++){//setup interrupt table
         IDT_type_attributes ta;
@@ -156,20 +156,53 @@ void IDT::init(){
         }
         IDT[i].encode((uint32_t)idtx[i],ta);//encode address
     }
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_s("OK");
+    Screen::setfgcolor(Screen::WHITE);
+}
+
+bool use_apic=false;
+
+void IDT::init(){
+    Screen::write_s("\n -Loading IDT...");
     loadidt((uint32_t)IDT,sizeof(IDT_entry)*256);
-    PIC::init();
-    asm("sti");
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_s("OK");
+    Screen::setfgcolor(Screen::WHITE);
+    if((use_apic=APIC::supported())){
+        APIC::init();
+    }else{
+        PIC::init();
+    }
+    Screen::write_s("\n -Enabling Interrupts...");
+    asm("sti");//enable interrupts
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_s("OK");
     Screen::setfgcolor(Screen::WHITE);
 }
 
 void IDT::irq_enable(uint8_t irq){
-    PIC::unmask(irq);
+    if(use_apic){
+        APIC::enable(irq);
+    }else{
+        PIC::unmask(irq);
+    }
 }
 
 void IDT::irq_disable(uint8_t irq){
-    PIC::mask(irq);
+    if(use_apic){
+        APIC::disable(irq);
+    }else{
+        PIC::mask(irq);
+    }
+}
+
+uint8_t IDT::irq_get_mapping(uint8_t irq){
+    if(use_apic){
+        return APIC::get_mapping(irq);
+    }else{
+        return PIC::get_mapping(irq);
+    }
 }
 
 void IDT::set_irq_handler(uint8_t irq,void(*c)(void),gate_type g,ring_type t){

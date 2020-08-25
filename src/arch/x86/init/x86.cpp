@@ -6,13 +6,6 @@
 
 #include "fs/ramfs.h"
 
-#ifdef DEBUG
-static volatile bool global_constructors_ran;
-static __attribute__ ((constructor)) void global_constructors_ok(void) {
-    global_constructors_ran=true;
-}
-#endif // DEBUG
-
 extern "C" {
     
     void outb(uint16_t port, uint8_t val) {
@@ -59,45 +52,22 @@ extern "C" void x86_start(struct multiboot_info * mbd, unsigned int magic){//x86
         k_abort_s("CPUID not supported");
     }
     CPUID::check();
-    Screen::write_s(">Initializing x86 Internals");
+    Screen::write_s(">Initializing x86 System");
     GDT::init();
     Memory::x86_init(mbd);//initialize physical memory
-    IDT::init();
+    IDT::setup();
     Memory::x86_paging_init();//initialize virtual memory
+    ACPI::init();
+    IDT::init();
     FPU::init();
     Serial::x86_init();
     PIT::init();
-    ACPI::init();
-    Screen::write_s("\n>Global Constructors...");
-    #ifdef DEBUG
-    global_constructors_ran=false;
-    #endif // DEBUG
+    ACPI::enable();
     _init();//only call global constructors after setting up screen, paging, memory management, etc...
-    #ifdef DEBUG
-    if(global_constructors_ran){
-    #endif // DEBUG
-        Screen::setfgcolor(Screen::LIGHT_GREEN);
-        Screen::write_s("OK");
-    #ifdef DEBUG
-    }else{
-        Screen::setfgcolor(Screen::RED);
-        Screen::write_s("FAIL");
-        k_abort_s("Global Constructors Failed to Run");
-    }
-    #endif // DEBUG
-    Screen::setfgcolor(Screen::WHITE);
-    Screen::write_s("\n>Initializing VFS...");
+    Screen::write_s("\n>Creating RamVFS");
     FS::VFSRoot::init(new FS::RamFS());
-    Screen::setfgcolor(Screen::LIGHT_GREEN);
-    Screen::write_s("OK");
-    Screen::setfgcolor(Screen::WHITE);
-    Screen::write_s("\n>Initializing KLib...");
-    if(klib_init()){
-        Screen::setfgcolor(Screen::LIGHT_GREEN);
-        Screen::write_s("OK");
-    }else{
-        Screen::setfgcolor(Screen::RED);
-        Screen::write_s("FAIL");
+    Screen::write_s("\n>Initializing KLib");
+    if(!klib_init()){
         k_abort_s("KLib Initialization Failed");
     }
     Screen::setfgcolor(Screen::WHITE);
