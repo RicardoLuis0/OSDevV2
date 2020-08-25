@@ -9,7 +9,7 @@ namespace APIC {
     }
     
     bool supported(){
-        return false;
+        return false;//CPUID::has(0,CPUID::FEAT_EDX_APIC);
     }
     
     void enable(uint8_t irq){

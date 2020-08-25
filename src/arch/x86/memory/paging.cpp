@@ -187,20 +187,15 @@ extern uint8_t kernel_start;
 extern uint8_t kernel_end;
 
 static void paging_enable(entry_t * pd){
-    CR::CR3::set((uint32_t)pd);
-    CR::CR0::enableFlags(CR::CR0_PG);
+    CR3::set((uint32_t)pd);
+    CR0::enableFlags(CR0::PG);
     Internal::current_page_directory=pd;
 }
 
 static void page_fault_handler(uint32_t data){
-//    Screen::setcolor(Screen::BLACK,Screen::WHITE);
-//    Screen::clear();
     Screen::setcolor(Screen::RED,Screen::WHITE);
-//    Screen::clear_line(0);
-//    Screen::clear_line(1);
-//    Screen::move(0,0);
     Screen::write_s("\nPage Fault trying to access ( ");
-    Screen::write_h(CR::CR2::get());
+    Screen::write_h(CR2::get());
     Screen::write_s(" ): ");
     if(data&0x1){
         Screen::write_s("present ");
@@ -217,20 +212,6 @@ static void page_fault_handler(uint32_t data){
     }else{
         Screen::write_s(", kernel ");
     }
-    /*
-    something to do with PSE/PAE???
-    if(data&0x8){
-        Screen::write_s("reserved ");
-    }
-    */
-    /*
-    //no execute bit
-    if(data&0x10){
-        Screen::write_s("instruction ");
-    }else{
-        Screen::write_s("data ");
-    }
-    */
     Screen::write_s("( ");
     Screen::write_h(data);
     Screen::write_s(")");

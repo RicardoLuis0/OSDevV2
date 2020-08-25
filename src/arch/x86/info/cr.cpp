@@ -2,53 +2,53 @@
 #include "screen.h"
 #include "klib.h"
 
-static const char * CR0_flags_str[32] {
-    "CR0_PE -- protected mode enable bit",
-    "CR0_MP -- monitor co-processor",
-    "CR0_EM -- x87 is present",
-    "CR0_TS -- x87 task switched",
-    "CR0_ET -- x87 type",
-    "CR0_NE -- x87 numeric error",
-    FORC8("reserved -- unused"),
-    "reserved -- unused",
-    "reserved -- unused",
-    "CR0_WP -- ring 0 write protect",
-    "reserved -- unused",
-    "CR0_AM -- ring 3 alignment check",
-    FORC8("reserved -- unused"),
-    "reserved -- unused",
-    "reserved -- unused",
-    "CR0_NW -- write-through caching disable bit",
-    "CR0_CD -- memory caching disable bit",
-    "CR0_PG -- paging enable bit",
+static const char * cr0_flags_str[32] {
+    "PE         -- protected mode enable bit",
+    "MP         -- monitor co-processor",
+    "EM         -- x87 is present",
+    "TS         -- x87 task switched",
+    "ET         -- x87 type",
+    "NE         -- x87 numeric error",
+    FORC8("reserved   -- unused"),
+    "reserved   -- unused",
+    "reserved   -- unused",
+    "WP         -- ring 0 write protect",
+    "reserved   -- unused",
+    "AM         -- ring 3 alignment check",
+    FORC8("reserved   -- unused"),
+    "reserved   -- unused",
+    "reserved   -- unused",
+    "NW         -- write-through caching disable bit",
+    "CD         -- memory caching disable bit",
+    "PG         -- paging enable bit",
 };
 
-static const char * CR4_flags_str[32] {
-    "CR4_VME -- V8086 mode virtual interrupt support",
-    "CR4_PVI -- protected mode virtual interrupt support",
-    "CR4_TSD -- RDTSC only in ring0?",
-    "CR4_DE -- debugging extensions enabled",
-    "CR4_PSE -- is Page Size Extension (page size 4MB) enabled?",
-    "CR4_PAE -- is Physical Address Extension enabled?",
-    "CR4_MCE -- enable machine check interrupts",
-    "CR4_PGE -- page global enabled",
-    "CR4_PCE -- RDPCM at any priviledge?",
-    "CR4_OSFXSR -- enable FXSAVE FXRSTOR",
-    "CR4_OSXMMEXCPT -- enable unmasked SSE exceptions",
-    "CR4_UMIP -- prevent usermode access to SGDT, SIDT, SLDT, SMSW and STR",
-    "CR4_LA57 -- enable 5-level paging",
-    "CR4_VMXE -- VT-x, Intel Virtualization Technology",
-    "CR4_SMXE -- Intel Trusted Execution Technology",
-    "reserved -- unused",
-    "CR4_FSGSBASE -- enable RDFSBASE RDGSBASE WRFSBASE WRGSBASE",
-    "CR4_PCIDE -- enable PCID",
-    "CR4_OSXAVE -- enable XSAVE",
-    "reserved -- unused",
-    "CR4_SMEP -- enable Supervisor Mode Execution Protection",
-    "CR4_SMAP -- enable Supervisor Mode Access Prevention",
-    "CR4_PKE -- enable Protection Key",
-    FORC8("reserved -- unused"),
-    "reserved -- unused",
+static const char * cr4_flags_str[32] {
+    "VME        -- V8086 mode virtual interrupt support",
+    "PVI        -- protected mode virtual interrupt support",
+    "TSD        -- RDTSC only in ring0?",
+    "DE         -- debugging extensions enabled",
+    "PSE        -- is Page Size Extension (page size 4MB) enabled?",
+    "PAE        -- is Physical Address Extension enabled?",
+    "MCE        -- enable machine check interrupts",
+    "PGE        -- page global enabled",
+    "PCE        -- RDPCM at any priviledge?",
+    "OSFXSR     -- enable FXSAVE FXRSTOR",
+    "OSXMMEXCPT -- enable unmasked SSE exceptions",
+    "UMIP       -- prevent usermode access to SGDT, SIDT, SLDT, SMSW and STR",
+    "LA57       -- enable 5-level paging",
+    "VMXE       -- VT-x, Intel Virtualization Technology",
+    "SMXE       -- Intel Trusted Execution Technology",
+    "reserved   -- unused",
+    "FSGSBASE   -- enable RDFSBASE RDGSBASE WRFSBASE WRGSBASE",
+    "PCIDE      -- enable PCID",
+    "OSXAVE     -- enable XSAVE",
+    "reserved   -- unused",
+    "SMEP       -- enable Supervisor Mode Execution Protection",
+    "SMAP       -- enable Supervisor Mode Access Prevention",
+    "PKE        -- enable Protection Key",
+    FORC8("reserved   -- unused"),
+    "reserved   -- unused",
 };
 
 void CR::cmd_crdump(){
@@ -67,7 +67,7 @@ void CR::cmd_crdump(){
             }
             lines++;
             k_putc('\n');
-            k_puts(CR0_flags_str[i]);
+            k_puts(cr0_flags_str[i]);
         }
     }
     if(lines>20){
@@ -95,12 +95,12 @@ void CR::cmd_crdump(){
             }
             lines++;
             k_putc('\n');
-            k_puts(CR4_flags_str[i]);
+            k_puts(cr4_flags_str[i]);
         }
     }
 }
 
-namespace CR::CR0{
+namespace CR0{
     uint32_t get(){
         uint32_t t;
         asm volatile("mov %%cr0,%0":"=r"(t):);
@@ -120,14 +120,14 @@ namespace CR::CR0{
     }
 }
 
-namespace CR::CR2 {
+namespace CR2 {
     uint32_t get(){
         uint32_t t;
         asm volatile("mov %%cr2,%0":"=r"(t):);
         return t;
     }
 }
-namespace CR::CR3 {
+namespace CR3 {
     uint32_t get(){
         uint32_t t;
         asm volatile("mov %%cr3,%0":"=r"(t):);
@@ -137,7 +137,7 @@ namespace CR::CR3 {
         asm volatile("mov %0,%%cr3"::"r"(t));
     }
 }
-namespace CR::CR4 {
+namespace CR4 {
     uint32_t get(){
         uint32_t t;
         asm volatile("mov %%cr4,%0":"=r"(t):);
