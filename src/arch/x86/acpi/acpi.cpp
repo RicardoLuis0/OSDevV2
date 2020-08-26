@@ -18,6 +18,8 @@ acpi_xsdt_t * xsdt;
 
 acpi_fadt_t * fadt;
 
+acpi_header_t * madt;
+
 lai_rsdp_info rsdp_info;
 
 void * ACPI::Internal::map_table(uint32_t addr){
@@ -57,7 +59,7 @@ void ACPI::init(){
     }
     
     fadt=(acpi_fadt_t*)laihost_scan("FACP",0);
-    if(!fadt)k_abort_s("Couldn't find FADT header!");
+    if(!fadt)k_abort_s("Couldn't find FADT table!");
     
     //initialize LAI
     
@@ -68,7 +70,16 @@ void ACPI::init(){
     lai_enable_tracing(LAI_TRACE_OP|LAI_TRACE_IO|LAI_TRACE_NS);
 #endif // K_LAI_DEBUG_EXTRA
     
-    //TODO MADT
+    madt=(acpi_header_t*)laihost_scan("APIC",0);
+    
+    if(!madt){
+        Screen::setfgcolor(Screen::RED);
+        Screen::write_s("FAIL");
+        Screen::setfgcolor(Screen::WHITE);
+        k_abort_s("Could't find MADT table");
+    }
+    
+    //TODO parse MADT
     
     PCI::init();
     
