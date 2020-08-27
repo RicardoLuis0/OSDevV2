@@ -3,6 +3,7 @@
 
 #include "extern/multiboot.h"
 
+#include "arch/x86/x86_acpi.h"
 #include "arch/x86/x86_cpu.h"
 #include "arch/x86/x86_cr.h"
 #include "arch/x86/x86_fpu.h"

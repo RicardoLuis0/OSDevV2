@@ -200,6 +200,18 @@ namespace Util {
                     alloc=len;
                 }
             }
+            T * release(){
+                T * temp=vec;
+                vec=nullptr;
+                alloc=0;
+                len=0;
+                return temp;
+            }
+            
+            T * release(size_t &len_out){
+                len_out=len;
+                return release();
+            }
             
         protected:
             

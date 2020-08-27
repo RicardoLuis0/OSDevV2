@@ -18,6 +18,7 @@
 					<Add option="-g" />
 					<Add option="-DDEBUG" />
 					<Add option="-DLAI_LOG" />
+					<Add option="-DMADT_DEBUG" />
 					<Add directory="include" />
 				</Compiler>
 			</Target>
@@ -60,6 +61,7 @@
 		<Unit filename="include/acpi.h" />
 		<Unit filename="include/arch/x86.h" />
 		<Unit filename="include/arch/x86/tasking_internal.h" />
+		<Unit filename="include/arch/x86/x86_acpi.h" />
 		<Unit filename="include/arch/x86/x86_apic.h" />
 		<Unit filename="include/arch/x86/x86_cpu.h" />
 		<Unit filename="include/arch/x86/x86_cpuid.h" />

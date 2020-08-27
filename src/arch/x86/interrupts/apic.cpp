@@ -2,10 +2,16 @@
 #include "klib.h"
 #include "screen.h"
 
+using namespace ACPI;
+
+extern MADT::Table * madt;
+
 namespace APIC {
     void init(){
         Screen::write_s("\n -Enabling APIC...");
-        PIC::reset(0x20,0x28);
+        if(madt->flags&MADT::LEGACY_PIC){
+            PIC::reset(0x20,0x28);
+        }
         k_abort_s("APIC::init unimplemented");
     }
     
