@@ -57,10 +57,10 @@ extern "C" void x86_start(struct multiboot_info * mbd, unsigned int magic){//x86
     Memory::x86_init(mbd);//initialize physical memory
     IDT::setup();
     Memory::x86_paging_init();//initialize virtual memory
+    Serial::x86_init();
     ACPI::init();
     IDT::init();
     FPU::init();
-    Serial::x86_init();
     PIT::init();
     ACPI::enable();
     _init();//only call global constructors after setting up screen, paging, memory management, etc...
