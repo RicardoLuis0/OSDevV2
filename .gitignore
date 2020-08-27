@@ -20,3 +20,4 @@ log.txt
 *.a
 __pycache__/
 VBoxSerialLog.txt
+BochsSerialLog.txt
