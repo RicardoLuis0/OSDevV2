@@ -48,7 +48,7 @@ namespace Util {
             Vector<String> explode(char separator,bool &has_first_separator,bool &has_last_separator) const;
             
             String substr(size_t start,size_t len=-1) const;
-            
+            static String format_hex(uint64_t);
         protected:
         private:
     };

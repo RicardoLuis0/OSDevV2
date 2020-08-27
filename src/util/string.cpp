@@ -200,4 +200,18 @@ char * String::release(){
     return tmp;
 }
 
+static void string_format_hex_rec(String &s,uint64_t h){
+    if(h>15){
+        string_format_hex_rec(s,h/16);
+        h%=16;
+    }
+    s+=((h<10)?(h+'0'):((h-10)+'A'));
+}
+
+String String::format_hex(uint64_t h){
+    String temp("0x");
+    string_format_hex_rec(temp,h);
+    return temp;
+}
+
 
