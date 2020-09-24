@@ -18,11 +18,19 @@ namespace FS {
         virtual ~VirtualFileSystem()=0;
     };
     
+    
+    namespace VFSRoot {
+        bool renameFile(class FolderHandle * location,const Util::String &path,const Util::String &new_name);//TODO support moving
+        bool renameFolder(class FolderHandle * location,const Util::String &path,const Util::String &new_name);//TODO support moving
+    };
+    
     class Handle {
     protected:
-        VirtualFileSystem * fs;
         Util::String name;
+        friend bool ::FS::VFSRoot::renameFile(class FolderHandle * location,const Util::String &path,const Util::String &new_name);
+        friend bool ::FS::VFSRoot::renameFolder(class FolderHandle * location,const Util::String &path,const Util::String &new_name);
     public:
+        const VirtualFileSystem * fs;
         const enum FSHandleType_t{
             FSHANDLE_FOLDER,
             FSHANDLE_FILE,
@@ -56,10 +64,20 @@ namespace FS {
         virtual FolderHandle * createFolder(const Util::String & name)=0;
         virtual FileHandle * openFile(const Util::String & name,bool create)=0;
         virtual FileHandle * createFile(const Util::String & name)=0;
+        virtual Util::UniquePtr<FileHandle> releaseFile(const Util::String & name)=0;
+        virtual bool insertFile(Util::UniquePtr<FileHandle>,const Util::String & name)=0;
+        virtual Util::UniquePtr<FolderHandle> releaseFolder(const Util::String & name)=0;
+        virtual bool insertFolder(Util::UniquePtr<FolderHandle>,const Util::String & name)=0;
         virtual bool removeFile(const Util::String & name)=0;
         virtual bool removeFolder(const Util::String & name)=0;
         virtual bool renameFile(const Util::String & name_old,const Util::String & name_new)=0;
         virtual bool renameFolder(const Util::String & name_old,const Util::String & name_new)=0;
+    };
+    
+    class FSHandle : public Handle {//reference to other filesystem
+    public:
+        FSHandle(VirtualFileSystem * containing_fs,Util::SharedPtr<VirtualFileSystem> linked_fs);
+        Util::SharedPtr<VirtualFileSystem> fsroot;
     };
     
     namespace VFSRoot {
@@ -69,13 +87,12 @@ namespace FS {
         FolderHandle * resolveFolderPath(FolderHandle * location,const Util::String &path,bool create=true,bool create_path=false);//if location is null, resolve only absolute paths
         FolderHandle * resolveFolderPathCreate(FolderHandle * location,const Util::String &path,bool create_path=false);//if location is null, resolve only absolute paths
         bool removeFile(FolderHandle * location,const Util::String &path);
-        bool renameFile(FolderHandle * location,const Util::String &path,const Util::String &new_name);//TODO support moving
+        bool moveFile(FolderHandle * location,const Util::String &old_path,const Util::String &new_path);
         bool removeFolder(FolderHandle * location,const Util::String &path);
-        bool renameFolder(FolderHandle * location,const Util::String &path,const Util::String &new_name);//TODO support moving
+        bool moveFolder(FolderHandle * location,const Util::String &path,const Util::String &new_name);
         FolderHandle * getRoot();
     };
     
 }
-
 
 #endif // VFS_H_INCLUDED

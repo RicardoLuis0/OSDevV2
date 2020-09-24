@@ -30,7 +30,7 @@ namespace FS {
         };
         
         class FolderHandle : public FS::FolderHandle {
-        public:
+        public://TODO folder locking
             FolderHandle(RamFS * fs);//root constructor
             FolderHandle(RamFS * fs,const Util::String &name,FolderHandle * parent);//parent MUST NOT BE NULL
             virtual Util::Vector<Util::String> listFiles() override;
@@ -40,6 +40,10 @@ namespace FS {
             virtual RamFS::FolderHandle * createFolder(const Util::String & name) override;//if folder already exists returns null
             virtual FS::FileHandle * openFile(const Util::String & name,bool create) override;//if file doesn't exist and create is false returns null, if create is true, creates the file and returns it
             virtual RamFS::FileHandle * createFile(const Util::String & name) override;//if file already exists returns null
+            virtual Util::UniquePtr<FS::FileHandle> releaseFile(const Util::String & name) override;//release file from ownership
+            virtual bool insertFile(Util::UniquePtr<FS::FileHandle> file,const Util::String & name) override;//add file into ownership
+            virtual Util::UniquePtr<FS::FolderHandle> releaseFolder(const Util::String & name) override;//release folder from ownership
+            virtual bool insertFolder(Util::UniquePtr<FS::FolderHandle> folder,const Util::String & name) override;//add folder into ownership
             virtual bool removeFolder(const Util::String & name) override;//if folder doesn't exist returns false
             virtual bool removeFile(const Util::String & name) override;//if file doesn't exist returns false
             virtual bool renameFolder(const Util::String & name_old,const Util::String & name_new) override;//if folder doesn't exist returns false

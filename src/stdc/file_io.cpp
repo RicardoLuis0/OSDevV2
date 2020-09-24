@@ -217,7 +217,7 @@ extern "C" {
     }
     
     int rename(const char * old_filename, const char * new_filename){
-        return FS::VFSRoot::renameFile(nullptr,old_filename,new_filename);
+        return FS::VFSRoot::moveFile(nullptr,old_filename,new_filename);
     }
     
     int fflush(FILE * f){
