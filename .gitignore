@@ -21,3 +21,5 @@ log.txt
 __pycache__/
 VBoxSerialLog.txt
 BochsSerialLog.txt
+*.sh
+*init
