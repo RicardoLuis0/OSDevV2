@@ -37,8 +37,8 @@ namespace Util {
             String& operator=(const String & other);
             String& operator=(String && other);
             
-            bool operator==(const char * other);
-            bool operator==(const String & other);
+            bool operator==(const char * other) const;
+            bool operator==(const String & other) const;
             operator const char *() const;
             
             const char * c_str() const;

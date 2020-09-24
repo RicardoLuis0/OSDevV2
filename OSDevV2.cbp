@@ -19,7 +19,6 @@
 					<Add option="-DDEBUG" />
 					<Add option="-DLAI_LOG" />
 					<Add option="-DMADT_DEBUG" />
-					<Add directory="include" />
 				</Compiler>
 			</Target>
 			<Target title="KernelRelease">
@@ -31,7 +30,6 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-DNDEBUG" />
-					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -45,12 +43,13 @@
 			<Add option="-Wall" />
 			<Add option="-std=c11" />
 			<Add option="-std=c++20" />
-			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-rtti -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-exceptions -Werror=implicit-function-declaration -Werror=return-type -Wshadow" />
+			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-rtti -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-exceptions -Werror=implicit-function-declaration -Werror=return-type -Wshadow -mno-red-zone" />
 			<Add option="-DLAI_HOST_IDENTITY_MAP" />
 			<Add option="-DSERIAL_CRLF" />
 			<Add option="-D__OSDEV_V2__" />
 			<Add directory="include/stdc/" />
 			<Add directory="../lai/include" />
+			<Add directory="include" />
 		</Compiler>
 		<Linker>
 			<Add option="-T linker.ld" />

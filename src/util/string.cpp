@@ -134,11 +134,11 @@ String& String::operator=(String && other){
 }
 
 
-bool String::operator==(const char * other){
+bool String::operator==(const char * other) const{
     return k_strcmp_bool(data,other);
 }
 
-bool String::operator==(const String & other){
+bool String::operator==(const String & other) const{
     return k_strcmp_bool(data,other.data);
 }
 
