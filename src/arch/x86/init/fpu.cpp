@@ -7,7 +7,7 @@ static bool sse;
 
 void FPU::init(){
     Screen::write_s("\n -Initializing FPU...");
-    if(!CPUID::has(0,CPUID::FEAT_EDX_FPU)&&!CR0::hasFlags(CR0::EM)&&CR0::hasFlags(CR0::ET)){
+    if(!CPUID::has(0,CPUID::FEAT_EDX_1_FPU)&&!CR0::hasFlags(CR0::EM)&&CR0::hasFlags(CR0::ET)){
         Screen::setfgcolor(Screen::RED);
         Screen::write_s("FAIL");
         Screen::setfgcolor(Screen::WHITE);
@@ -16,7 +16,7 @@ void FPU::init(){
     }
     CR0::enableFlags(CR0::NE);
     CR0::enableFlags(CR0::MP);
-    sse=CPUID::has(0,CPUID::FEAT_EDX_SSE);
+    sse=CPUID::has(0,CPUID::FEAT_EDX_1_SSE);
     if(sse){
         CR4::enableFlags(CR4::OSFXSR);
         CR4::enableFlags(CR4::OSXMMEXCPT);

@@ -5,73 +5,73 @@
 using namespace CPUID;
 
 static const char * features_ecx_str[32] {
-    "ECX_SSE3           -- SSE3",
-    "ECX_PCLMUL         -- PCLMULQDQ",
-    "ECX_DTES64         -- 64-bit debug store",
-    "ECX_MONITOR        -- MONITOR, MWAIT (SSE3)",
-    "ECX_DS_CPL         -- CPL-qualified debug store",
-    "ECX_VMX            -- Virtual Machine eXtensions",
-    "ECX_SMX            -- Safer Mode Extensions",
-    "ECX_EST            -- Enhanced SpeedStep",
-    "ECX_TM2            -- Thermal Monitor 2",
-    "ECX_SSSE3          -- Supplemental SSE3",
-    "ECX_CNTX_ID        -- L1 Context ID",
-    "ECX_SDBG           -- Silicon Debug Interface",
-    "ECX_FMA            -- Fused Multiply-Add (FMA3)",
-    "ECX_CX16           -- CMPXCHG16B compare-and-swap",
-    "ECX_XTPR           -- Disable task priority messages",
-    "ECX_PDCM           -- Perfmon & Debug Capability",
+    "ECX_1_SSE3           -- SSE3",
+    "ECX_1_PCLMUL         -- PCLMULQDQ",
+    "ECX_1_DTES64         -- 64-bit debug store",
+    "ECX_1_MONITOR        -- MONITOR, MWAIT (SSE3)",
+    "ECX_1_DS_CPL         -- CPL-qualified debug store",
+    "ECX_1_VMX            -- Virtual Machine eXtensions",
+    "ECX_1_SMX            -- Safer Mode Extensions",
+    "ECX_1_EST            -- Enhanced SpeedStep",
+    "ECX_1_TM2            -- Thermal Monitor 2",
+    "ECX_1_SSSE3          -- Supplemental SSE3",
+    "ECX_1_CNTX_ID        -- L1 Context ID",
+    "ECX_1_SDBG           -- Silicon Debug Interface",
+    "ECX_1_FMA            -- Fused Multiply-Add (FMA3)",
+    "ECX_1_CX16           -- CMPXCHG16B compare-and-swap",
+    "ECX_1_XTPR           -- Disable task priority messages",
+    "ECX_1_PDCM           -- Perfmon & Debug Capability",
     "reserved           -- unused",
-    "ECX_PCID           -- process context identifiers (CR4 bit 17)",
-    "ECX_DCA            -- Direct cahce access for DMA",
-    "ECX_SSE4_1         -- SSE4.1",
-    "ECX_SSE4_2         -- SSE4.2",
-    "ECX_x2APIC         -- x2APIC",
-    "ECX_MOVBE          -- MOVBE (big-endian)",
-    "ECX_POPCNT         -- POPCNT",
-    "ECX_TSC_DEADLINE   -- APIC TSC deadline",
-    "ECX_AES            -- AES",
-    "ECX_XSAVE          -- XSAVE,XRESTOR,XSETBV,XGETBV",
-    "ECX_OSXSAVE        -- XSAVE enabled by OS",
-    "ECX_AVX            -- Advanced Vector Extensions",
-    "ECX_F16C           -- Half-precision float support",
-    "ECX_RDRAND         -- RDRAND",
-    "ECX_HYPERVISOR     -- Running under hypervisor",
+    "ECX_1_PCID           -- process context identifiers (CR4 bit 17)",
+    "ECX_1_DCA            -- Direct cahce access for DMA",
+    "ECX_1_SSE4_1         -- SSE4.1",
+    "ECX_1_SSE4_2         -- SSE4.2",
+    "ECX_1_x2APIC         -- x2APIC",
+    "ECX_1_MOVBE          -- MOVBE (big-endian)",
+    "ECX_1_POPCNT         -- POPCNT",
+    "ECX_1_TSC_DEADLINE   -- APIC TSC deadline",
+    "ECX_1_AES            -- AES",
+    "ECX_1_XSAVE          -- XSAVE,XRESTOR,XSETBV,XGETBV",
+    "ECX_1_OSXSAVE        -- XSAVE enabled by OS",
+    "ECX_1_AVX            -- Advanced Vector Extensions",
+    "ECX_1_F16C           -- Half-precision float support",
+    "ECX_1_RDRAND         -- RDRAND",
+    "ECX_1_HYPERVISOR     -- Running under hypervisor",
 };
 
 static const char * features_edx_str[32] {
-    "EDX_FPU        -- on-board FPU",
-    "EDX_VME        -- virtual 8086 mode extensions",
-    "EDX_DE         -- debugging extensions",
-    "EDX_PSE        -- page size extension",
-    "EDX_TSC        -- time stamp counter",
-    "EDX_MSR        -- model-specific registers",
-    "EDX_PAE        -- physical address extension",
-    "EDX_MCE        -- machine check exception",
-    "EDX_CX8        -- CMPXCHG8 compare-and-swap",
-    "EDX_APIC       -- on-board APIC",
+    "EDX_1_FPU        -- on-board FPU",
+    "EDX_1_VME        -- virtual 8086 mode extensions",
+    "EDX_1_DE         -- debugging extensions",
+    "EDX_1_PSE        -- page size extension",
+    "EDX_1_TSC        -- time stamp counter",
+    "EDX_1_MSR        -- model-specific registers",
+    "EDX_1_PAE        -- physical address extension",
+    "EDX_1_MCE        -- machine check exception",
+    "EDX_1_CX8        -- CMPXCHG8 compare-and-swap",
+    "EDX_1_APIC       -- on-board APIC",
     "reserved       -- unused",
-    "EDX_SEP        -- SYSENTER & SYSEXIT",
-    "EDX_MTRR       -- Memory type range registers",
-    "EDX_PGE        -- Page global enable bit (in CR4)",
-    "EDX_MCA        -- Machine check architecture",
-    "EDX_CMOV       -- Conditional move",
-    "EDX_PAT        -- Page attribute table",
-    "EDX_PSE_36     -- 36-bit page extension",
-    "EDX_PSN        -- Processor serial number",
-    "EDX_CLFSH      -- CLFLUSH (SSE2)",
+    "EDX_1_SEP        -- SYSENTER & SYSEXIT",
+    "EDX_1_MTRR       -- Memory type range registers",
+    "EDX_1_PGE        -- Page global enable bit (in CR4)",
+    "EDX_1_MCA        -- Machine check architecture",
+    "EDX_1_CMOV       -- Conditional move",
+    "EDX_1_PAT        -- Page attribute table",
+    "EDX_1_PSE_36     -- 36-bit page extension",
+    "EDX_1_PSN        -- Processor serial number",
+    "EDX_1_CLFSH      -- CLFLUSH (SSE2)",
     "reserved       -- unused",
-    "EDX_DTES       -- Debug store",
-    "EDX_ACPI       -- ACPI thermal control MSRs",
-    "EDX_MMX        -- MMX",
-    "EDX_FXSR       -- FXSAVE,FXRESTOR, CR4 bit 9",
-    "EDX_SSE        -- SSE",
-    "EDX_SSE2       -- SSE2",
-    "EDX_SS         -- CPU cache self-snoop",
-    "EDX_HTT        -- Hyper-threading",
-    "EDX_TM1        -- Thermal Monitor 1",
-    "EDX_IA64       -- Running as x86 emulation on 64-bit CPU",
-    "EDX_PBE        -- Pending Break Enable wakeup capability",
+    "EDX_1_DTES       -- Debug store",
+    "EDX_1_ACPI       -- ACPI thermal control MSRs",
+    "EDX_1_MMX        -- MMX",
+    "EDX_1_FXSR       -- FXSAVE,FXRESTOR, CR4 bit 9",
+    "EDX_1_SSE        -- SSE",
+    "EDX_1_SSE2       -- SSE2",
+    "EDX_1_SS         -- CPU cache self-snoop",
+    "EDX_1_HTT        -- Hyper-threading",
+    "EDX_1_TM1        -- Thermal Monitor 1",
+    "EDX_1_IA64       -- Running as x86 emulation on 64-bit CPU",
+    "EDX_1_PBE        -- Pending Break Enable wakeup capability",
 };
 
 void print_features(uint32_t ecx,uint32_t edx){
@@ -115,43 +115,58 @@ void print_features(uint32_t ecx,uint32_t edx){
     }
 }
 
-void CPUID::get(uint32_t &ecx,uint32_t &edx){
-    ecx=0;
-    edx=0;
-    asm volatile(
-        R"asm(
-            pusha //save registers just in case
-            push %0
-            push %1
-            call cpuid_features
-            popa //restore registers
-        )asm"
-        :
-        :
-        "r"(&ecx),
-        "r"(&edx)
-    );
+extern "C" uint32_t has_cpuid_impl();
+
+namespace CPUID {
+    bool b_has_cpuid;
+    uint32_t ecx1,edx1;
+}
+
+void CPUID::init(){
+    b_has_cpuid=has_cpuid_impl();
+    ecx1=0;
+    edx1=0;
+    if(b_has_cpuid){
+        asm volatile(
+            R"asm(
+                pusha //save registers
+                push %0
+                push %1
+                call cpuid_features
+                popa //restore registers
+            )asm"
+            :
+            :
+            "r"(&ecx1),
+            "r"(&edx1)
+        );
+    }
+}
+
+bool CPUID::has_cpuid(){
+    return b_has_cpuid;
+}
+
+void CPUID::get(uint32_t &c,uint32_t &d){
+    c=ecx1;
+    d=edx1;
 }
 
 void CPUID::cmd_cpuid(){
-    uint32_t ecx,edx;
-    get(ecx,edx);
-    print_features(ecx,edx);
+    print_features(ecx1,edx1);
 }
 
-bool CPUID::has(uint32_t ecx,uint32_t edx){
-    uint32_t ecx2,edx2;
-    get(ecx2,edx2);
-    return ((ecx&ecx2)==ecx)&&((edx&edx2)==edx);
+bool CPUID::has(uint32_t c1,uint32_t d1){
+    return ((c1&ecx1)==c1)&&((d1&edx1)==d1);
 }
 
 void CPUID::check(){
     uint32_t ecx,edx;
     get(ecx,edx);
-    if(!(edx&FEAT_EDX_MSR)){
+    if(!(edx&FEAT_EDX_1_MSR)){
         k_abort_s("MSR not supported");
     }
-    if(!(edx&FEAT_EDX_APIC)){
+    if(!(edx&FEAT_EDX_1_APIC)){
         k_abort_s("APIC not supported");
     }
 }

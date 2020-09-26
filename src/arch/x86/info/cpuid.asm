@@ -1,7 +1,7 @@
 [BITS 32]
 section .text
-global has_cpuid
-has_cpuid:
+global has_cpuid_impl
+has_cpuid_impl:
     pushfd
     pushfd
     xor dword [esp],0x00200000
