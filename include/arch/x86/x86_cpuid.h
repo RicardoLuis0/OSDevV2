@@ -24,7 +24,7 @@ namespace CPUID {
         FEAT_ECX_1_CX16         = 1U << 13,//CMPXCHG16B compare-and-swap
         FEAT_ECX_1_XTPR         = 1U << 14,//Disable task priority messages
         FEAT_ECX_1_PDCM         = 1U << 15,//Perfmon & Debug Capability
-        //bit 16 reserved
+        //BIT 16 RESERVED
         FEAT_ECX_1_PCID         = 1U << 17,//process context identifiers (CR4 bit 17)
         FEAT_ECX_1_DCA          = 1U << 18,//Direct cahce access for DMA
         FEAT_ECX_1_SSE4_1       = 1U << 19,//SSE4.1
@@ -53,7 +53,7 @@ namespace CPUID {
         FEAT_EDX_1_MCE          = 1U <<  7,//machine check exception
         FEAT_EDX_1_CX8          = 1U <<  8,//CMPXCHG8 compare-and-swap
         FEAT_EDX_1_APIC         = 1U <<  9,//on-board APIC
-        //bit 10 reserved
+        //BIT 10 RESERVED
         FEAT_EDX_1_SEP          = 1U << 11,//SYSENTER & SYSEXIT
         FEAT_EDX_1_MTRR         = 1U << 12,//Memory type range registers
         FEAT_EDX_1_PGE          = 1U << 13,//Page global enable bit (in CR4)
@@ -63,7 +63,7 @@ namespace CPUID {
         FEAT_EDX_1_PSE_36       = 1U << 17,//36-bit page extension
         FEAT_EDX_1_PSN          = 1U << 18,//Processor serial number
         FEAT_EDX_1_CLFSH        = 1U << 19,//CLFLUSH (SSE2)
-        //bit 20 reserved
+        //BIT 20 RESERVED
         FEAT_EDX_1_DTES         = 1U << 21,//Debug store
         FEAT_EDX_1_ACPI         = 1U << 22,//ACPI thermal control MSRs
         FEAT_EDX_1_MMX          = 1U << 23,//MMX
@@ -76,10 +76,153 @@ namespace CPUID {
         FEAT_EDX_1_IA64         = 1U << 30,//Running as x86 emulation on 64-bit CPU
         FEAT_EDX_1_PBE          = 1U << 31,//Pending Break Enable wakeup capability
     };
+    
+    enum features_ebx_7_0 {
+        FEAT_EBX_7_0_FSGSBASE           = 1U <<  0,
+        FEAT_EBX_7_0_IA32_TSC_ADJUST    = 1U <<  1,
+        FEAT_EBX_7_0_SGX                = 1U <<  2,
+        FEAT_EBX_7_0_BMI1               = 1U <<  3,
+        FEAT_EBX_7_0_HLE                = 1U <<  4,
+        FEAT_EBX_7_0_AVX2               = 1U <<  5,
+        FEAT_EBX_7_0_FDP_EXCPTN_ONLY    = 1U <<  6,
+        FEAT_EBX_7_0_SMEP               = 1U <<  7,
+        FEAT_EBX_7_0_BMI2               = 1U <<  8,
+        FEAT_EBX_7_0_ERMS               = 1U <<  9,
+        FEAT_EBX_7_0_INVPCID            = 1U << 10,
+        FEAT_EBX_7_0_RTM                = 1U << 11,
+        FEAT_EBX_7_0_PQM                = 1U << 12,
+        FEAT_EBX_7_0_FPU_CSDS_DPC       = 1U << 13,
+        FEAT_EBX_7_0_MPX                = 1U << 14,
+        FEAT_EBX_7_0_PQE                = 1U << 15,
+        FEAT_EBX_7_0_AVX512F            = 1U << 16,
+        FEAT_EBX_7_0_AVX512DQ           = 1U << 17,
+        FEAT_EBX_7_0_RDSEED             = 1U << 18,
+        FEAT_EBX_7_0_ADX                = 1U << 19,
+        FEAT_EBX_7_0_SMAP               = 1U << 20,
+        FEAT_EBX_7_0_AVX512IFMA         = 1U << 21,
+        FEAT_EBX_7_0_PCOMMIT            = 1U << 22,
+        FEAT_EBX_7_0_CLFLUSHOPT         = 1U << 23,
+        FEAT_EBX_7_0_CLWB               = 1U << 24,
+        FEAT_EBX_7_0_INTEL_PT           = 1U << 25,
+        FEAT_EBX_7_0_AVX512PF           = 1U << 26,
+        FEAT_EBX_7_0_AVX512ER           = 1U << 27,
+        FEAT_EBX_7_0_AVX512CD           = 1U << 28,
+        FEAT_EBX_7_0_SHA                = 1U << 29,
+        FEAT_EBX_7_0_AVX512BW           = 1U << 30,
+        FEAT_EBX_7_0_AVX512VL           = 1U << 31,
+    };
+    
+    enum features_ecx_7_0 {
+        FEAT_ECX_7_0_PREFETCHWT1        = 1U <<  0,
+        FEAT_ECX_7_0_AVX512VBMI         = 1U <<  1,
+        FEAT_ECX_7_0_UMIP               = 1U <<  2,
+        FEAT_ECX_7_0_PKU                = 1U <<  3,
+        FEAT_ECX_7_0_OSPKE              = 1U <<  4,
+        FEAT_ECX_7_0_WAITPKG            = 1U <<  5,
+        FEAT_ECX_7_0_AVC512VBMI2        = 1U <<  6,
+        FEAT_ECX_7_0_CET_SS             = 1U <<  7,
+        FEAT_ECX_7_0_GFNI               = 1U <<  8,
+        FEAT_ECX_7_0_VAES               = 1U <<  9,
+        FEAT_ECX_7_0_VPCLMULQDQ         = 1U << 10,
+        FEAT_ECX_7_0_AVX512VNNI         = 1U << 11,
+        FEAT_ECX_7_0_AVX512BITALG       = 1U << 12,
+        //BIT 13 RESERVED
+        FEAT_ECX_7_0_AVX512VPOPCNTDQ    = 1U << 14,
+        //BIT 15 RESERVED
+        FEAT_ECX_7_0_5LVPG              = 1U << 16,
+        //BIT 17 MAWAU
+        //BIT 18 MAWAU
+        //BIT 19 MAWAU
+        //BIT 20 MAWAU
+        //BIT 21 MAWAU
+        FEAT_ECX_7_0_RDPID              = 1U << 22,
+        //BIT 23 RESERVED
+        //BIT 24 RESERVED
+        FEAT_ECX_7_0_CLDEMOTE           = 1U << 25,
+        //BIT 26 RESERVED
+        FEAT_ECX_7_0_MOVDIRI            = 1U << 27,
+        FEAT_ECX_7_0_MOVDIR64B          = 1U << 28,
+        FEAT_ECX_7_0_ENQCMD             = 1U << 29,
+        FEAT_ECX_7_0_SGX_LC             = 1U << 30,
+        FEAT_ECX_7_0_PKS                = 1U << 31,
+    };
+    
+    enum features_edx_7_0 {
+        //BIT  0 RESERVED
+        //BIT  1 RESERVED
+        FEAT_EDX_7_0_AVC512_4VNNIW      = 1U <<  2,
+        FEAT_EDX_7_0_AVC512_4FMAPS      = 1U <<  3,
+        FEAT_EDX_7_0_FSRM               = 1U <<  4,
+        //BIT  5 RESERVED
+        //BIT  6 RESERVED
+        //BIT  7 RESERVED
+        FEAT_EDX_7_0_AVC512VP2INTERSECT = 1U <<  8,
+        FEAT_EDX_7_0_SRBDS_CTRL         = 1U <<  9,
+        FEAT_EDX_7_0_MD_CLEAR           = 1U << 10,
+        //BIT 11 RESERVED
+        //BIT 12 RESERVED
+        FEAT_EDX_7_0_TSX_FORCE_ABORT    = 1U << 13,
+        FEAT_EDX_7_0_SERIALIZE          = 1U << 14,
+        FEAT_EDX_7_0_HYBRID             = 1U << 15,
+        FEAT_EDX_7_0_TSXLDTRK           = 1U << 16,
+        //BIT 17 RESERVED
+        FEAT_EDX_7_0_PCONFIG            = 1U << 18,
+        FEAT_EDX_7_0_LBR                = 1U << 19,
+        FEAT_EDX_7_0_CET_IBT            = 1U << 20,
+        //BIT 21 RESERVED
+        FEAT_EDX_7_0_AMXBF16            = 1U << 22,
+        //BIT 23 RESERVED
+        FEAT_EDX_7_0_AMXTILE            = 1U << 24,
+        FEAT_EDX_7_0_AMXINT8            = 1U << 25,
+        FEAT_EDX_7_0_IBRS_IBPB          = 1U << 26,
+        FEAT_EDX_7_0_STIBP              = 1U << 27,
+        FEAT_EDX_7_0_L1D_FLUSH          = 1U << 28,
+        FEAT_EDX_7_0_IA32_ARCH_CAP      = 1U << 29,
+        FEAT_EDX_7_0_IA32_CORE_CAP      = 1U << 30,
+        FEAT_EDX_7_0_SSBD               = 1U << 31,
+    };
+    
+    enum features_eax_7_1 {
+        //BIT  0 RESERVED
+        //BIT  1 RESERVED
+        //BIT  2 RESERVED
+        //BIT  3 RESERVED
+        //BIT  4 RESERVED
+        FEAT_EAX_7_1_AVX512BF16         = 1U <<  5,
+        //BIT  6 RESERVED
+        //BIT  7 RESERVED
+        //BIT  8 RESERVED
+        //BIT  9 RESERVED
+        //BIT 10 RESERVED
+        //BIT 11 RESERVED
+        //BIT 12 RESERVED
+        //BIT 13 RESERVED
+        //BIT 14 RESERVED
+        //BIT 15 RESERVED
+        //BIT 16 RESERVED
+        //BIT 17 RESERVED
+        //BIT 18 RESERVED
+        //BIT 19 RESERVED
+        //BIT 20 RESERVED
+        //BIT 21 RESERVED
+        //BIT 22 RESERVED
+        //BIT 23 RESERVED
+        //BIT 24 RESERVED
+        //BIT 25 RESERVED
+        //BIT 26 RESERVED
+        //BIT 27 RESERVED
+        //BIT 28 RESERVED
+        //BIT 29 RESERVED
+        //BIT 30 RESERVED
+        //BIT 31 RESERVED
+    };
+    
     void init();//safe to call multiple times, will refresh cpuid info
     void check();
     void get(uint32_t &ecx_1,uint32_t &edx_1);
+    void get(uint32_t &ecx_1,uint32_t &edx_1,uint32_t &ebx_7_0,uint32_t &ecx_7_0,uint32_t &edx_7_0,uint32_t &eax_7_1);
     bool has(uint32_t ecx_1,uint32_t edx_1);
+    bool has(uint32_t ecx_1,uint32_t edx_1,uint32_t ebx_7_0,uint32_t ecx_7_0,uint32_t edx_7_0,uint32_t eax_7_1);
     void cmd_cpuid();
     
 }

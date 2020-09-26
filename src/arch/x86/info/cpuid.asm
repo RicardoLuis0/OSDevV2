@@ -13,16 +13,78 @@ has_cpuid_impl:
     and eax,0x00200000
     ret
 
-global cpuid_features
-cpuid_features:
-    mov eax,1
-    mov ecx,0
-    mov edx,0
+global cpuid_0
+cpuid_0:
+    xor eax,eax
+    xor ebx,ebx
+    xor ecx,ecx
+    xor edx,edx
     cpuid
-    pop ebx ; save return address
-    pop eax ; pop pointer into eax
-    mov [eax],edx ; dereference and save edx into pointer
-    pop eax ; pop pointer into eax
-    mov [eax],ecx ; dereference and save ecx into pointer
-    push ebx ; restore return address
+    pop ebp ; save return address
+    pop esi ; pop pointer into eax
+    mov [esi],edx ; dereference and save edx into pointer
+    pop esi ; pop pointer into eax
+    mov [esi],ecx ; dereference and save ecx into pointer
+    pop esi ; pop pointer into eax
+    mov [esi],ebx ; dereference and save ecx into pointer
+    pop esi ; pop pointer into eax
+    mov [esi],eax ; dereference and save ecx into pointer
+    push ebp ; restore return address
+    ret
+
+global cpuid_1
+cpuid_1:
+    mov eax,1
+    xor ebx,ebx
+    xor ecx,ecx
+    xor edx,edx
+    cpuid
+    pop ebp ; save return address
+    pop esi ; pop pointer into eax
+    mov [esi],edx ; dereference and save edx into pointer
+    pop esi ; pop pointer into eax
+    mov [esi],ecx ; dereference and save ecx into pointer
+    pop esi ; pop pointer into eax
+    mov [esi],ebx ; dereference and save ecx into pointer
+    pop esi ; pop pointer into eax
+    mov [esi],eax ; dereference and save ecx into pointer
+    push ebp ; restore return address
+    ret
+
+global cpuid_7_0
+cpuid_7_0:
+    mov eax,7
+    xor ebx,ebx
+    xor ecx,ecx
+    xor edx,edx
+    cpuid
+    pop ebp ; save return address
+    pop esi ; pop pointer into eax
+    mov [esi],edx ; dereference and save edx into pointer
+    pop esi ; pop pointer into eax
+    mov [esi],ecx ; dereference and save ecx into pointer
+    pop esi ; pop pointer into eax
+    mov [esi],ebx ; dereference and save ecx into pointer
+    pop esi ; pop pointer into eax
+    mov [esi],eax ; dereference and save ecx into pointer
+    push ebp ; restore return address
+    ret
+
+global cpuid_7_1
+cpuid_7_1:
+    mov eax,7
+    xor ebx,ebx
+    mov ecx,1
+    xor edx,edx
+    cpuid
+    pop ebp ; save return address
+    pop esi ; pop pointer into eax
+    mov [esi],edx ; dereference and save edx into pointer
+    pop esi ; pop pointer into eax
+    mov [esi],ecx ; dereference and save ecx into pointer
+    pop esi ; pop pointer into eax
+    mov [esi],ebx ; dereference and save ecx into pointer
+    pop esi ; pop pointer into eax
+    mov [esi],eax ; dereference and save ecx into pointer
+    push ebp ; restore return address
     ret
