@@ -20,6 +20,8 @@ typedef __INTMAX_TYPE__ intmax_t;
 typedef __UINTMAX_TYPE__ uintmax_t;
 
 #define INT32_C(i) join_indirect(i, __INT32_C_SUFFIX__)
+#define INT64_C(i) join_indirect(i, __INT64_C_SUFFIX__)
 #define UINT32_C(i) join_indirect(i##U, __INT32_C_SUFFIX__)
+#define UINT64_C(i) join_indirect(i##U, __INT64_C_SUFFIX__)
 
 #endif // STDINT_H_INCLUDED
