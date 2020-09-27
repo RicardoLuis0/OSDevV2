@@ -1,6 +1,16 @@
 #!/usr/bin/env python3
 
 from buildsystem import *
+import sys
+
+if "--rebuild" in sys.argv or "-r" in sys.argv:
+    set_rebuild(True)
+
+if "--silent" in sys.argv or "-s" in sys.argv:
+    set_silent_verbose(True,False)
+
+if "--verbose" in sys.argv or "-v" in sys.argv:
+    set_silent_verbose(False,True)
 
 lai_path="../lai/"
 
@@ -15,7 +25,7 @@ flags_c_cpp=[
 ]
 
 flags_c=flags_c_cpp+[
-    "-std=c18"
+    "-std=c18","-Werror=implicit-function-declaration"
 ]
 
 flags_cpp=flags_c_cpp+[

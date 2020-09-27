@@ -194,11 +194,25 @@ def get_files(folder,out_folder,tmp_folder,compiler_exts,nolink,linker):#must be
                     src=path+"/"+file
                     out=out_folder+"/"+(split[0] if nolink_b else file)+".o"
                     if compiler.needs_to_run(src,file,f,path,out,tmp_folder):#src,src_file,src_base,src_path,out,tmp
+                        if verbose and not silent:print("preparing '"+ext+"' file "+file)
                         complist.add(compiler,linker,src,out,compiler.calc_extraflags(src,file,f,path,out,tmp_folder),nolink_b)
                     elif not nolink_b:
+                        if verbose and not silent:print("skipping '"+ext+"' file "+file)
                         complist.add_linkonly(linker,out)
-                    if verbose and not silent:print("preparing '"+ext+"' file "+file)
                 else:
                     if verbose and not silent:print("skipping '"+ext+"' file "+file)
     return complist
     
+def set_rebuild(new_rebuild):
+    global do_rebuild
+    do_rebuild=new_rebuild
+
+def set_silent_verbose(new_silent,new_verbose):
+    global silent
+    global verbose
+    silent=new_silent
+    verbose=new_verbose
+    
+
+
+
