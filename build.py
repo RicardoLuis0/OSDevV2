@@ -8,10 +8,6 @@ defines_c_cpp=[
     "-DDEBUG"
 ]
 
-defines_c=defines_c_cpp
-
-defines_cpp=defines_c_cpp
-
 flags_c_cpp=[
     "-g","-Iinclude","-I\"include/stdc\"","-I\""+lai_path+"include\"",
     "--target=i686-pc-none-elf","-march=i686","-ffreestanding","-fno-builtin","-nostdlib",
@@ -40,8 +36,8 @@ get_files(
     #extension <-> compiler association
     {
         ".asm":nasm(flags_asm),
-        ".cpp":clang_cpp(defines_cpp,flags_cpp),
-        ".c":clang_c(defines_c,flags_c),
+        ".cpp":clang_cpp(defines_c_cpp,flags_cpp),
+        ".c":clang_c(defines_c_cpp,flags_c),
     },
     #files not to link automatically
     ["crti","crtn","boot"],
