@@ -4,44 +4,42 @@ from buildsystem import *
 
 lai_path="../lai/"
 
-config_debug={
-    ".asm":nasm(
-        #flags
-        ["-f elf"]
-    ),
-    ".c":clang(
-        #flags
-        [
-        #defines
-        "-DDEBUG",
-        #other flags
-        "-std=c18","-g","-I\""+lai_path+"include\"","--target=i686-pc-none-elf","-march=i686","-ffreestanding","-fno-builtin","-nostdlib",
-        #"-nostdinc",
-        "-Wall","-Werror=undef"],
-        #c++
-        False
-    ),
-}
+defines_c=[
+    "-DDEBUG"
+]
 
-ar=linker_ar(
-    #flags
-    ["rc"],
-    
-    #link before other files
+flags_c=[
+    "-std=c18","-g","-I\""+lai_path+"include\"","-I\"include/stdc\"","--target=i686-pc-none-elf",
+    "-march=i686","-ffreestanding","-fno-builtin","-nostdlib","-nostdinc","-Wall","-Werror=undef"
+]
+
+
+flags_asm=[
+    "-f elf"
+]
+
+get_files(
+    #source folders
+    [lai_path+"core",lai_path+"helpers"],
+    #obj output folder
+    lai_path+"build/obj",
+    #build temp folder
+    lai_path+"build/tmp",
+    #extension <-> compiler association
+    {
+        ".asm":nasm(flags_asm),
+        ".c":clang_c(defines_c,flags_c),
+    },
+    #files not to link automatically
     [],
-    
-    #link after other files
-    []
-)
+    #linker
+    linker_ar(
+        #flags
+        ["rc"],
+        #link before other files
+        [],
+        #link after other files
+        []
+    )
+).compile("lib/liblai_i386.a")
 
-runners=get_files([lai_path+"core",lai_path+"helpers"],lai_path+"obj",config_debug,[],ar)
-
-#run compilers
-for runner in runners:
-    runner.run()
-
-#run linker
-ar.run(
-    #final output file
-    "lib/liblai_i386.a"
-)
