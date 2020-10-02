@@ -17,5 +17,6 @@
 #include "arch/x86/x86_serial.h"
 #include "arch/x86/x86_pit.h"
 #include "arch/x86/x86_tasking.h"
+#include "arch/x86/x86_msr.h"
 
 #endif // X86_H_INCLUDED

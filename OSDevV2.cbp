@@ -68,6 +68,7 @@
 		<Unit filename="include/arch/x86/x86_gdt.h" />
 		<Unit filename="include/arch/x86/x86_idt.h" />
 		<Unit filename="include/arch/x86/x86_mem.h" />
+		<Unit filename="include/arch/x86/x86_msr.h" />
 		<Unit filename="include/arch/x86/x86_pic.h" />
 		<Unit filename="include/arch/x86/x86_pit.h" />
 		<Unit filename="include/arch/x86/x86_screen.h" />
@@ -159,6 +160,7 @@
 		</Unit>
 		<Unit filename="src/arch/x86/info/cpuid.cpp" />
 		<Unit filename="src/arch/x86/info/cr.cpp" />
+		<Unit filename="src/arch/x86/info/msr.cpp" />
 		<Unit filename="src/arch/x86/init/boot.asm">
 			<Option link="0" />
 			<Option compiler="llvm_clang_compiler_osdev" use="1" buildCommand="nasm $file -f elf -o obj/boot.o" />

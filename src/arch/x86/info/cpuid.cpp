@@ -512,7 +512,4 @@ void CPUID::check(){
     if(!(edx&FEAT_EDX_1_MSR)){
         k_abort_s("MSR not supported");
     }
-    if(!(edx&FEAT_EDX_1_APIC)){
-        k_abort_s("APIC not supported");
-    }
 }
