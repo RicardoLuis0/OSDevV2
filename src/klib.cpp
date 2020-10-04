@@ -186,13 +186,13 @@ extern "C" {
         k_halt();
     }
     
-    void k_abort(){
+    [[noreturn]] void k_abort(){
         Screen::setcolor(Screen::RED,Screen::WHITE);
         print("\nKernel Aborted!");
         k_abort_main();
     }
     
-    void k_abort_fullscreen(){
+    [[noreturn]] void k_abort_fullscreen(){
         Screen::setcolor(Screen::BLACK,Screen::WHITE);
         Screen::clear();
         Screen::setcolor(Screen::RED,Screen::WHITE);
@@ -202,31 +202,42 @@ extern "C" {
         k_abort_main();
     }
     
-    void k_abort_i(int code){
+    [[noreturn]] void k_abort_i(int code){
         Screen::setcolor(Screen::RED,Screen::WHITE);
         print("\nKernel Aborted! Error code '",code,"'");
         k_abort_main();
     }
     
-    void k_abort_s(const char * msg){
+    [[noreturn]] void k_abort_s(const char * msg){
         Screen::setcolor(Screen::RED,Screen::WHITE);
         print("\nKernel Aborted! ",msg,"");
         k_abort_main();
     }
     
-    void k_abort_s_i_s(const char * s1,int i,const char * s2){
+    [[noreturn]] void k_abort_fmt(const char * fmt,...){
+        char msg[256];
+        va_list arg;
+        va_start(arg,fmt);
+        vsnprintf(msg,256,fmt,arg);
+        va_end(arg);
+        Screen::setcolor(Screen::RED,Screen::WHITE);
+        print("\nKernel Aborted! ",msg,"");
+        k_abort_main();
+    }
+    
+    [[noreturn]] void k_abort_s_i_s(const char * s1,int i,const char * s2){
         Screen::setcolor(Screen::RED,Screen::WHITE);
         print("\nKernel Aborted! ",s1,i,s2,"");
         k_abort_main();
     }
     
-    void k_abort_assert(const char * condition,const char * name,uint32_t line){
+    [[noreturn]] void k_abort_assert(const char * condition,const char * name,uint32_t line){
         Screen::setcolor(Screen::RED,Screen::WHITE);
         print("\nKernel Aborted! In ",name,":",line,", Assertion ",condition," failed.");
         k_abort_main();
     }
     
-    void k_abort_massert(const char * condition,const char * msg,const char * name,uint32_t line){
+    [[noreturn]] void k_abort_massert(const char * condition,const char * msg,const char * name,uint32_t line){
         Screen::setcolor(Screen::RED,Screen::WHITE);
         print("\nKernel Aborted! In ",name,":",line,", Assertion ",condition," failed.\n",msg);
         k_abort_main();

@@ -47,6 +47,7 @@ NORETURN void k_abort();
 NORETURN void k_abort_fullscreen();
 NORETURN void k_abort_i(int code);
 NORETURN void k_abort_s(const char * msg);
+NORETURN void k_abort_fmt(const char * fmt,...);
 NORETURN void k_abort_s_i_s(const char * s1,int i,const char * s2);
 NORETURN void k_abort_assert(const char * condition,const char * name,uint32_t line);
 NORETURN void k_abort_massert(const char * condition,const char * msg,const char * name,uint32_t line);
