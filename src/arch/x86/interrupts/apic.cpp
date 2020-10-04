@@ -53,10 +53,12 @@
 #define LAPIC_MSR 0x1B
 #define LAPIC_MSR_ENABLE_BIT (1U << 11)
 
-#define MEMIO8(base,offset)  (*((volatile uint8_t*) (base+offset)))
-#define MEMIO16(base,offset) (*((volatile uint16_t*)(base+offset)))
-#define MEMIO32(base,offset) (*((volatile uint32_t*)(base+offset)))
-#define MEMIO64(base,offset) (*((volatile uint64_t*)(base+offset)))
+#define LAPIC_MSR_X2APIC_ENABLE_BIT (1U << 10)
+
+#define MMIO8(base,offset)  (*((volatile uint8_t*) (base+offset)))
+#define MMIO16(base,offset) (*((volatile uint16_t*)(base+offset)))
+#define MMIO32(base,offset) (*((volatile uint32_t*)(base+offset)))
+#define MMIO64(base,offset) (*((volatile uint64_t*)(base+offset)))
 
 using namespace ACPI;
 
@@ -66,6 +68,48 @@ static uint32_t lapic_base(){
     uint64_t msr;
     MSR::get(LAPIC_MSR,&msr);
     return msr&0xFFFFF000;//mask off lower bits
+}
+
+[[maybe_unused]]
+static inline uint32_t lapic_register_get(uint32_t reg){
+    return MMIO32(lapic_base(),reg);
+}
+
+[[maybe_unused]]
+static inline uint32_t lapic_register_get(uint32_t base,uint32_t reg){
+    return MMIO32(base,reg);
+}
+
+[[maybe_unused]]
+static inline void lapic_register_set(uint32_t reg,uint32_t val){
+    MMIO32(lapic_base(),reg)=val;
+}
+
+[[maybe_unused]]
+static inline void lapic_register_set(uint32_t base,uint32_t reg,uint32_t val){
+    MMIO32(base,reg)=val;
+}
+
+[[maybe_unused]]
+static inline void lapic_register_and(uint32_t reg,uint32_t val){
+    uint32_t base=lapic_base();
+    MMIO32(base,reg)=MMIO32(base,reg)&val;
+}
+
+[[maybe_unused]]
+static inline void lapic_register_and(uint32_t base,uint32_t reg,uint32_t val){
+    MMIO32(base,reg)=MMIO32(base,reg)&val;
+}
+
+[[maybe_unused]]
+static inline void lapic_register_or(uint32_t reg,uint32_t val){
+    uint32_t base=lapic_base();
+    MMIO32(base,reg)=MMIO32(base,reg)|val;
+}
+
+[[maybe_unused]]
+static inline void lapic_register_or(uint32_t base,uint32_t reg,uint32_t val){
+    MMIO32(base,reg)=MMIO32(base,reg)|val;
 }
 
 [[maybe_unused]]
@@ -85,31 +129,38 @@ namespace APIC {
     
     [[maybe_unused]]
     static void apic_info(){
-        const uint32_t base=lapic_base();
         Screen::write_s("\n\nLAPIC BASE:");
-        Screen::write_h(base);
+        Screen::write_h(lapic_base());
         Screen::write_s("\n\n");
         Screen::write_s("\n\nLAPIC ID:");
-        Screen::write_h(MEMIO32(base,LAPIC_ID));
+        Screen::write_h(lapic_register_get(LAPIC_ID));
         Screen::write_s("\n\n");
         Screen::write_s("\n\nLAPIC ENABLED:");
         Screen::write_s((MSR::get(LAPIC_MSR)&LAPIC_MSR_ENABLE_BIT)?"yes":"no");
         Screen::write_s("\n\n");
         Screen::write_s("\n\nLAPIC SIV:");
-        Screen::write_h(MEMIO32(base,LAPIC_SIV));
+        Screen::write_h(lapic_register_get(LAPIC_SIV));
         Screen::write_s("\n\n");
+    }
+    
+    static void lapic_init(){
+        if(madt->flags&MADT::LEGACY_PIC){//mask out legacy PIC if necessary
+            PIC::reset(0x20,0x28);
+        }
+        
+        //enable LAPIC in case it isn't already enabled
+        MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_ENABLE_BIT);
+        
+        //enable LAPIC's SIV (spurious interrupt vector) in case it isn't already enabled
+        lapic_register_or(LAPIC_SIV,0x1FF);
     }
     
     void init(){
         Screen::write_s("\n -Enabling APIC...");
-        //initialize LAPIC
-        if(madt->flags&MADT::LEGACY_PIC){
-            PIC::reset(0x20,0x28);//mask out legacy PIC if necessary
-        }
-        MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_ENABLE_BIT);//enable LAPIC in case it isn't already enabled
-        const uint32_t base=lapic_base();
-        MEMIO32(base,LAPIC_SIV)=MEMIO32(base,LAPIC_SIV)|0x1FF;//enable LAPIC's SIV (spurious interrupt vector) in case it isn't already enabled
-        //initialize IOAPIC
+        
+        lapic_init();//initialize LAPIC
+        
+        //TODO initialize IOAPIC
         k_abort_s("IOAPIC unimplemented");
     }
     
