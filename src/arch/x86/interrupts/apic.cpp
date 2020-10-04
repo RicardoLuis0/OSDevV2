@@ -68,6 +68,19 @@ static uint32_t lapic_base(){
     return msr&0xFFFFF000;//mask off lower bits
 }
 
+[[maybe_unused]]
+static uint32_t ioapic_base(uint32_t n){
+    for(uint32_t i=0;i<MADT::entry_count;i++){//NOTE maybe build an array of IOAPIC addresses instead of going through whole MADT table?
+        if(MADT::entries[i]->type==MADT::Entry::IO_APIC){
+            MADT::IOAPICEntry * entry=reinterpret_cast<MADT::IOAPICEntry*>(MADT::entries[i]);
+            if(entry->id==n){
+                return entry->address;
+            }
+        }
+    }
+    k_abort_fmt("can't find base address for inexistent IOAPIC #%d",n);
+}
+
 namespace APIC {
     
     [[maybe_unused]]
