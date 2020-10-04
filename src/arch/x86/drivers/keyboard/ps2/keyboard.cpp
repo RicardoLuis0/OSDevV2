@@ -14,7 +14,7 @@ namespace PS2 {
 
 static volatile atomic_bool wait_for_key=false;
 
-Util::LFQ<keycode> * key_queue;
+Util::LFQ<keycode,20,true> * key_queue;
 
 constexpr const uint8_t KEYCODES_US_QWERTY_SET1_LEN=0xE0;
 constexpr const uint8_t KEYCODES_US_QWERTY_SET1_EXTRA_LEN=0xEE;
@@ -196,7 +196,7 @@ static void kbint(){
 
 void init(){
     print("\n  .PS/2 Keyboard...");
-    key_queue=new Util::LFQ<keycode>();
+    key_queue=new Util::LFQ<keycode,20,true>();
     IDT::set_irq_handler(0x21,kbint,IDT::G_32_INT,IDT::RING_0);
     IDT::irq_enable(1);
     Screen::setfgcolor(Screen::LIGHT_GREEN);

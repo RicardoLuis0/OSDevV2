@@ -25,7 +25,7 @@ namespace Util {
     public:
         
         LFQ(){
-            data=(T*)data_raw;
+            data=reinterpret_cast<T*>(data_raw);
         }
         
         ~LFQ(){
@@ -46,12 +46,12 @@ namespace Util {
         
         void push(T && val){
             if(size<N){
-                new(data+location+size)T(move(val));
+                new(data+((location+size)%N))T(move(val));
                 size++;
             }else if constexpr(discard_if_full){
                 return;
             }else{
-                const size_t ol=location;
+                const size_t ol=((location+size)%N);
                 adv_loc();
                 data[ol].~T();
                 new(data+ol)T(move(val));
@@ -60,7 +60,7 @@ namespace Util {
         
         void push(const T & val){
             if(size<N){
-                new(data+location+size)T(val);
+                new(data+((location+size)%N))T(val);
                 size++;
             }else if constexpr(discard_if_full){
                 return;
