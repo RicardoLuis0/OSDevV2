@@ -47,21 +47,21 @@ size_t String::size() const{
 
 String String::operator+(const char * other) const{
     size_t l2=strlen(other);
-    char * tmp=(char*)calloc(len+l2+1,sizeof(char));
+    char * tmp=reinterpret_cast<char*>(calloc(len+l2+1,sizeof(char)));
     memcpy(tmp,data,len);
     memcpy(tmp+len,other,l2);
     return String(tmp,len+l2);
 }
 
 String String::operator+(const String & other) const{
-    UniquePtr<char> tmp=(char*)calloc(len+other.len+1,sizeof(char));
+    UniquePtr<char> tmp=reinterpret_cast<char*>(calloc(len+other.len+1,sizeof(char)));
     memcpy(tmp,data,len);
     memcpy(tmp+len,other.data,other.len);
     return String(TMP::move(tmp),len+other.len);
 }
 
 String String::operator+(char c) const {
-    UniquePtr<char> tmp=(char*)calloc(len+2,sizeof(char));
+    UniquePtr<char> tmp=reinterpret_cast<char*>(calloc(len+2,sizeof(char)));
     memcpy(tmp,data,len);
     tmp[len]=c;
     tmp[len+1]='\0';
@@ -70,7 +70,7 @@ String String::operator+(char c) const {
 
 String& String::operator+=(const char * other){
     size_t l2=strlen(other);
-    char * tmp=(char*)calloc(len+l2+1,sizeof(char));
+    char * tmp=reinterpret_cast<char*>(calloc(len+l2+1,sizeof(char)));
     memcpy(tmp,data,len);
     memcpy(tmp+len,other,l2);
     len=len+l2;
@@ -80,7 +80,7 @@ String& String::operator+=(const char * other){
 
 String& String::operator+=(char c) {
     char * tmp=data.release();
-    tmp=(char*)realloc(tmp,len+2);
+    tmp=reinterpret_cast<char*>(realloc(tmp,len+2));
     tmp[len]=c;
     tmp[len+1]='\0';
     data=tmp;
@@ -89,7 +89,7 @@ String& String::operator+=(char c) {
 }
 
 String& String::operator+=(const String & other){
-    char * tmp=(char*)calloc(len+other.len+1,sizeof(char));
+    char * tmp=reinterpret_cast<char*>(calloc(len+other.len+1,sizeof(char)));
     memcpy(tmp,data,len);
     memcpy(tmp+len,other.data,other.len);
     len=len+other.len;

@@ -6,7 +6,7 @@
 
 namespace FS {
     
-    RamFS::FileHandle::FileHandle(RamFS * f,const Util::String &n):FS::FileHandle(f,n,FSHANDLE_FILE){
+    RamFS::FileHandle::FileHandle(const RamFS * f,const Util::String &n):FS::FileHandle(f,n,FSHANDLE_FILE){
     }
     
     void RamFS::FileHandle::lock(){
@@ -44,7 +44,7 @@ namespace FS {
     
     char RamFS::FileHandle::getc(size_t offset){
         if(offset>data.size())return EOF;
-        return *(char*)(data.get()+offset);
+        return *reinterpret_cast<char*>(data.get()+offset);
     }
     
     uint8_t RamFS::FileHandle::getu(size_t offset){
@@ -76,10 +76,10 @@ namespace FS {
         return folder_names;
     }
     
-    RamFS::FolderHandle::FolderHandle(RamFS * f):FS::FolderHandle(f,"/",FSHANDLE_FOLDER),parent(nullptr){
+    RamFS::FolderHandle::FolderHandle(const RamFS * f):FS::FolderHandle(f,"/",FSHANDLE_FOLDER),parent(nullptr){
     }
     
-    RamFS::FolderHandle::FolderHandle(RamFS * f,const Util::String &n,FolderHandle * p):FS::FolderHandle(f,n,FSHANDLE_FOLDER),parent(p){
+    RamFS::FolderHandle::FolderHandle(const RamFS * f,const Util::String &n,FolderHandle * p):FS::FolderHandle(f,n,FSHANDLE_FOLDER),parent(p){
     }
     
     FS::FolderHandle * RamFS::FolderHandle::parentFolder(){
@@ -95,7 +95,7 @@ namespace FS {
         if(folders.has(name)){
             return nullptr;
         }
-        RamFS::FolderHandle * f=new RamFS::FolderHandle((RamFS*)fs,name,this);
+        RamFS::FolderHandle * f=new RamFS::FolderHandle(reinterpret_cast<const RamFS*>(fs),name,this);
         folders.set(name,f);
         return f;
     }
@@ -109,7 +109,7 @@ namespace FS {
         if(files.has(name)){
             return nullptr;
         }
-        RamFS::FileHandle * f=new RamFS::FileHandle((RamFS*)fs,name);
+        RamFS::FileHandle * f=new RamFS::FileHandle(reinterpret_cast<const RamFS*>(fs),name);
         files.set(name,f);
         return f;
     }

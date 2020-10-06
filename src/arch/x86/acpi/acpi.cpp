@@ -24,15 +24,15 @@ MADT::Table * madt;
 lai_rsdp_info rsdp_info;
 
 void * ACPI::Internal::map_table(uint32_t addr){
-    acpi_header_t * t=(acpi_header_t*)laihost_map(addr,sizeof(acpi_header_t));
+    acpi_header_t * t=reinterpret_cast<acpi_header_t*>(laihost_map(addr,sizeof(acpi_header_t)));
     uint32_t len=t->length;
     laihost_unmap(t,sizeof(acpi_header_t));
-    t=(acpi_header_t*)laihost_map(addr,len);
+    t=reinterpret_cast<acpi_header_t*>(laihost_map(addr,len));
     return t;
 }
 
 void ACPI::Internal::unmap_table(void * p){
-    acpi_header_t * t=(acpi_header_t*)p;
+    acpi_header_t * t=reinterpret_cast<acpi_header_t*>(p);
     laihost_unmap(t,t->length);
 }
 
@@ -51,14 +51,14 @@ void ACPI::init(){
     
     //setup initial tables
     
-    rsdp=(acpi_rsdp_t*)map_table(rsdp_info.rsdp_address);
-    rsdt=(acpi_rsdt_t*)map_table(rsdp_info.rsdt_address);
+    rsdp=reinterpret_cast<acpi_rsdp_t*>(map_table(rsdp_info.rsdp_address));
+    rsdt=reinterpret_cast<acpi_rsdt_t*>(map_table(rsdp_info.rsdt_address));
     if(rsdp_info.acpi_version>=2){
-        xsdp=(acpi_xsdp_t*)rsdp;
-        xsdt=(acpi_xsdt_t*)map_table(rsdp_info.xsdt_address);
+        xsdp=reinterpret_cast<acpi_xsdp_t*>(rsdp);
+        xsdt=reinterpret_cast<acpi_xsdt_t*>(map_table(rsdp_info.xsdt_address));
     }
     
-    fadt=(acpi_fadt_t*)laihost_scan("FACP",0);
+    fadt=reinterpret_cast<acpi_fadt_t*>(laihost_scan("FACP",0));
     if(!fadt)k_abort_s("Couldn't find FADT table!");
     
     //initialize LAI
@@ -70,7 +70,7 @@ void ACPI::init(){
     lai_enable_tracing(LAI_TRACE_OP|LAI_TRACE_IO|LAI_TRACE_NS);
 #endif // K_LAI_DEBUG_EXTRA
     
-    madt=(MADT::Table*)laihost_scan("APIC",0);
+    madt=reinterpret_cast<MADT::Table*>(laihost_scan("APIC",0));
     
     if(!madt){
         Screen::write_s("\n -Initializing ACPI...");
@@ -115,8 +115,8 @@ size_t MADT::entry_count;
 
 void MADT::init(){
     Util::Vector<Entry*> entry_vec;
-    Entry * current=(Entry*)(madt+1);//pointer of just past madt, start of entries
-    while((uint32_t)current<(((uint32_t)madt)+madt->header.length)){//don't read past end
+    Entry * current=reinterpret_cast<Entry*>(madt+1);//pointer of just past madt, start of entries
+    while(reinterpret_cast<uint32_t>(current)<(reinterpret_cast<uint32_t>(madt)+madt->header.length)){//don't read past end
         entry_vec.push_back(current);
         switch(current->type){
         #ifdef MADT_DEBUG
@@ -204,7 +204,7 @@ void MADT::init(){
         default:
             k_abort_s("Unknown MADT entry Type");
         }
-        current=(Entry*)((uint8_t*)current+current->length);
+        current=reinterpret_cast<Entry*>(reinterpret_cast<uint8_t*>(current)+current->length);
     }
     entry_vec.shrink_to_fit();
     entries=entry_vec.release(entry_count);

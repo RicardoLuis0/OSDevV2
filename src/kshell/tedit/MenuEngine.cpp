@@ -37,7 +37,7 @@ namespace TEdit::MenuEngine {
     } state=STATE_NONE;
     
     void init(){
-        filename=(char*)calloc(filename_max+1,1);
+        filename=reinterpret_cast<char*>(calloc(filename_max+1,1));
     }
     
     void quit(){

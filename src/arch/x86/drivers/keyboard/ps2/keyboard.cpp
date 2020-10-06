@@ -42,12 +42,12 @@ namespace Drivers::Keyboard::PS2 {
             }else if(scancode==0xB7){
                 if(get_scancode_wait()==0xE0&&get_scancode_wait()==0xAA)return KEY_PRINTSCR_RELEASED;
             }else if(scancode<KEYCODES_US_QWERTY_SET1_EXTRA_LEN){
-                return (keycode)keycodes_extra1[scancode];
+                return static_cast<keycode>(keycodes_extra1[scancode]);
             }
         }else if(scancode==0xE1){
             if(get_scancode_wait()==0x1D&&get_scancode_wait()==0x45&&get_scancode_wait()==0xE1&&get_scancode_wait()==0x9D&&get_scancode_wait()==0xC5)return KEY_PAUSE;
         }else if(scancode<KEYCODES_US_QWERTY_SET1_LEN){
-            return (keycode)keycodes[scancode];
+            return static_cast<keycode>(keycodes[scancode]);
         }
         return KEY_INVALID;//fallback to invalid
     }
@@ -226,12 +226,12 @@ namespace Drivers::Keyboard::PS2 {
             }else if(scancode==0xB7){
                 if(get_scancode_dump_wait()==0xE0&&get_scancode_dump_wait()==0xAA)return KEY_PRINTSCR_RELEASED;
             }else if(scancode<KEYCODES_US_QWERTY_SET1_EXTRA_LEN){
-                return (keycode)keycodes_extra1[scancode];
+                return static_cast<keycode>(keycodes_extra1[scancode]);
             }
         }else if(scancode==0xE1){
             if(get_scancode_dump_wait()==0x1D&&get_scancode_dump_wait()==0x45&&get_scancode_dump_wait()==0xE1&&get_scancode_dump_wait()==0x9D&&get_scancode_dump_wait()==0xC5)return KEY_PAUSE;
         }else if(scancode<KEYCODES_US_QWERTY_SET1_LEN){
-            return (keycode)keycodes[scancode];
+            return static_cast<keycode>(keycodes[scancode]);
         }
         return KEY_INVALID;//fallback to invalid
     }

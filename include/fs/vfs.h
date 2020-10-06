@@ -35,13 +35,13 @@ namespace FS {
             FSHANDLE_FOLDER,
             FSHANDLE_FILE,
         }type;
-        Handle(VirtualFileSystem *,const Util::String &,FSHandleType_t);
+        Handle(const VirtualFileSystem *,const Util::String &,FSHandleType_t);
         virtual ~Handle()=0;
     };
     
     class FileHandle : public Handle {
     public:
-        FileHandle(VirtualFileSystem *,const Util::String &,FSHandleType_t);
+        FileHandle(const VirtualFileSystem *,const Util::String &,FSHandleType_t);
         virtual void lock()=0;
         virtual bool try_lock()=0;
         virtual void unlock()=0;
@@ -56,7 +56,7 @@ namespace FS {
     
     class FolderHandle : public Handle {
     public:
-        FolderHandle(VirtualFileSystem *,const Util::String &,FSHandleType_t);
+        FolderHandle(const VirtualFileSystem *,const Util::String &,FSHandleType_t);
         virtual Util::Vector<Util::String> listFiles()=0;
         virtual Util::Vector<Util::String> listFolders()=0;
         virtual FolderHandle * parentFolder()=0;
@@ -76,7 +76,7 @@ namespace FS {
     
     class FSHandle : public Handle {//reference to other filesystem
     public:
-        FSHandle(VirtualFileSystem * containing_fs,Util::SharedPtr<VirtualFileSystem> linked_fs);
+        FSHandle(const VirtualFileSystem * containing_fs,Util::SharedPtr<VirtualFileSystem> linked_fs);
         Util::SharedPtr<VirtualFileSystem> fsroot;
     };
     

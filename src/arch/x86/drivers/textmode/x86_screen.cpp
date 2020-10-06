@@ -100,7 +100,7 @@ static inline void update_color() {
 }
 
 static inline uint16_t vga_entry(uint8_t uc) {
-    return (((uint16_t) uc) | ((uint16_t) (color_value << 8)));
+    return (static_cast<uint16_t>(uc) | static_cast<uint16_t>(color_value << 8));
 }
 
 constexpr size_t vga_xy(size_t x,size_t y){
@@ -144,7 +144,7 @@ void Screen::fill_line_multi(size_t linestart,size_t lineend,char c){
 void Screen::scroll(int len){
     if(len>0){
         uint32_t scr=len*XLEN;
-        memcpy((void*)vga,(void*)(vga+scr),(POSLEN-scr)*2);
+        memcpy(reinterpret_cast<void*>(const_cast<uint16_t*>(vga)),reinterpret_cast<void*>(const_cast<uint16_t*>(vga)+scr),(POSLEN-scr)*2);
         clear_line_multi(25-len,25);
     }else if(len<0){
         //TODO scroll down
@@ -152,13 +152,13 @@ void Screen::scroll(int len){
 }
 
 void Screen::x86_init(){
-    vga=(uint16_t*) 0xB8000;
+    vga=reinterpret_cast<uint16_t*>(0xB8000);
     setcolor(BLACK,WHITE);//white on black color by default
     uint16_t pos = 0;
     outb(0x3D4, 0x0F);
     pos |= inb(0x3D5);
     outb(0x3D4, 0x0E);
-    pos |= ((uint16_t)inb(0x3D5)) << 8;
+    pos |= static_cast<uint16_t>(inb(0x3D5)) << 8;
     disable_cursor();
     move(pos);
 }
@@ -208,9 +208,9 @@ void Screen::move(size_t pos){
     xpos=pos%XLEN;
     ypos=pos/XLEN;
     outb(0x3D4, 0x0F);
-    outb(0x3D5, (uint8_t) (pos & 0xFF));
+    outb(0x3D5, static_cast<uint8_t>(pos & 0xFF));
     outb(0x3D4, 0x0E);
-    outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
+    outb(0x3D5, static_cast<uint8_t>((pos >> 8) & 0xFF));
 }
 
 void Screen::write_c(char c){
@@ -416,9 +416,9 @@ void Screen::write_s(const char * str){
                                 setcolor(BLACK,LIGHT_GREY);
                             }else if(v==1){
                                 ansi_intensity=true;
-                                setcolor((color)(bg%8),(color)((fg%8)+8));
+                                setcolor(static_cast<color>(bg%8),static_cast<color>((fg%8)+8));
                             }else if(v>=30&&v<=37){
-                                setcolor(bg,(color)(ansi_color_map[v-30]+(ansi_intensity?8:0)));
+                                setcolor(bg,static_cast<color>(ansi_color_map[v-30]+(ansi_intensity?8:0)));
                             }else if(v>=40&&v<=47){
                                 setcolor(ansi_color_map[(v-40)],fg);
                             }

@@ -42,7 +42,7 @@
 			<Add option="-Wall" />
 			<Add option="-std=c11" />
 			<Add option="-std=c++20" />
-			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-rtti -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-exceptions -Werror=implicit-function-declaration -Werror=return-type -Wshadow -mno-red-zone" />
+			<Add option="--target=i686-pc-none-elf -march=i686 -ffreestanding -fno-rtti -fno-builtin -nostdlib -nostdinc -nostdinc++ -fno-exceptions -Werror=implicit-function-declaration -Werror=return-type -Wshadow -mno-red-zone -Wold-style-cast" />
 			<Add option="-DLAI_HOST_IDENTITY_MAP" />
 			<Add option="-DSERIAL_CRLF" />
 			<Add option="-D__OSDEV_V2__" />
@@ -416,8 +416,12 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/stdc/printf.cpp" />
-		<Unit filename="src/stdc/stringlib.cpp" />
-		<Unit filename="src/stdc/vsnprintf.cpp" />
+		<Unit filename="src/stdc/stringlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stdc/vsnprintf.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/tdraw.cpp" />
 		<Unit filename="src/util/string.cpp" />
 		<Extensions>

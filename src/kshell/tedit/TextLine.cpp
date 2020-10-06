@@ -11,7 +11,7 @@ using namespace TEdit;
 TextLine::TextLine() {
     _len=0;
     _alloc=8;//initial allocation is 8 chars
-    buf=(char*)calloc(8,sizeof(char));//uses c allocation functions instead of new because of the need to use realloc
+    buf=reinterpret_cast<char*>(calloc(8,sizeof(char)));//uses c allocation functions instead of new because of the need to use realloc
     if(buf==nullptr){
         IOLayer::exit_error("Out of memory");
     }
@@ -52,7 +52,7 @@ TextLine * TextLine::split(size_t at){
         return new TextLine();
     }
     size_t sz=_len-at;
-    char * nbuf=(char*)calloc(sz+1,sizeof(char));
+    char * nbuf=reinterpret_cast<char*>(calloc(sz+1,sizeof(char)));
     memcpy(nbuf,buf+at,sz+1);//copy including null terminator
     buf[at]='\0';
     _len=at;
@@ -105,7 +105,7 @@ void TextLine::resize(size_t new_size,bool move_terminator){
 void TextLine::grow(size_t to){
     if(to<=_alloc)return;//only allow growth
     size_t ns=max(_alloc*2,to);//double or grow to necessary, whichever is largest
-    buf=(char*)realloc(buf,sizeof(char)*ns);
+    buf=reinterpret_cast<char*>(realloc(buf,sizeof(char)*ns));
     if(!buf){
         IOLayer::exit_error("REALLOC FAILED");
     }
@@ -114,7 +114,7 @@ void TextLine::grow(size_t to){
 
 void TextLine::trim(){
     if(_alloc>(_len+1)){
-        buf=(char*)realloc(buf,_len+1);
+        buf=reinterpret_cast<char*>(realloc(buf,_len+1));
         if(!buf){
             IOLayer::exit_error("REALLOC FAILED");
         }

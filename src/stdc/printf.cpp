@@ -22,7 +22,7 @@ extern "C" {
         va_copy(a2,arg);
         int n=vsnprintf(NULL,0,fmt,a2);
         va_end(a2);
-        char * s=(char*)calloc(n+1,sizeof(char));
+        char * s=reinterpret_cast<char*>(calloc(n+1,sizeof(char)));
         vsnprintf(s,n,fmt,arg);
         k_putsn(s,n);
         free(s);
@@ -62,7 +62,7 @@ extern "C" {
         va_copy(a2,arg);
         int n=vsnprintf(NULL,0,fmt,a2);
         va_end(a2);
-        char * s=(char*)calloc(n+1,sizeof(char));
+        char * s=reinterpret_cast<char*>(calloc(n+1,sizeof(char)));
         vsnprintf(s,n,fmt,arg);
         fwrite(s,sizeof(char),n,f);
         free(s);

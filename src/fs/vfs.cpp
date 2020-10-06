@@ -6,7 +6,7 @@ namespace FS {
     VirtualFileSystem::~VirtualFileSystem(){
     }
     
-    Handle::Handle(VirtualFileSystem * f,const Util::String & n,FSHandleType_t t):name(n),fs(f),type(t){
+    Handle::Handle(const VirtualFileSystem * f,const Util::String & n,FSHandleType_t t):name(n),fs(f),type(t){
         
     }
     
@@ -14,11 +14,11 @@ namespace FS {
         
     }
     
-    FolderHandle::FolderHandle(VirtualFileSystem * f,const Util::String & n,FSHandleType_t t):Handle(f,n,t){
+    FolderHandle::FolderHandle(const VirtualFileSystem * f,const Util::String & n,FSHandleType_t t):Handle(f,n,t){
         
     }
     
-    FileHandle::FileHandle(VirtualFileSystem * f,const Util::String & n,FSHandleType_t t):Handle(f,n,t){
+    FileHandle::FileHandle(const VirtualFileSystem * f,const Util::String & n,FSHandleType_t t):Handle(f,n,t){
         
     }
     

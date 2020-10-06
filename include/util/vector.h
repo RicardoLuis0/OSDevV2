@@ -31,7 +31,7 @@ namespace Util {
             }
             
             Vector(const T * arr,size_t n){
-                vec=(T*)calloc(sizeof(T),n);
+                vec=reinterpret_cast<T*>(calloc(sizeof(T),n));
                 if(!vec)k_abort_s("Not Enough Memory for Vector::Vector");
                 len=n;
                 alloc=n;
@@ -65,9 +65,9 @@ namespace Util {
                 SpinlockGuard guard(lock);
                 if(alloc<num){
                     if(vec){
-                        vec=(T*)realloc(vec,sizeof(T)*num);
+                        vec=reinterpret_cast<T*>(realloc(vec,sizeof(T)*num));
                     }else{
-                        vec=(T*)calloc(sizeof(T),num);
+                        vec=reinterpret_cast<T*>(calloc(sizeof(T),num));
                     }
                     alloc=num;
                 }
@@ -195,7 +195,7 @@ namespace Util {
             void shrink_to_fit(){
                 SpinlockGuard guard(lock);
                 if(alloc>len){
-                    vec=(T*)realloc(vec,sizeof(T)*len);
+                    vec=reinterpret_cast<T*>(realloc(vec,sizeof(T)*len));
                     if(!vec)k_abort_s("Not Enough Memory for Vector::shrink_to_fit");
                     alloc=len;
                 }
@@ -220,9 +220,9 @@ namespace Util {
                 if(alloc>=n)return;//no need to grow
                 if(vec){
                     n=max(n,(alloc*3u)/2u);
-                    vec=(T*)realloc(vec,sizeof(T)*n);
+                    vec=reinterpret_cast<T*>(realloc(vec,sizeof(T)*n));
                 }else{
-                    vec=(T*)calloc(sizeof(T),n);
+                    vec=reinterpret_cast<T*>(calloc(sizeof(T),n));
                 }
                 if(!vec)k_abort_s("Not Enough Memory for Vector::grow");
                 alloc=n;

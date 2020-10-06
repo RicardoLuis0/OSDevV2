@@ -73,7 +73,7 @@ extern "C" {
         }else{
             //lower memory except first page is always mapped, do nothing
         }
-        return (void*)address;
+        return reinterpret_cast<void*>(address);
     }
     
     void * laihost_scan(const char * sig,size_t index){
@@ -121,9 +121,9 @@ extern "C" {
     }
     
     void laihost_unmap(void *pointer, size_t count){
-        if((uint32_t)pointer<4096){
+        if(reinterpret_cast<uint32_t>(pointer)<4096){
             Memory::Internal::unmap_null();
-        }else if((uint32_t)pointer>=1_MB){
+        }else if(reinterpret_cast<uint32_t>(pointer)>=1_MB){
 #ifdef LAI_HOST_IDENTITY_MAP
             //if identity mapping don't unmap since a page could have been mapped multiple times
 #else

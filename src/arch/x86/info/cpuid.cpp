@@ -232,9 +232,9 @@ namespace CPUID {
         Screen::setfgcolor(Screen::LIGHT_CYAN);
         k_puts("\nVendor ID:\n");
         Screen::setfgcolor(Screen::WHITE);
-        k_putsn((char*)&ebx0,4);
-        k_putsn((char*)&edx0,4);
-        k_putsn((char*)&ecx0,4);
+        k_putsn(reinterpret_cast<char*>(&ebx0),4);
+        k_putsn(reinterpret_cast<char*>(&edx0),4);
+        k_putsn(reinterpret_cast<char*>(&ecx0),4);
         lines+=2;
         Screen::setfgcolor(Screen::LIGHT_CYAN);
         k_puts("\nHighest Function:\n");

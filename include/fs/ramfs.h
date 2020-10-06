@@ -13,7 +13,7 @@ namespace FS {
         
         class FileHandle : public FS::FileHandle {
         public:
-            FileHandle(RamFS * fs,const Util::String &name);
+            FileHandle(const RamFS * fs,const Util::String &name);
             virtual void lock() override;
             virtual bool try_lock() override;
             virtual void unlock() override;
@@ -31,8 +31,8 @@ namespace FS {
         
         class FolderHandle : public FS::FolderHandle {
         public://TODO folder locking
-            FolderHandle(RamFS * fs);//root constructor
-            FolderHandle(RamFS * fs,const Util::String &name,FolderHandle * parent);//parent MUST NOT BE NULL
+            FolderHandle(const RamFS * fs);//root constructor
+            FolderHandle(const RamFS * fs,const Util::String &name,FolderHandle * parent);//parent MUST NOT BE NULL
             virtual Util::Vector<Util::String> listFiles() override;
             virtual Util::Vector<Util::String> listFolders() override;
             virtual FS::FolderHandle * parentFolder() override;//parent is only null on the filesystem root

@@ -138,7 +138,7 @@ namespace Util {
     SharedPtr<T> makeShared(U&&... args){
         constexpr size_t ptr_start=align_size(sizeof(PtrData),alignof(T));
         void * buf=malloc(ptr_start+sizeof(T));
-        return SharedPtr<T>(new(buf)PtrData,new((void*)(((uint8_t*)buf)+ptr_start))T(TMP::forward<U>(args)...));
+        return SharedPtr<T>(new(buf)PtrData,new(reinterpret_cast<void*>((reinterpret_cast<uint8_t*>(buf)+ptr_start)))T(TMP::forward<U>(args)...));
     }
 
     template<typename T>

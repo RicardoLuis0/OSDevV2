@@ -114,8 +114,8 @@ void * Memory::Internal::phys_id_to_ptr(uint32_t page_id){
 }
 
 static inline uint32_t to_page_id(void * ptr){
-    if(((uint32_t)ptr)%4096)k_abort_s("Can't get page from misaligned pointer");
-    return ((uint32_t)ptr)/4096;
+    if(reinterpret_cast<uint32_t>(ptr)%4096)k_abort_s("Can't get page from misaligned pointer");
+    return reinterpret_cast<uint32_t>(ptr)/4096;
 }
 
 static inline void * virt_to_phys(void * v){
@@ -276,7 +276,7 @@ void Memory::cmd_meminfo(){
     Screen::setfgcolor(Screen::WHITE);
     Screen::write_s("\nKernel Binary Size: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
-    Screen::write_mem((((uint32_t)&kernel_end)-((uint32_t)&kernel_start))-STACK_SIZE);
+    Screen::write_mem((reinterpret_cast<uint32_t>(&kernel_end)-reinterpret_cast<uint32_t>(&kernel_start))-STACK_SIZE);
     Screen::setfgcolor(Screen::WHITE);
     Screen::write_s("\nKernel Heap Size: ");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
@@ -303,8 +303,8 @@ void Memory::x86_init(struct multiboot_info * mbd){
     blockdata blocks[BLOCK_MAX];
     uint8_t next_block=0;
     if(mbd&&mbd->flags&MULTIBOOT_INFO_MEM_MAP){
-        void * mmap_max=(void*)(mbd->mmap_addr+mbd->mmap_length);
-        for(multiboot_memory_map_t * mmap=(multiboot_memory_map_t *)mbd->mmap_addr;mmap<mmap_max;mmap=(multiboot_memory_map_t *)(((uint32_t)mmap)+mmap->size+sizeof(mmap->size))){
+        void * mmap_max=reinterpret_cast<void*>(mbd->mmap_addr+mbd->mmap_length);
+        for(multiboot_memory_map_t * mmap=reinterpret_cast<multiboot_memory_map_t *>(mbd->mmap_addr);mmap<mmap_max;mmap=reinterpret_cast<multiboot_memory_map_t *>(reinterpret_cast<uint32_t>(mmap)+mmap->size+sizeof(mmap->size))){
             total+=mmap->len;
             if(mmap->type!=MULTIBOOT_MEMORY_AVAILABLE){//ignore non-available memory
                 continue;
@@ -315,8 +315,8 @@ void Memory::x86_init(struct multiboot_info * mbd){
             }else{
                 if(next_block<BLOCK_MAX){
                     usable+=mmap->len;
-                    blocks[next_block].start=(uint32_t)mmap->addr;
-                    blocks[next_block].end=(uint32_t)mmap->addr+mmap->len;
+                    blocks[next_block].start=static_cast<uint32_t>(mmap->addr);
+                    blocks[next_block].end=static_cast<uint32_t>(mmap->addr)+mmap->len;
                     next_block++;
                 }
             }
@@ -359,8 +359,8 @@ void Memory::x86_init(struct multiboot_info * mbd){
     }
     assert(page_count_expected==page_count);
     #endif // DEBUG
-    uint32_t k_start=((uint32_t)&kernel_start);
-    uint32_t k_end=((uint32_t)&kernel_end);
+    uint32_t k_start=reinterpret_cast<uint32_t>(&kernel_start);
+    uint32_t k_end=reinterpret_cast<uint32_t>(&kernel_end);
     uint32_t k_start_page=k_start/4096;
     uint32_t k_end_page=(k_end/4096)+1;
     set_phys_free(k_start_page,k_end_page,false);

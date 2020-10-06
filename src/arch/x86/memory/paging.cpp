@@ -221,7 +221,7 @@ extern uint8_t kernel_start;
 extern uint8_t kernel_end;
 
 static void paging_enable(page_directory_root_t * pd){
-    CR3::set((uint32_t)pd);
+    CR3::set(reinterpret_cast<uint32_t>(pd));
     CR0::enableFlags(CR0::PG);
     Internal::current_page_directory=pd;
 }
@@ -258,7 +258,7 @@ void Memory::cmd_pagefault(){
     Screen::write_h(p);
     Screen::write_s("), Press Any Key to continue...");
     k_getch_extended();
-    *((uint32_t*)p)=0;
+    *reinterpret_cast<uint32_t*>(p)=0;
 }
 
 constexpr size_t entry_arr_pages=pages_to_fit(sizeof(entry_t)*1024u);

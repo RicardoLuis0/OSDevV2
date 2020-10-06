@@ -9,7 +9,7 @@ void PCI::init(){
 //https://wiki.osdev.org/PCI
 
 static constexpr uint32_t addr(uint8_t bus, uint8_t slot, uint8_t func,uint16_t off){
-    return (uint32_t)((((uint32_t)bus) << 16) | (((uint32_t)slot) << 11)|(((uint32_t)func) << 8) | (off & 0xfc) | ((uint32_t)0x80000000));
+    return static_cast<uint32_t>((static_cast<uint32_t>(bus) << 16) | (static_cast<uint32_t>(slot) << 11) | (static_cast<uint32_t>(func) << 8) | (off & 0xfc) | (static_cast<uint32_t>(0x80000000)));
 }
 
 void PCI::writeb(uint8_t bus, uint8_t slot, uint8_t func, uint16_t off, uint8_t val){

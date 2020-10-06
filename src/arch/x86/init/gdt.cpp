@@ -42,5 +42,5 @@ void GDT::init(){
     GDT[1].encode(0,0xFFFFFFFF,0x9A);
     GDT[2].encode(0,0xFFFFFFFF,0x92);
     //GDT[3].encode(???,sizeof(???),0x89), //???=TSS location, 0x18
-    loadgdt((uint32_t)GDT,sizeof(GDT));//load flat 4GB GDT
+    loadgdt(reinterpret_cast<uint32_t>(GDT),sizeof(GDT));//load flat 4GB GDT
 }

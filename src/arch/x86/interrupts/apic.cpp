@@ -55,10 +55,10 @@
 
 #define LAPIC_MSR_X2APIC_ENABLE_BIT (1U << 10)
 
-#define MMIO8(base,offset)  (*((volatile uint8_t*) ((uintptr_t)base+(uintptr_t)offset)))
-#define MMIO16(base,offset) (*((volatile uint16_t*)((uintptr_t)base+(uintptr_t)offset)))
-#define MMIO32(base,offset) (*((volatile uint32_t*)((uintptr_t)base+(uintptr_t)offset)))
-#define MMIO64(base,offset) (*((volatile uint64_t*)((uintptr_t)base+(uintptr_t)offset)))
+#define MMIO8(base,offset)  (*reinterpret_cast<volatile uint8_t*> (reinterpret_cast<uintptr_t>(base)+reinterpret_cast<uintptr_t>(offset)))
+#define MMIO16(base,offset) (*reinterpret_cast<volatile uint16_t*>(reinterpret_cast<uintptr_t>(base)+reinterpret_cast<uintptr_t>(offset)))
+#define MMIO32(base,offset) (*reinterpret_cast<volatile uint32_t*>(reinterpret_cast<uintptr_t>(base)+reinterpret_cast<uintptr_t>(offset)))
+#define MMIO64(base,offset) (*reinterpret_cast<volatile uint64_t*>(reinterpret_cast<uintptr_t>(base)+reinterpret_cast<uintptr_t>(offset)))
 
 #define REG2MSR(reg) ((reg>>4)+0x800)//ex. 0x20 -> 0x802
 

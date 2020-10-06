@@ -37,7 +37,7 @@ extern "C" {
     }
     
     clock_t clock(void){
-        return (clock_t)(-1);
+        return static_cast<clock_t>(-1);
     }
     
     time_t mktime(tm *time){
@@ -90,11 +90,11 @@ extern "C" {
     }
     
     int atexit(void(*func)(void)){
-        return __cxa_atexit((void (*)(void*))func,NULL,NULL);
+        return __cxa_atexit(reinterpret_cast<void (*)(void*)>(func),NULL,NULL);
     }
     
     const char * err_unknown = "unknown error";
-    char * errstr=(char*)err_unknown;
+    char * errstr=const_cast<char*>(err_unknown);
     
     char * strerror(int errnum) {
         return errstr;
@@ -253,7 +253,7 @@ extern "C" {
     //source http://www.cse.yorku.ca/~oz/hash.html
     size_t k_hash_s(const char * s){
         size_t hash = 5381;
-        while(*s++)hash = ((hash << 5) + hash) + ((size_t)*s); /* hash * 33 + c */
+        while(*s++)hash = ((hash << 5) + hash) + (static_cast<size_t>(*s)); /* hash * 33 + c */
         return hash;
     }
     

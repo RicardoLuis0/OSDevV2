@@ -196,7 +196,7 @@ static void cmd_lua(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Util::Vector<Util::UniquePtr<char>> args;
     cmd_parse(args,cmd);
     k_putc('\n');
-    lua_main(args.size()-1,(char**)args.get());
+    lua_main(args.size()-1,reinterpret_cast<char**>(args.get()));
 }
 
 static Util::HashTable<kshell_cmd> * cmds=nullptr;
@@ -251,7 +251,7 @@ void cmd_tedit(char * cmd,Util::HashTable<kshell_cmd> * commands){
     cmd_parse(args,cmd);
     k_putc('\n');
     Screen::clear();
-    TEdit::tedit_main(args.size()-1,(char**)args.get());
+    TEdit::tedit_main(args.size()-1,reinterpret_cast<char**>(args.get()));
 }
 
 void kshell_init(){

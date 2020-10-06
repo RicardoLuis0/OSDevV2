@@ -27,7 +27,7 @@ namespace TEdit::IOLayer {
         case K_GETCH_EXT_ALT:
             return {0,ALT,1};
         default:
-            return {(char)kc,KEY,1};
+            return {static_cast<char>(kc),KEY,1};
         }
     }
     
@@ -48,7 +48,7 @@ namespace TEdit::IOLayer {
     }
     
     void setColor(color fg,color bg){
-        Screen::setcolor((Screen::color)bg,(Screen::color)fg);
+        Screen::setcolor(static_cast<Screen::color>(bg),static_cast<Screen::color>(fg));
     }
     
     void fillLine(int16_t line,int16_t rows,char c,color fg,color bg){
@@ -66,7 +66,7 @@ namespace TEdit::IOLayer {
         va_copy(args2,args1);
         size_t len=vsnprintf(NULL,0,fmt,args2);
         va_end(args2);
-        char * buf=(char*)calloc(len+1,sizeof(char));
+        char * buf=reinterpret_cast<char*>(calloc(len+1,sizeof(char)));
         vsnprintf(buf,len+1,fmt,args1);
         va_end(args1);
         fillLine(0,25,' ',WHITE,BLACK);

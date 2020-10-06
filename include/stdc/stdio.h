@@ -8,14 +8,17 @@
 #ifdef __cplusplus
 extern "C" {
 #define RESTRICT __restrict__
+#define stdin reinterpret_cast<FILE*>(0)
+#define stdout reinterpret_cast<FILE*>(1)
+#define stderr reinterpret_cast<FILE*>(2)
 #else
 #define RESTRICT restrict
-#endif // __cplusplus
-
-#define EOF -1
 #define stdin ((FILE*)0)
 #define stdout ((FILE*)1)
 #define stderr ((FILE*)2)
+#endif // __cplusplus
+
+#define EOF -1
 
 #define BUFSIZ 512
 
