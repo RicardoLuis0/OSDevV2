@@ -425,7 +425,7 @@
 			<envvars />
 			<debugger>
 				<remote_debugging target="KernelDebug">
-					<options conn_type="0" serial_baud="115200" ip_address="localhost" ip_port="1234" additional_cmds_before='file bin/Debug/kernel.bin&#x0A;set architecture i386&#x0A;shell &quot;start start_kernel_debug.bat&quot;' extended_remote="1" />
+					<options conn_type="0" serial_baud="115200" ip_address="localhost" ip_port="1234" additional_cmds="add-symbol-file bin/Debug/kernel.bin" additional_cmds_before="set architecture i386&#x0A;" additional_shell_cmds_before="start start_kernel_debug.bat" />
 				</remote_debugging>
 			</debugger>
 		</Extensions>

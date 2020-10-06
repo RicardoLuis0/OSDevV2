@@ -55,14 +55,18 @@
 
 #define LAPIC_MSR_X2APIC_ENABLE_BIT (1U << 10)
 
-#define MMIO8(base,offset)  (*((volatile uint8_t*) (base+offset)))
-#define MMIO16(base,offset) (*((volatile uint16_t*)(base+offset)))
-#define MMIO32(base,offset) (*((volatile uint32_t*)(base+offset)))
-#define MMIO64(base,offset) (*((volatile uint64_t*)(base+offset)))
+#define MMIO8(base,offset)  (*((volatile uint8_t*) ((uintptr_t)base+(uintptr_t)offset)))
+#define MMIO16(base,offset) (*((volatile uint16_t*)((uintptr_t)base+(uintptr_t)offset)))
+#define MMIO32(base,offset) (*((volatile uint32_t*)((uintptr_t)base+(uintptr_t)offset)))
+#define MMIO64(base,offset) (*((volatile uint64_t*)((uintptr_t)base+(uintptr_t)offset)))
+
+#define REG2MSR(reg) ((reg>>4)+0x800)//ex. 0x20 -> 0x802
 
 using namespace ACPI;
 
 extern MADT::Table * madt;
+
+static bool x2apic;
 
 static uint32_t lapic_base(){
     uint64_t msr;
@@ -72,44 +76,86 @@ static uint32_t lapic_base(){
 
 [[maybe_unused]]
 static inline uint32_t lapic_register_get(uint32_t reg){
-    return MMIO32(lapic_base(),reg);
-}
-
-[[maybe_unused]]
-static inline uint32_t lapic_register_get(uint32_t base,uint32_t reg){
-    return MMIO32(base,reg);
+    if(x2apic){
+        if(reg==LAPIC_ICR_0){
+            uint32_t lo,hi;
+            MSR::get(0x830,&lo,&hi);
+            return lo;
+        }else if(reg==LAPIC_ICR_1){
+            uint32_t lo,hi;
+            MSR::get(0x830,&lo,&hi);
+            return hi;
+        }else{
+            uint32_t lo,hi;
+            MSR::get(REG2MSR(reg),&lo,&hi);
+            return lo;
+        }
+    }else{
+        return MMIO32(lapic_base(),reg);
+    }
 }
 
 [[maybe_unused]]
 static inline void lapic_register_set(uint32_t reg,uint32_t val){
-    MMIO32(lapic_base(),reg)=val;
-}
-
-[[maybe_unused]]
-static inline void lapic_register_set(uint32_t base,uint32_t reg,uint32_t val){
-    MMIO32(base,reg)=val;
+    if(x2apic){
+        if(reg==LAPIC_ICR_0){
+            uint32_t lo,hi;
+            MSR::get(0x830,&lo,&hi);
+            MSR::set(0x830,val,hi);
+        }else if(reg==LAPIC_ICR_1){
+            uint32_t lo,hi;
+            MSR::get(0x830,&lo,&hi);
+            MSR::set(0x830,lo,val);
+        }else{
+            MSR::set(REG2MSR(reg),val,0);
+        }
+    }else{
+        MMIO32(lapic_base(),reg)=val;
+    }
 }
 
 [[maybe_unused]]
 static inline void lapic_register_and(uint32_t reg,uint32_t val){
-    uint32_t base=lapic_base();
-    MMIO32(base,reg)=MMIO32(base,reg)&val;
-}
-
-[[maybe_unused]]
-static inline void lapic_register_and(uint32_t base,uint32_t reg,uint32_t val){
-    MMIO32(base,reg)=MMIO32(base,reg)&val;
+    if(x2apic){
+        if(reg==LAPIC_ICR_0){
+            uint32_t lo,hi;
+            MSR::get(0x830,&lo,&hi);
+            MSR::set(0x830,val&lo,hi);
+        }else if(reg==LAPIC_ICR_1){
+            uint32_t lo,hi;
+            MSR::get(0x830,&lo,&hi);
+            MSR::set(0x830,lo,val&hi);
+        }else{
+            uint32_t lo,hi;
+            MSR::get(REG2MSR(reg),&lo,&hi);
+            MSR::set(REG2MSR(reg),val&lo,0);
+        }
+    }else{
+        uint32_t base=lapic_base();
+        MMIO32(base,reg)=MMIO32(base,reg)&val;
+    }
 }
 
 [[maybe_unused]]
 static inline void lapic_register_or(uint32_t reg,uint32_t val){
-    uint32_t base=lapic_base();
-    MMIO32(base,reg)=MMIO32(base,reg)|val;
-}
-
-[[maybe_unused]]
-static inline void lapic_register_or(uint32_t base,uint32_t reg,uint32_t val){
-    MMIO32(base,reg)=MMIO32(base,reg)|val;
+    if(x2apic){
+        if(reg==LAPIC_ICR_0){
+            uint32_t lo,hi;
+            MSR::get(0x830,&lo,&hi);
+            MSR::set(0x830,val|lo,hi);
+        }else if(reg==LAPIC_ICR_1){
+            uint32_t lo,hi;
+            MSR::get(0x830,&lo,&hi);
+            MSR::set(0x830,lo,val|hi);
+        }else{
+            uint32_t lo,hi;
+            MSR::get(REG2MSR(reg),&lo,&hi);
+            MSR::set(REG2MSR(reg),val|lo,0);
+        }
+    }else{
+        uint32_t base=lapic_base();
+        MMIO32(base,reg)=MMIO32(base,reg)|val;
+    }
 }
 
 [[maybe_unused]]
@@ -151,8 +197,17 @@ namespace APIC {
         //enable LAPIC in case it isn't already enabled
         MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_ENABLE_BIT);
         
+        //is x2apic enabled? shouldn't be, but check just in case
+        x2apic=MSR::get(LAPIC_MSR)&LAPIC_MSR_X2APIC_ENABLE_BIT;
+        
+        if(!x2apic&&CPUID::has(CPUID::FEAT_ECX_1_x2APIC,0)){
+            MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_X2APIC_ENABLE_BIT);
+            x2apic=true;
+        }
+        
         //enable LAPIC's SIV (spurious interrupt vector) in case it isn't already enabled
         lapic_register_or(LAPIC_SIV,0x1FF);
+        
     }
     
     void init(){
