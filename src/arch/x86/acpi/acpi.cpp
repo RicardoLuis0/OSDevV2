@@ -121,8 +121,8 @@ void MADT::init(){
         switch(current->type){
         #ifdef MADT_DEBUG
         case Entry::PROCESSOR:{
-                ProcessorEntry * e=(ProcessorEntry *)current;
-                Serial::write_s("\nFound Processor MADT Entry");
+                ProcessorEntry * e=reinterpret_cast<ProcessorEntry *>(current);
+                Serial::write_s("\nMADT Processor Entry");
                 Serial::write_s("\n .Type:");
                 Serial::write_h(e->header.type);
                 Serial::write_s("\n .Length:");
@@ -136,8 +136,8 @@ void MADT::init(){
             }
             break;
         case Entry::IO_APIC:{
-                IOAPICEntry * e=(IOAPICEntry *)current;
-                Serial::write_s("\nFound I/O APIC MADT Entry");
+                IOAPICEntry * e=reinterpret_cast<IOAPICEntry *>(current);
+                Serial::write_s("\nMADT I/O APIC Entry");
                 Serial::write_s("\n .Type:");
                 Serial::write_h(e->header.type);
                 Serial::write_s("\n .Length:");
@@ -151,8 +151,8 @@ void MADT::init(){
             }
             break;
         case Entry::ISO:{
-                ISOEntry * e=(ISOEntry *)current;
-                Serial::write_s("\nFound Interrupt Source Override MADT Entry");
+                ISOEntry * e=reinterpret_cast<ISOEntry *>(current);
+                Serial::write_s("\nMADT Interrupt Source Override Entry");
                 Serial::write_s("\n .Type:");
                 Serial::write_h(e->header.type);
                 Serial::write_s("\n .Length:");
@@ -168,8 +168,8 @@ void MADT::init(){
             }
             break;
         case Entry::NMI:{
-                NMIEntry * e=(NMIEntry *)current;
-                Serial::write_s("\nFound Non-Maskable Interrupt MADT Entry");
+                NMIEntry * e=reinterpret_cast<NMIEntry *>(current);
+                Serial::write_s("\nMADT Non-Maskable Interrupt Entry");
                 Serial::write_s("\n .Type:");
                 Serial::write_h(e->header.type);
                 Serial::write_s("\n .Length:");
@@ -183,8 +183,8 @@ void MADT::init(){
             }
             break;
         case Entry::LAPIC_64:{
-                LAPIC64Entry * e=(LAPIC64Entry *)current;
-                Serial::write_s("\nFound 64-bit Local Apic Address Override MADT Entry");
+                LAPIC64Entry * e=reinterpret_cast<LAPIC64Entry *>(current);
+                Serial::write_s("\nMADT Found 64-bit Local Apic Address Override Entry");
                 Serial::write_s("\n .Type:");
                 Serial::write_h(e->header.type);
                 Serial::write_s("\n .Length:");
