@@ -2,53 +2,55 @@
 #include "klib.h"
 #include "screen.h"
 
-#define LAPIC_ID 0x20//read-write, Local APIC ID Register
-#define LAPIC_VER 0x30 //read-only, Local APIC Version Register
-#define LAPIC_TPR 0x80 //read-write, Task Priority Register
-#define LAPIC_APR 0x90 //read-only, Arbitration Priority Register
-#define LAPIC_PPR 0xA0 //read-only, Processor Priority Register
-#define LAPIC_EOI 0xB0 //write-only, EOI Register
-#define LAPIC_RRD 0xC0 //read-only, Remote Read Register
-#define LAPIC_LDR 0xD0 //read-write, Local Destination Register
-#define LAPIC_DFR 0xE0 //read-write, Destination Format Register
-#define LAPIC_SIV 0xF0 //read-write, Spurious Interrupt Vector Register
-#define LAPIC_ISR_0 0x100 //read-only, In-Service Register bits 31:0
-#define LAPIC_ISR_1 0x110 //read-only, In-Service Register bits 63:32
-#define LAPIC_ISR_2 0x120 //read-only, In-Service Register bits 95:64
-#define LAPIC_ISR_3 0x130 //read-only, In-Service Register bits 127:96
-#define LAPIC_ISR_4 0x140 //read-only, In-Service Register bits 159:128
-#define LAPIC_ISR_5 0x150 //read-only, In-Service Register bits 191:160
-#define LAPIC_ISR_6 0x160 //read-only, In-Service Register bits 223:192
-#define LAPIC_ISR_7 0x170 //read-only, In-Service Register bits 255:224
-#define LAPIC_TMR_0 0x180 //read-only, Trigger Mode Register bits 31:0
-#define LAPIC_TMR_1 0x190 //read-only, Trigger Mode Register bits 63:32
-#define LAPIC_TMR_2 0x1A0 //read-only, Trigger Mode Register bits 95:64
-#define LAPIC_TMR_3 0x1B0 //read-only, Trigger Mode Register bits 127:96
-#define LAPIC_TMR_4 0x1C0 //read-only, Trigger Mode Register bits 159:128
-#define LAPIC_TMR_5 0x1D0 //read-only, Trigger Mode Register bits 191:160
-#define LAPIC_TMR_6 0x1E0 //read-only, Trigger Mode Register bits 223:192
-#define LAPIC_TMR_7 0x1F0 //read-only, Trigger Mode Register bits 255:224
-#define LAPIC_IRR_0 0x200 //read-only, Interrupt Request Register bits 31:0
-#define LAPIC_IRR_1 0x210 //read-only, Interrupt Request Register bits 63:32
-#define LAPIC_IRR_2 0x220 //read-only, Interrupt Request Register bits 95:64
-#define LAPIC_IRR_3 0x230 //read-only, Interrupt Request Register bits 127:96
-#define LAPIC_IRR_4 0x240 //read-only, Interrupt Request Register bits 159:128
-#define LAPIC_IRR_5 0x250 //read-only, Interrupt Request Register bits 191:160
-#define LAPIC_IRR_6 0x260 //read-only, Interrupt Request Register bits 223:192
-#define LAPIC_IRR_7 0x270 //read-only, Interrupt Request Register bits 255:224
-#define LAPIC_ESR 0x280 //read-only, Error Status Register
-#define LAPIC_LVT_CMCI 0x2F0 //read-write, LVT CMCI Register
-#define LAPIC_ICR_0 0x300 //read-write, Interrupt Command Register bits 31:0
-#define LAPIC_ICR_1 0x310 //read-write, Interrupt Command Register bits 63:32
-#define LAPIC_LVT_TR 0x320 //read-write, LVT Timer Register
-#define LAPIC_LVT_TSR 0x330 //read-write, LVT Thermal Sensor Register
-#define LAPIC_LVT_PMCR 0x340 //read-write, LVT Performance Monitoring Counters Register
-#define LAPIC_LVT_LINT0 0x350 //read-write, LVT LINT0 Register
-#define LAPIC_LVT_LINT1 0x360 //read-write, LVT LINT0 Register
-#define LAPIC_LVT_ERR 0x370 //read-write, LVT Error Register
-#define LAPIC_TIMER_ICR 0x380 //read-write, Timer Initial Count Register
-#define LAPIC_TIMER_CCR 0x390 //read-only, Timer Current Count Register
-#define LAPIC_TIMER_DCR 0x39E //read-write, Timer Divide Configuration Register
+enum lapic_regs {
+    LAPIC_ID =            0x20, // read-write, Local APIC ID Register
+    LAPIC_VER =           0x30, // read-only, Local APIC Version Register
+    LAPIC_TPR =           0x80, // read-write, Task Priority Register
+    LAPIC_APR =           0x90, // read-only, Arbitration Priority Register
+    LAPIC_PPR =           0xA0, // read-only, Processor Priority Register
+    LAPIC_EOI =           0xB0, // write-only, EOI Register
+    LAPIC_RRD =           0xC0, // read-only, Remote Read Register
+    LAPIC_LDR =           0xD0, // read-write, Local Destination Register
+    LAPIC_DFR =           0xE0, // read-write, Destination Format Register
+    LAPIC_SIV =           0xF0, // read-write, Spurious Interrupt Vector Register
+    LAPIC_ISR_0 =        0x100, // read-only, In-Service Register bits 31:0
+    LAPIC_ISR_1 =        0x110, // read-only, In-Service Register bits 63:32
+    LAPIC_ISR_2 =        0x120, // read-only, In-Service Register bits 95:64
+    LAPIC_ISR_3 =        0x130, // read-only, In-Service Register bits 127:96
+    LAPIC_ISR_4 =        0x140, // read-only, In-Service Register bits 159:128
+    LAPIC_ISR_5 =        0x150, // read-only, In-Service Register bits 191:160
+    LAPIC_ISR_6 =        0x160, // read-only, In-Service Register bits 223:192
+    LAPIC_ISR_7 =        0x170, // read-only, In-Service Register bits 255:224
+    LAPIC_TMR_0 =        0x180, // read-only, Trigger Mode Register bits 31:0
+    LAPIC_TMR_1 =        0x190, // read-only, Trigger Mode Register bits 63:32
+    LAPIC_TMR_2 =        0x1A0, // read-only, Trigger Mode Register bits 95:64
+    LAPIC_TMR_3 =        0x1B0, // read-only, Trigger Mode Register bits 127:96
+    LAPIC_TMR_4 =        0x1C0, // read-only, Trigger Mode Register bits 159:128
+    LAPIC_TMR_5 =        0x1D0, // read-only, Trigger Mode Register bits 191:160
+    LAPIC_TMR_6 =        0x1E0, // read-only, Trigger Mode Register bits 223:192
+    LAPIC_TMR_7 =        0x1F0, // read-only, Trigger Mode Register bits 255:224
+    LAPIC_IRR_0 =        0x200, // read-only, Interrupt Request Register bits 31:0
+    LAPIC_IRR_1 =        0x210, // read-only, Interrupt Request Register bits 63:32
+    LAPIC_IRR_2 =        0x220, // read-only, Interrupt Request Register bits 95:64
+    LAPIC_IRR_3 =        0x230, // read-only, Interrupt Request Register bits 127:96
+    LAPIC_IRR_4 =        0x240, // read-only, Interrupt Request Register bits 159:128
+    LAPIC_IRR_5 =        0x250, // read-only, Interrupt Request Register bits 191:160
+    LAPIC_IRR_6 =        0x260, // read-only, Interrupt Request Register bits 223:192
+    LAPIC_IRR_7 =        0x270, // read-only, Interrupt Request Register bits 255:224
+    LAPIC_ESR =          0x280, // read-only, Error Status Register
+    LAPIC_LVT_CMCI =     0x2F0, // read-write, LVT CMCI Register
+    LAPIC_ICR_0 =        0x300, // read-write, Interrupt Command Register bits 31:0
+    LAPIC_ICR_1 =        0x310, // read-write, Interrupt Command Register bits 63:32
+    LAPIC_LVT_TR =       0x320, // read-write, LVT Timer Register
+    LAPIC_LVT_TSR =      0x330, // read-write, LVT Thermal Sensor Register
+    LAPIC_LVT_PMCR =     0x340, // read-write, LVT Performance Monitoring Counters Register
+    LAPIC_LVT_LINT0 =    0x350, // read-write, LVT LINT0 Register
+    LAPIC_LVT_LINT1 =    0x360, // read-write, LVT LINT0 Register
+    LAPIC_LVT_ERR =      0x370, // read-write, LVT Error Register
+    LAPIC_TIMER_ICR =    0x380, // read-write, Timer Initial Count Register
+    LAPIC_TIMER_CCR =    0x390, // read-only, Timer Current Count Register
+    LAPIC_TIMER_DCR =    0x39E, // read-write, Timer Divide Configuration Register
+};
 
 #define LAPIC_MSR 0x1B
 #define LAPIC_MSR_ENABLE_BIT (1U << 11)
