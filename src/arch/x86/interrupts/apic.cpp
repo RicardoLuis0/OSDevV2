@@ -171,6 +171,32 @@ static uint32_t ioapic_base(uint32_t n){
     k_abort_fmt("can't find base address for inexistent IOAPIC #%d",n);
 }
 
+[[maybe_unused]]
+static void enable_x2apic(){
+    if(!x2apic&&CPUID::has(CPUID::FEAT_ECX_1_x2APIC,0)){
+        MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_X2APIC_ENABLE_BIT);
+        x2apic=true;
+    }
+}
+
+[[maybe_unused]]
+static void disable_x2apic(){
+    if(x2apic&&(MSR::get(LAPIC_MSR)&LAPIC_MSR_X2APIC_ENABLE_BIT)){
+        MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)&~(LAPIC_MSR_ENABLE_BIT|LAPIC_MSR_X2APIC_ENABLE_BIT));//disable apic&x2apic
+        MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_ENABLE_BIT);//re-enable apic without x2apic
+        x2apic=false;
+    }
+}
+
+static void init_x2apic(){
+    if(CPUID::has(CPUID::FEAT_ECX_1_x2APIC,0)){
+        MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_X2APIC_ENABLE_BIT);
+        x2apic=true;
+    }else{
+        x2apic=false;
+    }
+}
+
 namespace APIC {
     
     [[maybe_unused]]
@@ -197,13 +223,7 @@ namespace APIC {
         //enable LAPIC in case it isn't already enabled
         MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_ENABLE_BIT);
         
-        //is x2apic enabled? shouldn't be, but check just in case
-        x2apic=MSR::get(LAPIC_MSR)&LAPIC_MSR_X2APIC_ENABLE_BIT;
-        
-        if(!x2apic&&CPUID::has(CPUID::FEAT_ECX_1_x2APIC,0)){
-            MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_X2APIC_ENABLE_BIT);
-            x2apic=true;
-        }
+        init_x2apic();
         
         //enable LAPIC's SIV (spurious interrupt vector) in case it isn't already enabled
         lapic_register_or(LAPIC_SIV,0x1FF);
