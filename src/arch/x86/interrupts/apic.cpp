@@ -216,7 +216,7 @@ namespace APIC {
         Screen::write_s("\n\n");
     }
     
-    static void lapic_init(){
+    static void init_lapic(){
         if(madt->flags&MADT::LEGACY_PIC){//mask out legacy PIC if necessary
             PIC::reset(0x20,0x28);
         }
@@ -234,7 +234,7 @@ namespace APIC {
     void init(){
         Screen::write_s("\n -Enabling APIC...");
         
-        lapic_init();//initialize LAPIC
+        init_lapic();//initialize LAPIC
         
         //TODO initialize IOAPIC
         k_abort_s("IOAPIC unimplemented");
