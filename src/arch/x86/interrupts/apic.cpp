@@ -66,138 +66,139 @@ using namespace ACPI;
 
 extern MADT::Table * madt;
 
-static bool x2apic;
-
-static uint32_t lapic_base(){
-    uint64_t msr;
-    MSR::get(LAPIC_MSR,&msr);
-    return msr&0xFFFFF000;//mask off lower bits
-}
-
-[[maybe_unused]]
-static inline uint32_t lapic_register_get(uint32_t reg){
-    if(x2apic){
-        if(reg==LAPIC_ICR_0){
-            uint32_t lo,hi;
-            MSR::get(0x830,&lo,&hi);
-            return lo;
-        }else if(reg==LAPIC_ICR_1){
-            uint32_t lo,hi;
-            MSR::get(0x830,&lo,&hi);
-            return hi;
-        }else{
-            uint32_t lo,hi;
-            MSR::get(REG2MSR(reg),&lo,&hi);
-            return lo;
-        }
-    }else{
-        return MMIO32(lapic_base(),reg);
+namespace APIC {
+    
+    
+    static bool x2apic;
+    
+    static uint32_t lapic_base(){
+        uint64_t msr;
+        MSR::get(LAPIC_MSR,&msr);
+        return msr&0xFFFFF000;//mask off lower bits
     }
-}
-
-[[maybe_unused]]
-static inline void lapic_register_set(uint32_t reg,uint32_t val){
-    if(x2apic){
-        if(reg==LAPIC_ICR_0){
-            uint32_t lo,hi;
-            MSR::get(0x830,&lo,&hi);
-            MSR::set(0x830,val,hi);
-        }else if(reg==LAPIC_ICR_1){
-            uint32_t lo,hi;
-            MSR::get(0x830,&lo,&hi);
-            MSR::set(0x830,lo,val);
+    
+    [[maybe_unused]]
+    static inline uint32_t lapic_register_get(uint32_t reg){
+        if(x2apic){
+            if(reg==LAPIC_ICR_0){
+                uint32_t lo,hi;
+                MSR::get(0x830,&lo,&hi);
+                return lo;
+            }else if(reg==LAPIC_ICR_1){
+                uint32_t lo,hi;
+                MSR::get(0x830,&lo,&hi);
+                return hi;
+            }else{
+                uint32_t lo,hi;
+                MSR::get(REG2MSR(reg),&lo,&hi);
+                return lo;
+            }
         }else{
-            MSR::set(REG2MSR(reg),val,0);
+            return MMIO32(lapic_base(),reg);
         }
-    }else{
-        MMIO32(lapic_base(),reg)=val;
     }
-}
-
-[[maybe_unused]]
-static inline void lapic_register_and(uint32_t reg,uint32_t val){
-    if(x2apic){
-        if(reg==LAPIC_ICR_0){
-            uint32_t lo,hi;
-            MSR::get(0x830,&lo,&hi);
-            MSR::set(0x830,val&lo,hi);
-        }else if(reg==LAPIC_ICR_1){
-            uint32_t lo,hi;
-            MSR::get(0x830,&lo,&hi);
-            MSR::set(0x830,lo,val&hi);
+    
+    [[maybe_unused]]
+    static inline void lapic_register_set(uint32_t reg,uint32_t val){
+        if(x2apic){
+            if(reg==LAPIC_ICR_0){
+                uint32_t lo,hi;
+                MSR::get(0x830,&lo,&hi);
+                MSR::set(0x830,val,hi);
+            }else if(reg==LAPIC_ICR_1){
+                uint32_t lo,hi;
+                MSR::get(0x830,&lo,&hi);
+                MSR::set(0x830,lo,val);
+            }else{
+                MSR::set(REG2MSR(reg),val,0);
+            }
         }else{
-            uint32_t lo,hi;
-            MSR::get(REG2MSR(reg),&lo,&hi);
-            MSR::set(REG2MSR(reg),val&lo,0);
+            MMIO32(lapic_base(),reg)=val;
         }
-    }else{
-        uint32_t base=lapic_base();
-        MMIO32(base,reg)=MMIO32(base,reg)&val;
     }
-}
-
-[[maybe_unused]]
-static inline void lapic_register_or(uint32_t reg,uint32_t val){
-    if(x2apic){
-        if(reg==LAPIC_ICR_0){
-            uint32_t lo,hi;
-            MSR::get(0x830,&lo,&hi);
-            MSR::set(0x830,val|lo,hi);
-        }else if(reg==LAPIC_ICR_1){
-            uint32_t lo,hi;
-            MSR::get(0x830,&lo,&hi);
-            MSR::set(0x830,lo,val|hi);
+    
+    [[maybe_unused]]
+    static inline void lapic_register_and(uint32_t reg,uint32_t val){
+        if(x2apic){
+            if(reg==LAPIC_ICR_0){
+                uint32_t lo,hi;
+                MSR::get(0x830,&lo,&hi);
+                MSR::set(0x830,val&lo,hi);
+            }else if(reg==LAPIC_ICR_1){
+                uint32_t lo,hi;
+                MSR::get(0x830,&lo,&hi);
+                MSR::set(0x830,lo,val&hi);
+            }else{
+                uint32_t lo,hi;
+                MSR::get(REG2MSR(reg),&lo,&hi);
+                MSR::set(REG2MSR(reg),val&lo,0);
+            }
         }else{
-            uint32_t lo,hi;
-            MSR::get(REG2MSR(reg),&lo,&hi);
-            MSR::set(REG2MSR(reg),val|lo,0);
+            uint32_t base=lapic_base();
+            MMIO32(base,reg)=MMIO32(base,reg)&val;
         }
-    }else{
-        uint32_t base=lapic_base();
-        MMIO32(base,reg)=MMIO32(base,reg)|val;
     }
-}
-
-[[maybe_unused]]
-static uint32_t ioapic_base(uint32_t n){
-    for(uint32_t i=0;i<MADT::entry_count;i++){//NOTE maybe build an array of IOAPIC addresses instead of going through whole MADT table?
-        if(MADT::entries[i]->type==MADT::Entry::IO_APIC){
-            MADT::IOAPICEntry * entry=reinterpret_cast<MADT::IOAPICEntry*>(MADT::entries[i]);
-            if(entry->id==n){
-                return entry->address;
+    
+    [[maybe_unused]]
+    static inline void lapic_register_or(uint32_t reg,uint32_t val){
+        if(x2apic){
+            if(reg==LAPIC_ICR_0){
+                uint32_t lo,hi;
+                MSR::get(0x830,&lo,&hi);
+                MSR::set(0x830,val|lo,hi);
+            }else if(reg==LAPIC_ICR_1){
+                uint32_t lo,hi;
+                MSR::get(0x830,&lo,&hi);
+                MSR::set(0x830,lo,val|hi);
+            }else{
+                uint32_t lo,hi;
+                MSR::get(REG2MSR(reg),&lo,&hi);
+                MSR::set(REG2MSR(reg),val|lo,0);
+            }
+        }else{
+            uint32_t base=lapic_base();
+            MMIO32(base,reg)=MMIO32(base,reg)|val;
+        }
+    }
+    
+    [[maybe_unused]]
+    static uint32_t ioapic_base(uint32_t n){
+        for(uint32_t i=0;i<MADT::entry_count;i++){//NOTE maybe build an array of IOAPIC addresses instead of going through whole MADT table?
+            if(MADT::entries[i]->type==MADT::Entry::IO_APIC){
+                MADT::IOAPICEntry * entry=reinterpret_cast<MADT::IOAPICEntry*>(MADT::entries[i]);
+                if(entry->id==n){
+                    return entry->address;
+                }
             }
         }
+        k_abort_fmt("can't find base address for inexistent IOAPIC #%d",n);
     }
-    k_abort_fmt("can't find base address for inexistent IOAPIC #%d",n);
-}
-
-[[maybe_unused]]
-static void enable_x2apic(){
-    if(!x2apic&&CPUID::has(CPUID::FEAT_ECX_1_x2APIC,0)){
-        MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_X2APIC_ENABLE_BIT);
-        x2apic=true;
+    
+    [[maybe_unused]]
+    static void enable_x2apic(){
+        if(!x2apic&&CPUID::has(CPUID::FEAT_ECX_1_x2APIC,0)){
+            MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_X2APIC_ENABLE_BIT);
+            x2apic=true;
+        }
     }
-}
-
-[[maybe_unused]]
-static void disable_x2apic(){
-    if(x2apic&&(MSR::get(LAPIC_MSR)&LAPIC_MSR_X2APIC_ENABLE_BIT)){
-        MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)&~(LAPIC_MSR_ENABLE_BIT|LAPIC_MSR_X2APIC_ENABLE_BIT));//disable apic&x2apic
-        MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_ENABLE_BIT);//re-enable apic without x2apic
-        x2apic=false;
+    
+    [[maybe_unused]]
+    static void disable_x2apic(){
+        if(x2apic&&(MSR::get(LAPIC_MSR)&LAPIC_MSR_X2APIC_ENABLE_BIT)){
+            MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)&~(LAPIC_MSR_ENABLE_BIT|LAPIC_MSR_X2APIC_ENABLE_BIT));//disable apic&x2apic
+            MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_ENABLE_BIT);//re-enable apic without x2apic
+            x2apic=false;
+        }
     }
-}
-
-static void init_x2apic(){
-    if(CPUID::has(CPUID::FEAT_ECX_1_x2APIC,0)){
-        MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_X2APIC_ENABLE_BIT);
-        x2apic=true;
-    }else{
-        x2apic=false;
+    
+    static void init_x2apic(){
+        if(CPUID::has(CPUID::FEAT_ECX_1_x2APIC,0)){
+            MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_X2APIC_ENABLE_BIT);
+            x2apic=true;
+        }else{
+            x2apic=false;
+        }
     }
-}
-
-namespace APIC {
     
     [[maybe_unused]]
     static void apic_info(){
