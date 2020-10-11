@@ -46,25 +46,64 @@ bool klib_init();
 
 extern "C" void x86_start(struct multiboot_info * mbd, unsigned int magic){//x86-specific initialization sequence
     Screen::x86_init();
+    
+    //it's safe to call Screen::write/etc after this point
+    
     Screen::disable_cursor();
+    
+    //assert multiboot 1 magic is correct
     fassert(magic==0x2BADB002U);
+    
+    Screen::write_s(">Initializing x86 System");
+    
     CPUID::init();
+    
     if(!CPUID::has_cpuid()){
         k_abort_s("CPUID not supported");
     }
-    CPUID::check();
-    Screen::write_s(">Initializing x86 System");
+    
+    //it's safe to call CPUID functions after this point
+    
+    if(!CPUID::has(0,CPUID::FEAT_EDX_1_MSR)){
+        k_abort_s("MSR not supported");
+    }
+    
     GDT::init();
-    Memory::x86_init(mbd);//initialize physical memory
+    //initialize pmm
+    Memory::x86_init(mbd);
+    
+    //it's only safe to call alloc_phys_page after this point
+    
     IDT::setup();
-    Memory::x86_paging_init();//initialize virtual memory
+    
+    //it's safe to call set_irq_handler/set_exception_handler after this point, but not yet safe to call irq_enable (IDT is set up, but interrupts are not enabled yet)
+    
+    //initialize vmm
+    Memory::x86_paging_init();
+    
+    //it's safe to call alloc_virt_page/new/malloc after this point, but it's not safe to call alloc_phys_page anymore
+    
     Serial::x86_init();
+    
+    //it's safe to call Serial::write/etc after this point
+    
     ACPI::init();
+    
+    //load IDT and enable interrupts
     IDT::init();
+    
+    //it's safe to call irq_enable after this point
+    
     FPU::init();
+    
+    //it's safe to use the FPU after this point (and SSE if the CPU supports it)
+    
     PIT::init();
-    ACPI::enable();
-    _init();//only call global constructors after setting up screen, paging, memory management, etc...
+    
+    ACPI::enable();//enter ACPI mode
+    
+    _init();//only call global constructors after everything's initialized (x86 init internals should never use global constructors for this reason)
+    
     Screen::write_s("\n>Creating RamVFS");
     FS::VFSRoot::init(new FS::RamFS());
     Screen::write_s("\n>Initializing KLib");

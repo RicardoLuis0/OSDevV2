@@ -218,7 +218,6 @@ namespace CPUID {
     };
     
     void init();//safe to call multiple times, will refresh cpuid info
-    void check();
     void get(uint32_t &ecx_1,uint32_t &edx_1);
     void get(uint32_t &ecx_1,uint32_t &edx_1,uint32_t &ebx_7_0,uint32_t &ecx_7_0,uint32_t &edx_7_0,uint32_t &eax_7_1);
     bool has(uint32_t ecx_1,uint32_t edx_1);

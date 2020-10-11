@@ -14,15 +14,12 @@ void FPU::init(){
         k_abort_s("invalid FPU setup");
         return;
     }
-    CR0::enableFlags(CR0::NE);
-    CR0::enableFlags(CR0::MP);
+    CR0::enableFlags(CR0::NE|CR0::MP);
     sse=CPUID::has(0,CPUID::FEAT_EDX_1_SSE);
     if(sse){
-        CR4::enableFlags(CR4::OSFXSR);
-        CR4::enableFlags(CR4::OSXMMEXCPT);
+        CR4::enableFlags(CR4::OSFXSR|CR4::OSXMMEXCPT);
     }else{
-        CR4::disableFlags(CR4::OSFXSR);
-        CR4::disableFlags(CR4::OSXMMEXCPT);
+        CR4::disableFlags(CR4::OSFXSR|CR4::OSXMMEXCPT);
     }
     asm volatile ("finit");
     Screen::setfgcolor(Screen::LIGHT_GREEN);

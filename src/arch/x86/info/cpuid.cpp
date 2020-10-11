@@ -506,10 +506,3 @@ bool CPUID::has(uint32_t c1,uint32_t d1,uint32_t b1,uint32_t c2,uint32_t d2,uint
     
 }
 
-void CPUID::check(){
-    uint32_t ecx,edx;
-    get(ecx,edx);
-    if(!(edx&FEAT_EDX_1_MSR)){
-        k_abort_s("MSR not supported");
-    }
-}
