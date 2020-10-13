@@ -23,6 +23,128 @@ MADT::Table * madt;
 
 lai_rsdp_info rsdp_info;
 
+[[maybe_unused]]
+static void gas_outb(acpi_gas_t &reg,uint8_t data){
+    if(reg.access_size!=0&&reg.access_size!=1){
+        k_abort_s("requested accesss size is invalid for GAS register");
+    }
+    switch(reg.address_space){
+    case 0://MMIO
+        MMIO8(static_cast<uint32_t>(reg.base),0U)=data;
+    case 1://Port IO
+        outb(reg.base,data);
+    default:
+        k_abort_fmt("unimplemented GAS register type %x",reg.address_space);
+    }
+}
+
+[[maybe_unused]]
+static void gas_outw(acpi_gas_t &reg,uint16_t data){
+    if(reg.access_size!=0&&reg.access_size!=2){
+        k_abort_s("requested accesss size is invalid for GAS register");
+    }
+    switch(reg.address_space){
+    case 0://MMIO
+        MMIO16(static_cast<uint32_t>(reg.base),0U)=data;
+    case 1://Port IO
+        outw(reg.base,data);
+    default:
+        k_abort_fmt("unimplemented GAS register type %x",reg.address_space);
+    }
+}
+
+[[maybe_unused]]
+static void gas_outl(acpi_gas_t &reg,uint32_t data){
+    if(reg.access_size!=0&&reg.access_size!=3){
+        k_abort_s("requested accesss size is invalid for GAS register");
+    }
+    switch(reg.address_space){
+    case 0://MMIO
+        MMIO32(static_cast<uint32_t>(reg.base),0U)=data;
+    case 1://Port IO
+        outl(reg.base,data);
+    default:
+        k_abort_fmt("unimplemented GAS register type %x",reg.address_space);
+    }
+}
+[[maybe_unused]]
+static uint8_t gas_inb(acpi_gas_t &reg){
+    if(reg.access_size!=0&&reg.access_size!=1){
+        k_abort_s("requested accesss size is invalid for GAS register");
+    }
+    switch(reg.address_space){
+    case 0://MMIO
+        return MMIO8(static_cast<uint32_t>(reg.base),0U);
+    case 1://Port IO
+        return inb(reg.base);
+    default:
+        k_abort_fmt("unimplemented GAS register type %x",reg.address_space);
+    }
+}
+
+[[maybe_unused]]
+static uint16_t gas_inw(acpi_gas_t &reg){
+    if(reg.access_size!=0&&reg.access_size!=2){
+        k_abort_s("requested accesss size is invalid for GAS register");
+    }
+    switch(reg.address_space){
+    case 0://MMIO
+        return MMIO16(static_cast<uint32_t>(reg.base),0U);
+    case 1://Port IO
+        return inw(reg.base);
+    default:
+        k_abort_fmt("unimplemented GAS register type %x",reg.address_space);
+    }
+}
+
+[[maybe_unused]]
+static uint32_t gas_inl(acpi_gas_t &reg){
+    if(reg.access_size!=0&&reg.access_size!=3){
+        k_abort_s("requested accesss size is invalid for GAS register");
+    }
+    switch(reg.address_space){
+    case 0://MMIO
+        return MMIO32(static_cast<uint32_t>(reg.base),0U);
+    case 1://Port IO
+        return inl(reg.base);
+    default:
+        k_abort_fmt("unimplemented GAS register type %x",reg.address_space);
+    }
+}
+
+[[maybe_unused]]
+static void gas_out(acpi_gas_t &reg,uint32_t data){
+    switch(reg.access_size){
+    case 0:
+        k_abort_s("unkown GAS register access size");
+    case 1:
+        gas_outb(reg,data);
+        break;
+    case 2:
+        gas_outw(reg,data);
+    case 3:
+        gas_outl(reg,data);
+    default:
+        k_abort_s("unimplemented GAS register access size");
+    }
+}
+
+[[maybe_unused]]
+static uint32_t gas_in(acpi_gas_t &reg){
+    switch(reg.access_size){
+    case 0:
+        k_abort_s("unkown GAS register access size");
+    case 1:
+        return gas_inb(reg);
+    case 2:
+        return gas_inw(reg);
+    case 3:
+        return gas_inl(reg);
+    default:
+        k_abort_s("unimplemented GAS register access size");
+    }
+}
+
 void * ACPI::Internal::map_table(uint32_t addr){
     acpi_header_t * t=reinterpret_cast<acpi_header_t*>(laihost_map(addr,sizeof(acpi_header_t)));
     uint32_t len=t->length;
@@ -111,10 +233,14 @@ void ACPI::shutdown(){
 }
 
 void ACPI::reset(){
+    gas_outb(fadt->reset_register,fadt->reset_command);
+    Screen::setcolor(Screen::RED,Screen::WHITE);
+    Screen::write_s("\nACPI Reset Failed, Triple Faulting!");
+    Screen::setcolor(Screen::BLACK,Screen::WHITE);
     IDT::disable_exception_handler(8);
     IDT::disable_exception_handler(14);//disable page fault,dobule fault exception handlers and triple fault
     *reinterpret_cast<volatile uint32_t*>(Memory::next_free_virt_page(1))=0;
-    k_abort_s("failed to reboot");
+    k_abort_s("Triple Fault Failed (?!?!?!)");
 }
 
 MADT::Entry ** MADT::entries;
