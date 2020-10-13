@@ -110,6 +110,13 @@ void ACPI::shutdown(){
     lai_enter_sleep(5);//acpi sleep state 5 is soft shutdown
 }
 
+void ACPI::reset(){
+    IDT::disable_exception_handler(8);
+    IDT::disable_exception_handler(14);//disable page fault,dobule fault exception handlers and triple fault
+    *reinterpret_cast<volatile uint32_t*>(Memory::next_free_virt_page(1))=0;
+    k_abort_s("failed to reboot");
+}
+
 MADT::Entry ** MADT::entries;
 size_t MADT::entry_count;
 

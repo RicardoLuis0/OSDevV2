@@ -237,6 +237,10 @@ static void cmd_shutdown(char * cmd,Util::HashTable<kshell_cmd> * commands){
     ACPI::shutdown();
 }
 
+static void cmd_reset(char * cmd,Util::HashTable<kshell_cmd> * commands){
+    ACPI::reset();
+}
+
 static void cmd_timer(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Screen::write_s("\ntimer = ");
     Screen::write_ull(PIT::timer);
@@ -268,6 +272,7 @@ void kshell_init(){
     (*cmds)["pagefault"]={cmd_pagefault,"pagefault","cause page fault","- pagefault"};
     (*cmds)["timer"]={cmd_timer,"timer","value of PIT timer","- timer"};
     (*cmds)["shutdown"]={cmd_shutdown,"shutdown","ACPI Shutdown","- shutdown"};
+    (*cmds)["reset"]={cmd_reset,"reset","ACPI reset","- reset"};
     (*cmds)["tedit"]={cmd_tedit,"tedit","simple text editor","- tedit [file]"};
 }
 

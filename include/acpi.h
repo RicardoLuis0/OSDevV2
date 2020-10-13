@@ -21,6 +21,7 @@ namespace ACPI {
         void unmap_table(void *);
     }
     void shutdown();
+    void reset();
     //TODO
 }
 #endif // ACPI_H_INCLUDED
