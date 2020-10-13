@@ -99,6 +99,11 @@ uint16_t inw(uint16_t port);
 void outl(uint16_t port, uint32_t val);
 uint32_t inl(uint16_t port);
 
+#define MMIO8(base,offset)  (*reinterpret_cast<volatile uint8_t*> (reinterpret_cast<uintptr_t>(base)+reinterpret_cast<uintptr_t>(offset)))
+#define MMIO16(base,offset) (*reinterpret_cast<volatile uint16_t*>(reinterpret_cast<uintptr_t>(base)+reinterpret_cast<uintptr_t>(offset)))
+#define MMIO32(base,offset) (*reinterpret_cast<volatile uint32_t*>(reinterpret_cast<uintptr_t>(base)+reinterpret_cast<uintptr_t>(offset)))
+#define MMIO64(base,offset) (*reinterpret_cast<volatile uint64_t*>(reinterpret_cast<uintptr_t>(base)+reinterpret_cast<uintptr_t>(offset)))
+
 #ifdef __cplusplus
 
 }

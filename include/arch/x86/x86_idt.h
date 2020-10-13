@@ -23,14 +23,17 @@ namespace IDT{
     
     void setup();
     void init();
-    void set_irq_handler(uint8_t num,void(*)(void),gate_type,ring_type);//ignores data
-    void set_irq_handler(uint8_t num,void(*)(uint32_t),gate_type,ring_type);//receives data
-    void set_irq_handler(uint8_t num,void(*)(uint32_t,uint32_t),gate_type,ring_type);//receives data and irq number (for multi-irq handlers)
+    void set_irq_handler(uint8_t irq,void(*)(void),gate_type,ring_type);//ignores data
+    void set_irq_handler(uint8_t irq,void(*)(uint32_t),gate_type,ring_type);//receives data
+    void set_irq_handler(uint8_t irq,void(*)(uint32_t,uint32_t),gate_type,ring_type);//receives data and irq number (for multi-irq handlers)
     void set_raw_irq_handler(uint8_t irq,void * h,gate_type g,ring_type t);//h must be a pointer to an interrupt handler (that preserves register state and returns with iret)
-    void set_exception_handler(uint8_t num,void(*)(void),gate_type,ring_type);//ignores data
-    void set_exception_handler(uint8_t num,void(*)(uint32_t),gate_type,ring_type);//receives data
-    void set_exception_handler(uint8_t num,void(*)(uint32_t,uint32_t),gate_type,ring_type);//receives data and irq number (for multi-irq handlers)
+    void set_exception_handler(uint8_t irq,void(*)(void),gate_type,ring_type);//ignores data
+    void set_exception_handler(uint8_t irq,void(*)(uint32_t),gate_type,ring_type);//receives data
+    void set_exception_handler(uint8_t irq,void(*)(uint32_t,uint32_t),gate_type,ring_type);//receives data and irq number (for multi-irq handlers)
     void set_raw_exception_handler(uint8_t irq,void * h,gate_type g,ring_type t);//h must be a pointer to an interrupt handler (that preserves register state and returns with iret)
+    
+    void disable_irq_handler(uint8_t irq);
+    void disable_exception_handler(uint8_t irq);
     
     void irq_enable(uint8_t irq);
     void irq_disable(uint8_t irq);

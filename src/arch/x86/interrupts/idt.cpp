@@ -258,3 +258,16 @@ void IDT::set_raw_exception_handler(uint8_t irq,void * h,gate_type g,ring_type t
     fmassert(irq<32,"Cannot map Exception Handler into IRQ area");
     IDT[irq].encode(reinterpret_cast<uint32_t>(h),IDT_type_attributes(g,t));
 }
+
+void IDT::disable_irq_handler(uint8_t irq){
+    fmassert(irq<32,"Handler is not IRQ, is Exception");
+    IDT[irq].type_attr.present=0;
+}
+
+void IDT::disable_exception_handler(uint8_t irq){
+    fmassert(irq<32,"Handler is not Exception, is IRQ");
+    IDT[irq].type_attr.present=0;
+}
+
+
+
