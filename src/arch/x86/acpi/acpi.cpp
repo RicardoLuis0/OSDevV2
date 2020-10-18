@@ -159,6 +159,9 @@ void ACPI::Internal::unmap_table(void * p){
 }
 
 void ACPI::init(){
+    
+    //TODO allow boot on systems without ACPI support
+    
 #ifdef LAI_HOST_IDENTITY_MAP
     Memory::Internal::map_virtual_page_unsafe(0xC0000,0xC0000,0x40000,true);//identity map PCI memory/etc
 #endif // LAI_HOST_IDENTITY_MAP

@@ -39,6 +39,9 @@ namespace IDT{
     void irq_disable(uint8_t irq);
     
     uint8_t irq_get_mapping(uint8_t irq);
+    void irq_remap(uint8_t from,uint8_t to);
+    
+    bool irq_supports_remapping();
     
     template<uint32_t irq>
     void call_interrupt(uint32_t data){//call user-defined interrupt

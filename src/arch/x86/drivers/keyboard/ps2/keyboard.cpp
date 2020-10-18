@@ -195,8 +195,12 @@ namespace Drivers::Keyboard::PS2 {
     void init(){
         print("\n  .PS/2 Keyboard...");
         key_queue=new Util::LFQ<keycode,20,true>();
-        IDT::set_irq_handler(0x21,kbint,IDT::G_32_INT,IDT::RING_0);
-        IDT::irq_enable(1);
+        if(IDT::irq_supports_remapping()){
+            IDT::irq_remap(0x1,0x21);
+        }
+        uint8_t irq=IDT::irq_get_mapping(0x1);
+        IDT::set_irq_handler(irq,kbint,IDT::G_32_INT,IDT::RING_0);
+        IDT::irq_enable(0x1);
         Screen::setfgcolor(Screen::LIGHT_GREEN);
         Screen::write_s("OK");
         Screen::setfgcolor(Screen::WHITE);
@@ -253,11 +257,12 @@ namespace Drivers::Keyboard::PS2 {
     
     void cmd_kbdump(){
         kbdump_continue=true;
-        IDT::set_irq_handler(0x21,kbint_dump,IDT::G_32_INT,IDT::RING_0);
+        uint8_t irq=IDT::irq_get_mapping(0x1);
+        IDT::set_irq_handler(irq,kbint_dump,IDT::G_32_INT,IDT::RING_0);
         while(kbdump_continue){
             asm("pause");
         }
-        IDT::set_irq_handler(0x21,kbint,IDT::G_32_INT,IDT::RING_0);
+        IDT::set_irq_handler(irq,kbint,IDT::G_32_INT,IDT::RING_0);
     }
     
     char simple_getch(){

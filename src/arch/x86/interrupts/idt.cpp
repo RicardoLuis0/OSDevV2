@@ -207,6 +207,15 @@ uint8_t IDT::irq_get_mapping(uint8_t irq){
     }
 }
 
+void IDT::irq_remap(uint8_t from,uint8_t to){
+    if(!use_apic) k_abort_s("interrupt re-remapping not supported for Legacy PIC");
+    APIC::remap(from,to);
+}
+
+bool IDT::irq_supports_remapping(){
+    return use_apic;
+}
+
 void IDT::set_irq_handler(uint8_t irq,void(*c)(void),gate_type g,ring_type t){
     fmassert(irq>31,"Cannot map IRQ Handler into Exception area");
     idt_callback[irq].type=idt_callback_t::IC_V;

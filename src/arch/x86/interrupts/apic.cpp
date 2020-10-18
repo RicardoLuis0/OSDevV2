@@ -335,5 +335,9 @@ namespace APIC {
         k_abort_s("APIC::get_mapping unimplemented");
     }
     
+    uint8_t remap(uint8_t from,uint8_t to){
+        k_abort_s("APIC::remap unimplemented");
+    }
+    
 }
 
