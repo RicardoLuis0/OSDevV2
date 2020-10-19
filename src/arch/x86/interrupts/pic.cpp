@@ -68,6 +68,7 @@ namespace PIC {
     
     void eoi(){
         uint16_t isr=ocw3_isr();
+        if(isr==0)return;//if isn't valid ISR don't send EOI
         if(isr>=8)outb(0xA0, 0x20);//EOI slave
         outb(0x20, 0x20);//EOI master
     }
