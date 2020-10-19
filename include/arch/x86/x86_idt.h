@@ -21,16 +21,36 @@ namespace IDT{
         RING_3=0b11,
     };
     
+    
+    struct regs {
+        uint32_t eax;
+        uint32_t ecx;
+        uint32_t edx;
+        uint32_t ebx;
+        uint32_t esp;
+        uint32_t ebp;
+        uint32_t esi;
+        uint32_t edi;
+    };
+    
     void setup();
     void init();
     void set_irq_handler(uint8_t irq,void(*)(void),gate_type,ring_type);//ignores data
+    void set_irq_handler(uint8_t irq,void(*)(regs*),gate_type,ring_type);//receives register state
     void set_irq_handler(uint8_t irq,void(*)(uint32_t),gate_type,ring_type);//receives data
+    void set_irq_handler(uint8_t irq,void(*)(uint32_t,regs*),gate_type,ring_type);//receives data and register state
     void set_irq_handler(uint8_t irq,void(*)(uint32_t,uint32_t),gate_type,ring_type);//receives data and irq number (for multi-irq handlers)
-    void set_raw_irq_handler(uint8_t irq,void * h,gate_type g,ring_type t);//h must be a pointer to an interrupt handler (that preserves register state and returns with iret)
+    void set_irq_handler(uint8_t irq,void(*)(uint32_t,uint32_t,regs*),gate_type,ring_type);//receives data and irq number (for multi-irq handlers)
+    
     void set_exception_handler(uint8_t irq,void(*)(void),gate_type,ring_type);//ignores data
+    void set_exception_handler(uint8_t irq,void(*)(regs*),gate_type,ring_type);//receives register state
     void set_exception_handler(uint8_t irq,void(*)(uint32_t),gate_type,ring_type);//receives data
+    void set_exception_handler(uint8_t irq,void(*)(uint32_t,regs*),gate_type,ring_type);//receives data and register state
     void set_exception_handler(uint8_t irq,void(*)(uint32_t,uint32_t),gate_type,ring_type);//receives data and irq number (for multi-irq handlers)
-    void set_raw_exception_handler(uint8_t irq,void * h,gate_type g,ring_type t);//h must be a pointer to an interrupt handler (that preserves register state and returns with iret)
+    void set_exception_handler(uint8_t irq,void(*)(uint32_t,uint32_t,regs*),gate_type,ring_type);//receives data, irq number (for multi-irq handlers) and register state
+    
+    void set_raw_irq_handler(uint8_t irq,void * h,gate_type g,ring_type t);//h must be a pointer to a raw interrupt handler (must preserve state, send EOI and return with iret)
+    void set_raw_exception_handler(uint8_t irq,void * h,gate_type g,ring_type t);//h must be a pointer to a raw interrupt handler (must preserve state, send EOI and return with iret)
     
     void disable_irq_handler(uint8_t irq);
     void disable_exception_handler(uint8_t irq);

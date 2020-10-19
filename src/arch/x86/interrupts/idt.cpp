@@ -63,31 +63,55 @@ namespace IDT {
         enum{
             IC_NONE,
             IC_V,
+            IC_R,
             IC_I,
+            IC_IR,
             IC_II,
+            IC_IIR,
         } type=IC_NONE;
         union {
             void (*cv)(void);//no args
+            void (*cr)(regs*);//regs
             void (*ci)(uint32_t);//data
+            void (*cir)(uint32_t,regs*);//data,regs
             void (*cii)(uint32_t,uint32_t);//irq,data
+            void (*ciir)(uint32_t,uint32_t,regs*);//irq,data,regs
         };
     };
     idt_callback_t idt_callback[256]={};
 }
 
-extern "C" void call_idt(uint32_t irq,uint32_t data){
+extern "C" void handle_irq(
+                            uint32_t irq,uint32_t data,
+                            uint32_t edi,uint32_t esi,
+                            uint32_t ebp,uint32_t esp,
+                            uint32_t ebx,uint32_t edx,
+                            uint32_t ecx,uint32_t eax
+                          ){
     if(irq<0||irq>255)return;//too large/small
+    
+    IDT::regs regs{eax,ecx,edx,ebx,esp,ebp,esi,edi};
+    
     switch(idt_callback[irq].type){
     case IDT::idt_callback_t::IC_NONE:
         k_abort_s_i_s("Unimplemented Interrupt Handler ",irq," Called");
     case IDT::idt_callback_t::IC_V:
         idt_callback[irq].cv();
         break;
+    case IDT::idt_callback_t::IC_R:
+        idt_callback[irq].cr(&regs);
+        break;
     case IDT::idt_callback_t::IC_I:
         idt_callback[irq].ci(data);
         break;
+    case IDT::idt_callback_t::IC_IR:
+        idt_callback[irq].cir(data,&regs);
+        break;
     case IDT::idt_callback_t::IC_II:
         idt_callback[irq].cii(irq,data);
+        break;
+    case IDT::idt_callback_t::IC_IIR:
+        idt_callback[irq].ciir(irq,data,&regs);
         break;
     }
     PIC::eoi();//TODO only send EOIs for external IRQs
@@ -222,10 +246,24 @@ void IDT::set_irq_handler(uint8_t irq,void(*c)(void),gate_type g,ring_type t){
     IDT[irq].encode(reinterpret_cast<uint32_t>(idtx[irq]),IDT_type_attributes(g,t));
 }
 
+void IDT::set_irq_handler(uint8_t irq,void(*c)(regs*),gate_type g,ring_type t){
+    fmassert(irq>31,"Cannot map IRQ Handler into Exception area");
+    idt_callback[irq].type=idt_callback_t::IC_R;
+    idt_callback[irq].cr=c;
+    IDT[irq].encode(reinterpret_cast<uint32_t>(idtx[irq]),IDT_type_attributes(g,t));
+}
+
 void IDT::set_irq_handler(uint8_t irq,void(*c)(uint32_t),gate_type g,ring_type t){
     fmassert(irq>31,"Cannot map IRQ Handler into Exception area");
     idt_callback[irq].type=idt_callback_t::IC_I;
     idt_callback[irq].ci=c;
+    IDT[irq].encode(reinterpret_cast<uint32_t>(idtx[irq]),IDT_type_attributes(g,t));
+}
+
+void IDT::set_irq_handler(uint8_t irq,void(*c)(uint32_t,regs*),gate_type g,ring_type t){
+    fmassert(irq>31,"Cannot map IRQ Handler into Exception area");
+    idt_callback[irq].type=idt_callback_t::IC_IR;
+    idt_callback[irq].cir=c;
     IDT[irq].encode(reinterpret_cast<uint32_t>(idtx[irq]),IDT_type_attributes(g,t));
 }
 
@@ -236,10 +274,24 @@ void IDT::set_irq_handler(uint8_t irq,void(*c)(uint32_t,uint32_t),gate_type g,ri
     IDT[irq].encode(reinterpret_cast<uint32_t>(idtx[irq]),IDT_type_attributes(g,t));
 }
 
+void IDT::set_irq_handler(uint8_t irq,void(*c)(uint32_t,uint32_t,regs*),gate_type g,ring_type t){
+    fmassert(irq>31,"Cannot map IRQ Handler into Exception area");
+    idt_callback[irq].type=idt_callback_t::IC_IIR;
+    idt_callback[irq].ciir=c;
+    IDT[irq].encode(reinterpret_cast<uint32_t>(idtx[irq]),IDT_type_attributes(g,t));
+}
+
 void IDT::set_exception_handler(uint8_t irq,void(*c)(void),gate_type g,ring_type t){
     fmassert(irq<32,"Cannot map Exception Handler into IRQ area");
     idt_callback[irq].type=idt_callback_t::IC_V;
     idt_callback[irq].cv=c;
+    IDT[irq].encode(reinterpret_cast<uint32_t>(idtx[irq]),IDT_type_attributes(g,t));
+}
+
+void IDT::set_exception_handler(uint8_t irq,void(*c)(regs*),gate_type g,ring_type t){
+    fmassert(irq<32,"Cannot map Exception Handler into IRQ area");
+    idt_callback[irq].type=idt_callback_t::IC_R;
+    idt_callback[irq].cr=c;
     IDT[irq].encode(reinterpret_cast<uint32_t>(idtx[irq]),IDT_type_attributes(g,t));
 }
 
@@ -250,10 +302,24 @@ void IDT::set_exception_handler(uint8_t irq,void(*c)(uint32_t),gate_type g,ring_
     IDT[irq].encode(reinterpret_cast<uint32_t>(idtx[irq]),IDT_type_attributes(g,t));
 }
 
+void IDT::set_exception_handler(uint8_t irq,void(*c)(uint32_t,regs*),gate_type g,ring_type t){
+    fmassert(irq<32,"Cannot map Exception Handler into IRQ area");
+    idt_callback[irq].type=idt_callback_t::IC_IR;
+    idt_callback[irq].cir=c;
+    IDT[irq].encode(reinterpret_cast<uint32_t>(idtx[irq]),IDT_type_attributes(g,t));
+}
+
 void IDT::set_exception_handler(uint8_t irq,void(*c)(uint32_t,uint32_t),gate_type g,ring_type t){
     fmassert(irq<32,"Cannot map Exception Handler into IRQ area");
     idt_callback[irq].type=idt_callback_t::IC_II;
     idt_callback[irq].cii=c;
+    IDT[irq].encode(reinterpret_cast<uint32_t>(idtx[irq]),IDT_type_attributes(g,t));
+}
+
+void IDT::set_exception_handler(uint8_t irq,void(*c)(uint32_t,uint32_t,regs*),gate_type g,ring_type t){
+    fmassert(irq<32,"Cannot map Exception Handler into IRQ area");
+    idt_callback[irq].type=idt_callback_t::IC_IIR;
+    idt_callback[irq].ciir=c;
     IDT[irq].encode(reinterpret_cast<uint32_t>(idtx[irq]),IDT_type_attributes(g,t));
 }
 
