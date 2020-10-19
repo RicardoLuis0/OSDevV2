@@ -24,3 +24,4 @@ BochsSerialLog.txt
 *.sh
 *init
 kernel.iso
+*.code-workspace
