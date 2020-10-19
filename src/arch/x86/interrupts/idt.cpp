@@ -90,8 +90,7 @@ extern "C" void call_idt(uint32_t irq,uint32_t data){
         idt_callback[irq].cii(irq,data);
         break;
     }
-    if(irq>=8)outb(0xA0, 0x20);//EOI slave
-    outb(0x20, 0x20);//EOI master
+    PIC::eoi();//TODO only send EOIs for external IRQs
 }
 
 IDTXa()

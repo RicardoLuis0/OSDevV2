@@ -58,4 +58,17 @@ namespace PIC {
         return (irq<16)?irq+32:irq;
     }
     
+    //from https://wiki.osdev.org/8259_PIC#ISR_and_IRR
+    
+    static uint16_t ocw3_isr(){
+        outb(0x20,0x0b);
+        outb(0xA0,0x0b);
+        return (inb(0xA0)<<8)|inb(0x20);//send ISR ocw3 command, and read from data port
+    }
+    
+    void eoi(){
+        uint16_t isr=ocw3_isr();
+        if(isr>=8)outb(0xA0, 0x20);//EOI slave
+        outb(0x20, 0x20);//EOI master
+    }
 }
