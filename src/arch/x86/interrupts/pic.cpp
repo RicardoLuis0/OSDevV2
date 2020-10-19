@@ -63,7 +63,7 @@ namespace PIC {
     static uint16_t ocw3_isr(){
         outb(0x20,0x0b);
         outb(0xA0,0x0b);
-        return (inb(0xA0)<<8)|inb(0x20);//send ISR ocw3 command, and read from data port
+        return (inb(0xA0)<<8)|inb(0x20);//send ISR ocw3 command, and read from command port
     }
     
     void eoi(){
