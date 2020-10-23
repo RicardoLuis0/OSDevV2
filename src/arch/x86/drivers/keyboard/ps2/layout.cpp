@@ -5,7 +5,7 @@ namespace Drivers {
 namespace Keyboard {
 namespace PS2 {
 
-uint16_t keycodes_us_qwerty_set1[0xFF] {
+uint16_t keycodes_us_qwerty_set1[0xE0] {
     KEY_INVALID,//0x00 invalid
     KEY_ESC_PRESSED,//0x01 ESCAPE
     KEY_1_PRESSED,//0x02
@@ -233,7 +233,7 @@ uint16_t keycodes_us_qwerty_set1[0xFF] {
     KEY_INVALID,//0xDF
 };
 
-uint16_t keycodes_us_qwerty_set1_extra1[0xFF] {
+uint16_t keycodes_us_qwerty_set1_extra1[0xEE] {
     KEY_INVALID,//0x00
     KEY_INVALID,//0x01
     KEY_INVALID,//0x02
