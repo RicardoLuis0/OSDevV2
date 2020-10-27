@@ -307,20 +307,20 @@ namespace APIC {
                 info.max_irq=((ver>>16)&0xFF)+1;
                 info.gsi_base=entry->global_system_interrupt_base;
                 #ifdef IOAPIC_DEBUG
-                    Screen::write_s("\n  .IOAPIC #");
-                    Screen::write_i(n);
-                    Screen::write_s(" detected\n   +base=");
-                    Screen::write_h(info.base);
-                    Screen::write_s("\n   +id=");
-                    Screen::write_i(info.id);
-                    Screen::write_s(" (MADT says ");
-                    Screen::write_i(entry->id);
-                    Screen::write_s(")\n   +version=");
-                    Screen::write_i(info.version);
-                    Screen::write_s("\n   +max_irq=");
-                    Screen::write_i(info.max_irq);
-                    Screen::write_s("\n   +gsi_base=");
-                    Screen::write_i(info.gsi_base);
+                    Serial::write_s("\n>IOAPIC #");
+                    Serial::write_i(n);
+                    Serial::write_s(" detected\n -base=");
+                    Serial::write_h(info.base);
+                    Serial::write_s("\n -id=");
+                    Serial::write_h(info.id);
+                    Serial::write_s(" (MADT says ");
+                    Serial::write_h(entry->id);
+                    Serial::write_s(")\n -version=");
+                    Serial::write_h(info.version);
+                    Serial::write_s("\n -max_irq=");
+                    Serial::write_h(info.max_irq);
+                    Serial::write_s("\n -gsi_base=");
+                    Serial::write_h(info.gsi_base);
                 #endif // IOAPIC_DEBUG
                 n++;
             }
