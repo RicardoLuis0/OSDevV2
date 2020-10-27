@@ -59,3 +59,21 @@ void Serial::write_h(uint64_t h){
     write_s("0x");
     write_h_rec(h);
 }
+
+void Serial::write_u(unsigned int u){
+    if(u>9){
+        write_u(u/10);
+        u%=10;
+    }
+    write_serial(u+'0');
+}
+
+void Serial::write_i(int i){
+    if(i<0){
+        write_serial('-');
+        write_u(-i);
+    }else{
+        write_u(i);
+    }
+}
+
