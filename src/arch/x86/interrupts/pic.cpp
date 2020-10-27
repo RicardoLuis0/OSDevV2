@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "klib.h"
 #include "screen.h"
+#include "serial.h"
 
 
 namespace PIC {
@@ -68,6 +69,10 @@ namespace PIC {
     
     void eoi(){
         uint16_t isr=ocw3_isr();
+        #ifdef EOI_LOG
+            Serial::write_s("\nEOI Requested for ");
+            Serial::write_h(isr);
+        #endif // EOI_LOG
         if(isr==0)return;//if isn't valid ISR don't send EOI
         if(isr>=8)outb(0xA0, 0x20);//EOI slave
         outb(0x20, 0x20);//EOI master
