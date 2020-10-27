@@ -2,6 +2,7 @@
 #include "klib.h"
 #include "screen.h"
 #include "serial.h"
+#include "util/iter.h"
 
 enum lapic_regs : uint32_t {
     LAPIC_ID =            0x20U, // read-writeU, Local APIC ID Register
@@ -108,7 +109,7 @@ union ioapic_redir {
         uint64_t delivery_status    : 1;//ro, is the irq pending?
         uint64_t pin_polarity       : 1;//rw, false active high, true active low
         uint64_t remote_irr         : 1;//ro, if level triggered, is the interrupt being processed?
-        uint64_t triggerMode        : 1;//rw, false edge triggered, true level triggered
+        uint64_t trigger_mode       : 1;//rw, false edge triggered, true level triggered
         uint64_t mask               : 1;//rw, is IRQ masked?
         uint64_t                    :39;//reserved
         uint64_t destination        : 8;//if physical, APIC ID of target, if logical set of processors
@@ -318,13 +319,47 @@ namespace APIC {
     
     
     [[maybe_unused]]
+    static ioapic_redir ioapic_get_redirection_reg(uintptr_t base,uint8_t id){
+        const uint32_t reg=(id*2)+0x10;
+        return {.lo=ioapic_get(base,reg),.hi=ioapic_get(base,reg+1)};
+    }
+    
+    [[maybe_unused]]
+    static void ioapic_set_redirection_reg(uintptr_t base,uint8_t id,ioapic_redir data){
+        const uint32_t reg=(id*2)+0x10;
+        ioapic_set(base,reg,data.lo);
+        ioapic_set(base,reg+1,data.hi);
+    }
+    
+    [[maybe_unused]]
+    static bool ioapic_has_redirection(uint8_t irq){
+        for(ioapic_info &ioapic:Util::CArrayIter(ioapics,ioapic_count)){
+            if(irq>=ioapic.gsi_base&&irq<(ioapic.gsi_base+ioapic.max_irq)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    [[maybe_unused]]
     static ioapic_redir ioapic_get_redirection(uint8_t irq){
-        k_abort_s("ioapic_get_redirection unimplemented");
+        for(ioapic_info &ioapic:Util::CArrayIter(ioapics,ioapic_count)){
+            if(irq>=ioapic.gsi_base&&irq<(ioapic.gsi_base+ioapic.max_irq)){
+                return ioapic_get_redirection_reg(ioapic.base,irq-ioapic.gsi_base);
+            }
+        }
+        k_abort_s("requested IRQ not available for redirection");
     }
     
     [[maybe_unused]]
     static void ioapic_set_redirection(uint8_t irq,ioapic_redir entry){
-        k_abort_s("ioapic_set_redirection unimplemented");
+        for(ioapic_info &ioapic:Util::CArrayIter(ioapics,ioapic_count)){
+            if(irq>=ioapic.gsi_base&&irq<(ioapic.gsi_base+ioapic.max_irq)){
+                ioapic_set_redirection_reg(ioapic.base,irq-ioapic.gsi_base,entry);
+                return;
+            }
+        }
+        k_abort_s("requested IRQ not available for redirection");
     }
     
     void init(){
@@ -370,18 +405,64 @@ namespace APIC {
                 #ifdef IOAPIC_DEBUG
                     Serial::write_s("\n>IOAPIC #");
                     Serial::write_i(n);
-                    Serial::write_s(" detected\n -base=");
+                    Serial::write_s(" found\n -base = ");
                     Serial::write_h(info.base);
-                    Serial::write_s("\n -id=");
+                    Serial::write_s("\n -id = ");
                     Serial::write_h(info.id);
                     Serial::write_s(" (MADT says ");
                     Serial::write_h(entry->id);
-                    Serial::write_s(")\n -version=");
+                    Serial::write_s(")\n -version = ");
                     Serial::write_h(info.version);
-                    Serial::write_s("\n -max_irq=");
+                    Serial::write_s("\n -max_irq = ");
                     Serial::write_h(info.max_irq);
-                    Serial::write_s("\n -gsi_base=");
+                    Serial::write_s("\n -gsi_base = ");
                     Serial::write_h(info.gsi_base);
+                    Serial::write_s("\n -redir:");
+                    for(uint8_t j=0;j<info.max_irq;j++){
+                        ioapic_redir redir=ioapic_get_redirection_reg(info.base,j);
+                        Serial::write_s("\n  :irq ");
+                        Serial::write_i(info.gsi_base+j);
+                        Serial::write_s("\n   .vector = ");
+                        Serial::write_i(redir.interrupt_vector);
+                        Serial::write_s("\n   .delivery_mode = ");
+                        switch(redir.delivery_mode){
+                        case DELIVERY_FIXED:
+                            Serial::write_s("FIXED");
+                            break;
+                        case DELIVERY_LOW:
+                            Serial::write_s("LOW");
+                            break;
+                        case DELIVERY_SMI:
+                            Serial::write_s("SMI");
+                            break;
+                        case DELIVERY_NMI:
+                            Serial::write_s("NMI");
+                            break;
+                        case DELIVERY_INIT:
+                            Serial::write_s("INIT");
+                            break;
+                        case DELIVERY_EXTINIT:
+                            Serial::write_s("EXTINIT");
+                            break;
+                        default:
+                        case DELIVERY_RESERVED_1:
+                        case DELIVERY_RESERVED_2:
+                            Serial::write_s("INVALID");
+                            break;
+                        }
+                        Serial::write_s("\n   .destination_mode = ");
+                        Serial::write_s(redir.destination_mode?"logical":"physical");
+                        Serial::write_s("\n   .pin_polarity = ");
+                        Serial::write_s(redir.pin_polarity?"low":"high");
+                        Serial::write_s("\n   .trigger_mode = ");
+                        Serial::write_s(redir.trigger_mode?"level":"edge");
+                        Serial::write_s("\n   .mask = ");
+                        Serial::write_s(redir.trigger_mode?"true":"false");
+                        Serial::write_s("\n   .destination = ");
+                        Serial::write_h(redir.destination);
+                        Serial::write_s("\n   .raw_data = ");
+                        Serial::write_h(redir.data);
+                    }
                 #endif // IOAPIC_DEBUG
                 n++;
             }
@@ -410,11 +491,19 @@ namespace APIC {
     }
     
     uint8_t get_mapping(uint8_t irq){
-        k_abort_s("APIC::get_mapping unimplemented");
+        if(ioapic_has_redirection(irq)){
+            return ioapic_get_redirection(irq).interrupt_vector;
+        }else{
+            return irq;
+        }
     }
     
     uint8_t remap(uint8_t from,uint8_t to){
-        k_abort_s("APIC::remap unimplemented");
+        if(ioapic_has_redirection(from)){
+            k_abort_s("APIC::remap unimplemented");
+        }else{
+            return from;
+        }
     }
     
 }
