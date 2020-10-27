@@ -1,6 +1,7 @@
 #include "arch/x86.h"
 #include "klib.h"
 #include "screen.h"
+#include "serial.h"
 
 enum lapic_regs : uint32_t {
     LAPIC_ID =            0x20U, // read-writeU, Local APIC ID Register
