@@ -258,12 +258,22 @@ namespace APIC {
     };
     
     [[maybe_unused]]
+    static uint64_t ioapic_encode_redirection_entry(redir_entry entry){
+        k_abort_s("ioapic_encode_redirection_entry unimplemented");
+    }
+    
+    [[maybe_unused]]
+    static redir_entry ioapic_decode_redirection_entry(uint64_t entry){
+        k_abort_s("ioapic_decode_redirection_entry unimplemented");
+    }
+    
+    [[maybe_unused]]
     static redir_entry ioapic_get_redirection(uint8_t irq){
         k_abort_s("ioapic_get_redirection unimplemented");
     }
     
     [[maybe_unused]]
-    static void ioapic_set_redirection(uint8_t irq,redir_entry data){
+    static void ioapic_set_redirection(uint8_t irq,redir_entry entry){
         k_abort_s("ioapic_set_redirection unimplemented");
     }
     
