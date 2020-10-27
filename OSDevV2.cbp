@@ -47,7 +47,6 @@
 			<Add option="-DSERIAL_CRLF" />
 			<Add option="-D__OSDEV_V2__" />
 			<Add option="-DIOAPIC_DEBUG" />
-			<Add option="-DMADT_DEBUG" />
 			<Add directory="include/stdc/" />
 			<Add directory="../lai/include" />
 			<Add directory="include" />

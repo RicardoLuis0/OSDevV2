@@ -235,7 +235,8 @@ namespace APIC {
         uint8_t id;
         uint8_t version;
         uint8_t max_irq;
-        //TODO
+        uint8_t gsi_base;
+        //TODO any extra data per ioapic
     };
     
     ioapic_info * ioapics;
@@ -251,6 +252,20 @@ namespace APIC {
         k_abort_fmt("can't find base address for non-existent IOAPIC #%d",id);
     }
     
+    struct redir_entry{
+        //TODO
+    };
+    
+    [[maybe_unused]]
+    static redir_entry ioapic_get_redirection(uint8_t irq){
+        k_abort_s("ioapic_get_redirection unimplemented");
+    }
+    
+    [[maybe_unused]]
+    static void ioapic_set_redirection(uint8_t irq,redir_entry data){
+        k_abort_s("ioapic_set_redirection unimplemented");
+    }
+    
     void init(){
         Screen::write_s("\n -Enabling APIC...");
         
@@ -263,8 +278,7 @@ namespace APIC {
         init_lapic();//initialize LAPIC
         
         ioapic_count=0;
-        for(uint32_t i=0;i<MADT::entry_count;i++){//NOTE maybe build an array of IOAPIC addresses instead of going through whole MADT table?
-                
+        for(uint32_t i=0;i<MADT::entry_count;i++){
             if(MADT::entries[i]->type==MADT::Entry::IO_APIC){
                 ioapic_count++;
             }
@@ -272,7 +286,7 @@ namespace APIC {
         
         ioapics=reinterpret_cast<ioapic_info *>(Memory::alloc_virt_page(Memory::pages_to_fit(sizeof(ioapic_info)*ioapic_count)));
         
-        for(uint32_t i=0,n=0;i<MADT::entry_count;i++){//NOTE maybe build an array of IOAPIC addresses instead of going through whole MADT table?
+        for(uint32_t i=0,n=0;i<MADT::entry_count&&n<ioapic_count;i++){
             if(MADT::entries[i]->type==MADT::Entry::IO_APIC){
                 MADT::IOAPICEntry * entry=reinterpret_cast<MADT::IOAPICEntry*>(MADT::entries[i]);
                 
@@ -291,6 +305,7 @@ namespace APIC {
                 uint32_t ver=ioapic_get(entry->address,IOAPIC_VER);
                 info.version=ver&0xFF;
                 info.max_irq=((ver>>16)&0xFF)+1;
+                info.gsi_base=entry->global_system_interrupt_base;
                 #ifdef IOAPIC_DEBUG
                     Screen::write_s("\n  .IOAPIC #");
                     Screen::write_i(n);
@@ -304,6 +319,8 @@ namespace APIC {
                     Screen::write_i(info.version);
                     Screen::write_s("\n   +max_irq=");
                     Screen::write_i(info.max_irq);
+                    Screen::write_s("\n   +gsi_base=");
+                    Screen::write_i(info.gsi_base);
                 #endif // IOAPIC_DEBUG
                 n++;
             }
