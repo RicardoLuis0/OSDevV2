@@ -53,10 +53,73 @@ enum lapic_regs : uint32_t {
     LAPIC_TIMER_DCR =    0x39EU, // read-writeU, Timer Divide Configuration Register
 };
 
+//source IOAPIC spec
+
 enum ioapic_regs : uint32_t{
-    IOAPIC_ID  = 0x0U,//bits 24-27 are ID
-    IOAPIC_VER = 0x1U,//bits 0-8 are version, bits 16-23 are max number of IRQs
+    IOAPIC_ID  = 0x0U,
+    IOAPIC_VER = 0x1U,
     IOAPIC_ARB = 0x2U,
+};
+
+union ioapic_id {
+    struct {
+        uint32_t   :24;
+        uint32_t id :4;
+        uint32_t    :4;
+    };
+    uint32_t data;
+};
+
+union ioapic_ver {
+    struct {
+        uint32_t ver:8;//IOAPIC version
+        uint32_t    :8;//reserved
+        uint32_t max:8;//max valid index of redirection table
+        uint32_t    :8;//reserved
+    };
+    uint32_t data;
+};
+
+union ioapic_arb {
+    struct {
+        uint32_t       :24;
+        uint32_t arb_id :4;
+        uint32_t        :4;
+    };
+    uint32_t data;
+};
+
+enum ioapic_redir_delivery_modes {
+    DELIVERY_FIXED=0x0,
+    DELIVERY_LOW=0x1,
+    DELIVERY_SMI=0x2,
+    DELIVERY_RESERVED_1=0x3,
+    DELIVERY_NMI=0x4,
+    DELIVERY_INIT=0x5,
+    DELIVERY_RESERVED_2=0x6,
+    DELIVERY_EXTINIT=0x7,
+};
+
+union ioapic_redir {
+    struct {
+        uint64_t interrupt_vector   : 8;//rw, interrupt to be raised on CPU
+        uint64_t delivery_mode      : 3;//rw, see ioapic_redir_delivery_modes
+        uint64_t destination_mode   : 1;//rw, if false, physical destination, if true, logical destination
+        uint64_t delivery_status    : 1;//ro, is the irq pending?
+        uint64_t pin_polarity       : 1;//rw, false active high, true active low
+        uint64_t remote_irr         : 1;//ro, if level triggered, is the interrupt being processed?
+        uint64_t triggerMode        : 1;//rw, false edge triggered, true level triggered
+        uint64_t mask               : 1;//rw, is IRQ masked?
+        uint64_t                    :39;//reserved
+        uint64_t destination        : 8;//if physical, APIC ID of target, if logical set of processors
+    };
+    
+    uint64_t data;
+    
+    struct {
+        uint32_t lo;
+        uint32_t hi;
+    };
 };
 
 #define LAPIC_MSR 0x1B
@@ -253,27 +316,14 @@ namespace APIC {
         k_abort_fmt("can't find base address for non-existent IOAPIC #%d",id);
     }
     
-    struct redir_entry{
-        //TODO
-    };
     
     [[maybe_unused]]
-    static uint64_t ioapic_encode_redirection_entry(redir_entry entry){
-        k_abort_s("ioapic_encode_redirection_entry unimplemented");
-    }
-    
-    [[maybe_unused]]
-    static redir_entry ioapic_decode_redirection_entry(uint64_t entry){
-        k_abort_s("ioapic_decode_redirection_entry unimplemented");
-    }
-    
-    [[maybe_unused]]
-    static redir_entry ioapic_get_redirection(uint8_t irq){
+    static ioapic_redir ioapic_get_redirection(uint8_t irq){
         k_abort_s("ioapic_get_redirection unimplemented");
     }
     
     [[maybe_unused]]
-    static void ioapic_set_redirection(uint8_t irq,redir_entry entry){
+    static void ioapic_set_redirection(uint8_t irq,ioapic_redir entry){
         k_abort_s("ioapic_set_redirection unimplemented");
     }
     
@@ -301,7 +351,7 @@ namespace APIC {
             if(MADT::entries[i]->type==MADT::Entry::IO_APIC){
                 MADT::IOAPICEntry * entry=reinterpret_cast<MADT::IOAPICEntry*>(MADT::entries[i]);
                 
-                uint32_t id=(ioapic_get(entry->address,IOAPIC_ID)>>24)&0xF;
+                ioapic_id id {.data=ioapic_get(entry->address,IOAPIC_ID)};
                 
                 //don't double check ID, since virtualbox gives wrong id in the MADT
                 /*
@@ -312,10 +362,10 @@ namespace APIC {
                 
                 auto &info=ioapics[n];
                 info.base=entry->address;
-                info.id=id;
-                uint32_t ver=ioapic_get(entry->address,IOAPIC_VER);
-                info.version=ver&0xFF;
-                info.max_irq=((ver>>16)&0xFF)+1;
+                info.id=id.id;
+                ioapic_ver ver {.data=ioapic_get(entry->address,IOAPIC_VER)};
+                info.version=ver.ver;
+                info.max_irq=ver.max+1;
                 info.gsi_base=entry->global_system_interrupt_base;
                 #ifdef IOAPIC_DEBUG
                     Serial::write_s("\n>IOAPIC #");
