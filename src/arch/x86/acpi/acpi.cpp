@@ -31,8 +31,10 @@ static void gas_outb(acpi_gas_t &reg,uint8_t data){
     switch(reg.address_space){
     case 0://MMIO
         MMIO8(static_cast<uint32_t>(reg.base),0U)=data;
+        return;
     case 1://Port IO
         outb(reg.base,data);
+        return;
     default:
         k_abort_fmt("unimplemented GAS register type %x",reg.address_space);
     }
@@ -46,8 +48,10 @@ static void gas_outw(acpi_gas_t &reg,uint16_t data){
     switch(reg.address_space){
     case 0://MMIO
         MMIO16(static_cast<uint32_t>(reg.base),0U)=data;
+        return;
     case 1://Port IO
         outw(reg.base,data);
+        return;
     default:
         k_abort_fmt("unimplemented GAS register type %x",reg.address_space);
     }
@@ -61,8 +65,10 @@ static void gas_outl(acpi_gas_t &reg,uint32_t data){
     switch(reg.address_space){
     case 0://MMIO
         MMIO32(static_cast<uint32_t>(reg.base),0U)=data;
+        return;
     case 1://Port IO
         outl(reg.base,data);
+        return;
     default:
         k_abort_fmt("unimplemented GAS register type %x",reg.address_space);
     }
@@ -122,8 +128,10 @@ static void gas_out(acpi_gas_t &reg,uint32_t data){
         break;
     case 2:
         gas_outw(reg,data);
+        return;
     case 3:
         gas_outl(reg,data);
+        return;
     default:
         k_abort_s("unimplemented GAS register access size");
     }
@@ -248,6 +256,7 @@ void ACPI::reset(){
 
 MADT::Entry ** MADT::entries;
 size_t MADT::entry_count;
+
 
 void MADT::init(){
     Util::Vector<Entry*> entry_vec;
