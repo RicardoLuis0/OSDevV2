@@ -195,12 +195,13 @@ namespace Drivers::Keyboard::PS2 {
     void init(){
         print("\n  .PS/2 Keyboard...");
         key_queue=new Util::LFQ<keycode,20,true>();
-        if(IDT::irq_supports_remapping()){
-            IDT::irq_remap(0x1,0x21);
+        uint8_t src=IDT::is_legacy_mode()?0x1:ACPI::MADT::resolve_irq_source(0x1);
+        if(IDT::irq_supports_remapping(src)){
+            IDT::irq_remap(src,0x21);
         }
-        uint8_t irq=IDT::irq_get_mapping(0x1);
+        uint8_t irq=IDT::irq_get_mapping(src);
         IDT::set_irq_handler(irq,kbint,IDT::G_32_INT,IDT::RING_0);
-        IDT::irq_enable(0x1);
+        IDT::irq_enable(src);
         Screen::setfgcolor(Screen::LIGHT_GREEN);
         Screen::write_s("OK");
         Screen::setfgcolor(Screen::WHITE);
