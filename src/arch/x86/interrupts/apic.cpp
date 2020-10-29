@@ -418,52 +418,104 @@ namespace APIC {
                     Serial::write_h(info.max_irq);
                     Serial::write_s("\n -gsi_base = ");
                     Serial::write_h(info.gsi_base);
-                    Serial::write_s("\n -redir:");
-                    for(uint8_t j=0;j<info.max_irq;j++){
-                        ioapic_redir redir=ioapic_get_redirection_reg(info.base,j);
-                        Serial::write_s("\n  :irq ");
-                        Serial::write_i(info.gsi_base+j);
-                        Serial::write_s("\n   .vector = ");
-                        Serial::write_i(redir.interrupt_vector);
-                        Serial::write_s("\n   .delivery_mode = ");
-                        switch(redir.delivery_mode){
-                        case DELIVERY_FIXED:
-                            Serial::write_s("FIXED");
-                            break;
-                        case DELIVERY_LOW:
-                            Serial::write_s("LOW");
-                            break;
-                        case DELIVERY_SMI:
-                            Serial::write_s("SMI");
-                            break;
-                        case DELIVERY_NMI:
-                            Serial::write_s("NMI");
-                            break;
-                        case DELIVERY_INIT:
-                            Serial::write_s("INIT");
-                            break;
-                        case DELIVERY_EXTINIT:
-                            Serial::write_s("EXTINIT");
-                            break;
-                        default:
-                        case DELIVERY_RESERVED_1:
-                        case DELIVERY_RESERVED_2:
-                            Serial::write_s("INVALID");
-                            break;
-                        }
-                        Serial::write_s("\n   .destination_mode = ");
-                        Serial::write_s(redir.destination_mode?"logical":"physical");
-                        Serial::write_s("\n   .pin_polarity = ");
-                        Serial::write_s(redir.pin_polarity?"low":"high");
-                        Serial::write_s("\n   .trigger_mode = ");
-                        Serial::write_s(redir.trigger_mode?"level":"edge");
-                        Serial::write_s("\n   .mask = ");
-                        Serial::write_s(redir.trigger_mode?"true":"false");
-                        Serial::write_s("\n   .destination = ");
-                        Serial::write_h(redir.destination);
-                        Serial::write_s("\n   .raw_data = ");
-                        Serial::write_h(redir.data);
-                    }
+                    
+                    #ifdef IOAPIC_DEBUG_DUMP_REDIR
+                        #ifdef IOAPIC_DEBUG_DUMP_REDIR_COMPACT
+                            Serial::write_s("\n-redir:\n");
+                            if(n==0)
+                            for(uint8_t j=0;j<info.max_irq;j++){
+                                ioapic_redir redir=ioapic_get_redirection_reg(info.base,j);
+                                if(j>0&&((j+1)%2))Serial::write_s("\n");
+                                Serial::write_s(":");
+                                Serial::write_i(info.gsi_base+j);
+                                Serial::write_s(" i");
+                                Serial::write_i(redir.interrupt_vector);
+                                Serial::write_s(" v");
+                                switch(redir.delivery_mode){
+                                case DELIVERY_FIXED:
+                                    Serial::write_s("F");
+                                    break;
+                                case DELIVERY_LOW:
+                                    Serial::write_s("L");
+                                    break;
+                                case DELIVERY_SMI:
+                                    Serial::write_s("S");
+                                    break;
+                                case DELIVERY_NMI:
+                                    Serial::write_s("N");
+                                    break;
+                                case DELIVERY_INIT:
+                                    Serial::write_s("I");
+                                    break;
+                                case DELIVERY_EXTINIT:
+                                    Serial::write_s("E");
+                                    break;
+                                default:
+                                case DELIVERY_RESERVED_1:
+                                case DELIVERY_RESERVED_2:
+                                    Serial::write_s("?");
+                                    break;
+                                }
+                                Serial::write_s(" s");
+                                Serial::write_s(redir.destination_mode?"L":"P");
+                                Serial::write_s(" p");
+                                Serial::write_s(redir.pin_polarity?"L":"H");
+                                Serial::write_s(" t");
+                                Serial::write_s(redir.trigger_mode?"L":"E");
+                                Serial::write_s(" m");
+                                Serial::write_s(redir.mask?"T":"F");
+                                Serial::write_s(" d");
+                                Serial::write_i(redir.destination);
+                            }
+                        #else
+                            Serial::write_s("\n -redir:");
+                            for(uint8_t j=0;j<info.max_irq;j++){
+                                ioapic_redir redir=ioapic_get_redirection_reg(info.base,j);
+                                Serial::write_s("\n  :irq ");
+                                Serial::write_i(info.gsi_base+j);
+                                Serial::write_s("\n   .vector = ");
+                                Serial::write_i(redir.interrupt_vector);
+                                Serial::write_s("\n   .delivery_mode = ");
+                                switch(redir.delivery_mode){
+                                case DELIVERY_FIXED:
+                                    Serial::write_s("FIXED");
+                                    break;
+                                case DELIVERY_LOW:
+                                    Serial::write_s("LOW");
+                                    break;
+                                case DELIVERY_SMI:
+                                    Serial::write_s("SMI");
+                                    break;
+                                case DELIVERY_NMI:
+                                    Serial::write_s("NMI");
+                                    break;
+                                case DELIVERY_INIT:
+                                    Serial::write_s("INIT");
+                                    break;
+                                case DELIVERY_EXTINIT:
+                                    Serial::write_s("EXTINIT");
+                                    break;
+                                default:
+                                case DELIVERY_RESERVED_1:
+                                case DELIVERY_RESERVED_2:
+                                    Serial::write_s("INVALID");
+                                    break;
+                                }
+                                Serial::write_s("\n   .destination_mode = ");
+                                Serial::write_s(redir.destination_mode?"logical":"physical");
+                                Serial::write_s("\n   .pin_polarity = ");
+                                Serial::write_s(redir.pin_polarity?"low":"high");
+                                Serial::write_s("\n   .trigger_mode = ");
+                                Serial::write_s(redir.trigger_mode?"level":"edge");
+                                Serial::write_s("\n   .mask = ");
+                                Serial::write_s(redir.mask?"true":"false");
+                                Serial::write_s("\n   .destination = ");
+                                Serial::write_h(redir.destination);
+                                Serial::write_s("\n   .raw_data = ");
+                                Serial::write_h(redir.data);
+                            }
+                        #endif // IOAPIC_DEBUG_DUMP_REDIR_COMPACT
+                    #endif // IOAPIC_DEBUG_DUMP_REDIR
                 #endif // IOAPIC_DEBUG
                 n++;
             }
