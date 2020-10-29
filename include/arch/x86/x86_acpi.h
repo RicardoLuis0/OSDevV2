@@ -74,6 +74,7 @@ namespace ACPI {
         
         void init();
         
+        uint8_t resolve_irq_source(uint8_t);
     }
 }
 #endif // X86_ACPI_H_INCLUDED

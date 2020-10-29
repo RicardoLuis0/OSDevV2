@@ -355,3 +355,14 @@ void MADT::init(){
     entries=entry_vec.release(entry_count);
 }
 
+uint8_t MADT::resolve_irq_source(uint8_t irq){
+    for(uint32_t i=0;i<MADT::entry_count;i++){
+        if(MADT::entries[i]->type==MADT::Entry::ISO){
+            MADT::ISOEntry* entry=reinterpret_cast<MADT::ISOEntry*>(MADT::entries[i]);
+            if(entry->irq_source==irq)return entry->global_system_interrupt;
+        }
+    }
+    return irq;
+}
+
+
