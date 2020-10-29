@@ -83,6 +83,7 @@ namespace IDT {
 
 extern "C" void handle_irq(
                             uint32_t irq,uint32_t data,
+                            uint32_t eip,
                             uint32_t edi,uint32_t esi,
                             uint32_t ebp,uint32_t esp,
                             uint32_t ebx,uint32_t edx,
@@ -90,7 +91,7 @@ extern "C" void handle_irq(
                           ){
     if(irq<0||irq>255)return;//too large/small
     
-    IDT::regs regs{eax,ecx,edx,ebx,esp,ebp,esi,edi};
+    IDT::regs regs{eax,ecx,edx,ebx,esp,ebp,esi,edi,eip};
     
     switch(idt_callback[irq].type){
     case IDT::idt_callback_t::IC_NONE:
@@ -189,6 +190,10 @@ void IDT::setup(){
 
 bool use_apic=false;
 
+static void gpf_handler(regs * regs){
+    k_abort_fmt("GPF, a=%x, c=%x, d=%x, b=%x, sp=%x, bp=%x, si=%x, di=%x, ip=%x",regs->eax,regs->ecx,regs->edx,regs->ebx,regs->esp,regs->ebp,regs->esi,regs->edi,regs->eip);
+}
+
 void IDT::init(){
     Screen::write_s("\n -Loading IDT...");
     loadidt(reinterpret_cast<uint32_t>(IDT),sizeof(IDT_entry)*256);
@@ -200,8 +205,9 @@ void IDT::init(){
     }else{
         PIC::init();
     }
+    set_exception_handler(13,gpf_handler,IDT::G_32_INT,IDT::RING_0);
     Screen::write_s("\n -Enabling Interrupts...");
-    asm("sti");//enable interrupts
+    asm volatile("sti");//enable interrupts
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_s("OK");
     Screen::setfgcolor(Screen::WHITE);
@@ -359,6 +365,5 @@ void IDT::disable_exception_handler(uint8_t irq){
     fmassert(irq<32,"Handler is not Exception, is IRQ");
     IDT[irq].type_attr.present=0;
 }
-
 
 

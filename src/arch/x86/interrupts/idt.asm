@@ -15,43 +15,45 @@ loadidt:
     lidt  [idtr]
     ret
 
-%macro IDTES 1          ;exception handler irq no parameter
+%macro IDTES 1              ;exception handler irq no parameter
 global _idtx%1
 _idtx%1:
-    pushad              ;save registers
-    push esp            ;push registers
-    push 0              ;push data
-    push %1             ;push irq number
-    call handle_irq     ;call c++ irq handler
-    add esp,8           ;pop 8 bytes (function arguments)
-    popad               ;return
+    pushad                  ;save registers
+    push dword [esp+0x20]   ;push eip
+    push 0                  ;push data
+    push %1                 ;push irq number
+    call handle_irq         ;call c++ irq handler
+    add esp,12              ;pop 12 bytes (function arguments)
+    popad                   ;return
     iret
 %endmacro
 
-%macro IDTEP 1          ;exception handler irq, with error code on top of stack
+%macro IDTEP 1              ;exception handler irq, with error code on top of stack
 global _idtx%1
 _idtx%1:
-    pushad              ;save registers
-    mov eax,[esp+0x20]  ;read data
-    push eax            ;push data
-    push %1             ;push irq number
-    call handle_irq     ;call c++ irq handler
-    add esp,8           ;pop 8 bytes (function arguments)
-    popad               ;restore registers
-    add esp,4           ;pop 4 bytes (data)
-    iret                ;return
+    pushad                  ;save registers
+    push dword [esp+0x24]   ;push eip
+    mov eax,[esp+0x20]      ;read data
+    push eax                ;push data
+    push %1                 ;push irq number
+    call handle_irq         ;call c++ irq handler
+    add esp,12              ;pop 12 bytes (function arguments)
+    popad                   ;restore registers
+    add esp,4               ;pop 4 bytes (data)
+    iret                    ;return
 %endmacro
 
-%macro IDTX 1           ;general-purpose interrupt, takes parameter in eax
+%macro IDTX 1               ;general-purpose interrupt, takes parameter in eax
 global _idtx%1
 _idtx%1:
-    pushad              ;save registers
-    push eax            ;push data
-    push %1             ;push irq number
-    call handle_irq     ;call c++ irq handler
-    add esp,8           ;pop 8 bytes (function arguments)
-    popad               ;restore registers
-    iret                ;return
+    pushad                  ;save registers
+    push dword [esp+0x20]   ;push eip
+    push eax                ;push data
+    push %1                 ;push irq number
+    call handle_irq         ;call c++ irq handler
+    add esp,12              ;pop 12 bytes (function arguments)
+    popad                   ;restore registers
+    iret                    ;return
 %endmacro
 
 %assign i 0
