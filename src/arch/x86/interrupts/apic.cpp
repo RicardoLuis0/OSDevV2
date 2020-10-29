@@ -404,6 +404,7 @@ namespace APIC {
                 info.max_irq=ver.max+1;
                 info.gsi_base=entry->global_system_interrupt_base;
                 #ifdef IOAPIC_DEBUG
+                    
                     Serial::write_s("\n>IOAPIC #");
                     Serial::write_i(n);
                     Serial::write_s(" found\n -base = ");
@@ -531,15 +532,11 @@ namespace APIC {
         Screen::write_s("\n  .Found ");
         Screen::write_i(ioapic_count);
         Screen::write_s(" IOAPICs...");
-        
-        
-        //TODO initialize IOAPIC
-        k_abort_s("IOAPIC unimplemented");
     }
     
     bool supported(){
-        //return CPUID::has(0,CPUID::FEAT_EDX_1_APIC);
-        return false;
+        return CPUID::has(0,CPUID::FEAT_EDX_1_APIC);
+        //return false;
     }
     
     void enable(uint8_t irq){
