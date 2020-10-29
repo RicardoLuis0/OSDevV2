@@ -62,6 +62,7 @@ namespace IDT{
     void irq_remap(uint8_t from,uint8_t to);
     
     bool irq_supports_remapping();
+    bool irq_supports_remapping(uint8_t irq);
     
     template<uint32_t irq>
     void call_interrupt(uint32_t data){//call user-defined interrupt
@@ -92,6 +93,10 @@ namespace IDT{
     }
     
     using nmi_guard=Util::simple_generic_guard<__nmi_guard_acq,__nmi_guard_rel>;
+    
+    void eoi();
+    
+    bool is_legacy_mode();
 }
 
 #endif // X86_IDT_H_INCLUDED

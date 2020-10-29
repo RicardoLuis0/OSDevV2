@@ -114,7 +114,7 @@ extern "C" void handle_irq(
         idt_callback[irq].ciir(irq,data,&regs);
         break;
     }
-    PIC::eoi();//TODO only send EOIs for external IRQs
+    IDT::eoi();
 }
 
 IDTXa()
@@ -124,6 +124,7 @@ using idth=void(*)();
 constexpr idth idtx[256]{//array of asm idt entrypoints
     listIDTXa()
 };
+
 
 extern "C" void loadidt(uint32_t base,uint16_t limit);
 
@@ -206,11 +207,23 @@ void IDT::init(){
     Screen::setfgcolor(Screen::WHITE);
 }
 
+bool IDT::is_legacy_mode(){
+    return !use_apic;
+}
+
 void IDT::irq_enable(uint8_t irq){
     if(use_apic){
         APIC::enable(irq);
     }else{
         PIC::unmask(irq);
+    }
+}
+
+void IDT::eoi(){
+    if(use_apic){
+        APIC::eoi();
+    }else{
+        PIC::eoi();
     }
 }
 
@@ -237,6 +250,10 @@ void IDT::irq_remap(uint8_t from,uint8_t to){
 
 bool IDT::irq_supports_remapping(){
     return use_apic;
+}
+
+bool IDT::irq_supports_remapping(uint8_t irq){
+    return use_apic&&APIC::has_remapping(irq);
 }
 
 void IDT::set_irq_handler(uint8_t irq,void(*c)(void),gate_type g,ring_type t){
