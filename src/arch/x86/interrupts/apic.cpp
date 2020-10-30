@@ -366,9 +366,7 @@ namespace APIC {
     void init(){
         Screen::write_s("\n -Enabling APIC...");
         
-        if(madt->flags&MADT::LEGACY_PIC){//mask out legacy PIC if necessary
-            PIC::reset(0x20,0x28);
-        }
+        PIC::reset(0xF0,0xF8);
         
         x2apic=CPUID::has(CPUID::FEAT_ECX_1_x2APIC,0);
         
@@ -571,6 +569,21 @@ namespace APIC {
     
     void eoi(){
         lapic_register_set(LAPIC_EOI,0);
+    }
+    
+    void isr_irr_dump(){
+        for(uint32_t i=0;i<8;i++){
+            Screen::write_s("\nisr[");
+            Screen::write_i(i);
+            Screen::write_s("]=");
+            Screen::write_h(lapic_register_get(LAPIC_ISR_0+(0x10*i)));
+        }
+        for(uint32_t i=0;i<8;i++){
+            Screen::write_s("\nirr[");
+            Screen::write_i(i);
+            Screen::write_s("]=");
+            Screen::write_h(lapic_register_get(LAPIC_IRR_0+(0x10*i)));
+        }
     }
 }
 

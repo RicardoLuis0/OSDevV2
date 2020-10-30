@@ -33,8 +33,7 @@ global _idtx%1
 _idtx%1:
     pushad                  ;save registers
     push dword [esp+0x24]   ;push eip
-    mov eax,[esp+0x20]      ;read data
-    push eax                ;push data
+    push dword [esp+0x24]   ;push data
     push %1                 ;push irq number
     call handle_irq         ;call c++ irq handler
     add esp,12              ;pop 12 bytes (function arguments)

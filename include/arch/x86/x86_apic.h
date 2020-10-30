@@ -10,6 +10,7 @@ namespace APIC {
     void remap(uint8_t from,uint8_t to);
     bool has_remapping(uint8_t irq);
     void eoi();
+    void isr_irr_dump();
 }
 
 #endif // X86_APIC_H_INCLUDED

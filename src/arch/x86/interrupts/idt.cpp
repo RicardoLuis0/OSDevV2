@@ -58,6 +58,7 @@ namespace IDT {
             offset_2=address>>16;
         }
     };
+    static_assert(sizeof(IDT_entry)==8);
     IDT_entry * IDT;
     struct idt_callback_t {
         enum{
@@ -80,6 +81,8 @@ namespace IDT {
     };
     idt_callback_t idt_callback[256]={};
 }
+
+bool use_apic;
 
 extern "C" void handle_irq(
                             uint32_t irq,uint32_t data,
@@ -115,7 +118,11 @@ extern "C" void handle_irq(
         idt_callback[irq].ciir(irq,data,&regs);
         break;
     }
+    if(irq==255){
+        outb(0x20, 0x20);
+    }
     IDT::eoi();
+    
 }
 
 IDTXa()
@@ -188,10 +195,12 @@ void IDT::setup(){
     Screen::setfgcolor(Screen::WHITE);
 }
 
-bool use_apic=false;
+static void gpf_handler(uint32_t err,regs * regs){
+    //APIC::isr_irr_dump();
+    k_abort_fmt("GPF, err=%x, a=%x, c=%x, d=%x, b=%x, sp=%x, bp=%x, si=%x, di=%x, ip=%x",err,regs->eax,regs->ecx,regs->edx,regs->ebx,regs->esp,regs->ebp,regs->esi,regs->edi,regs->eip);
+}
 
-static void gpf_handler(regs * regs){
-    k_abort_fmt("GPF, a=%x, c=%x, d=%x, b=%x, sp=%x, bp=%x, si=%x, di=%x, ip=%x",regs->eax,regs->ecx,regs->edx,regs->ebx,regs->esp,regs->ebp,regs->esi,regs->edi,regs->eip);
+static void spurious_irq(){
 }
 
 void IDT::init(){
@@ -206,6 +215,10 @@ void IDT::init(){
         PIC::init();
     }
     set_exception_handler(13,gpf_handler,IDT::G_32_INT,IDT::RING_0);
+    
+    set_irq_handler(247,spurious_irq,IDT::G_32_INT,IDT::RING_0);
+    set_irq_handler(255,spurious_irq,IDT::G_32_INT,IDT::RING_0);
+    
     Screen::write_s("\n -Enabling Interrupts...");
     asm volatile("sti");//enable interrupts
     Screen::setfgcolor(Screen::LIGHT_GREEN);
