@@ -365,4 +365,20 @@ uint8_t MADT::resolve_irq_source(uint8_t irq){
     return irq;
 }
 
+void MADT::dump_iso(){
+    for(uint32_t i=0;i<MADT::entry_count;i++){
+        if(MADT::entries[i]->type==MADT::Entry::ISO){
+            MADT::ISOEntry* entry=reinterpret_cast<MADT::ISOEntry*>(MADT::entries[i]);
+            Screen::write_s("\nISO: bs=");
+            Screen::write_h(entry->bus_source);
+            Screen::write_s(", is=");
+            Screen::write_h(entry->irq_source);
+            Screen::write_s(", gsi=");
+            Screen::write_h(entry->global_system_interrupt);
+            if(entry->flags&ISOEntry::ACTIVE_LOW) Screen::write_s(", LOW");
+            if(entry->flags&ISOEntry::LEVEL_TRIGGERED) Screen::write_s(", LEVEL");
+        }
+    }
+}
+
 

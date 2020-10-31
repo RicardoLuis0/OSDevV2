@@ -6,12 +6,10 @@
 #include "util/vector.h"
 #include <stdint.h>
 #include <ctype.h>
+#include <stdarg.h>
+#include <stdio.h>
 
 extern "C" {
-    
-    void putc(char c){
-        Screen::write_c(c);
-    }
     
     void puts(const char * s){
         Screen::write_s(s);
@@ -211,6 +209,20 @@ void Screen::move(size_t pos){
     outb(0x3D5, static_cast<uint8_t>(pos & 0xFF));
     outb(0x3D4, 0x0E);
     outb(0x3D5, static_cast<uint8_t>((pos >> 8) & 0xFF));
+}
+
+void Screen::write_fmt(char * fmt,...){
+    va_list arg;
+    va_start(arg,fmt);
+    va_list a2;
+    va_copy(a2,arg);
+    int n=vsnprintf(NULL,0,fmt,a2);
+    va_end(a2);
+    char * s=reinterpret_cast<char*>(calloc(n+1,sizeof(char)));
+    vsnprintf(s,n,fmt,arg);
+    va_end(arg);
+    write_sn(s,n);
+    free(s);
 }
 
 void Screen::write_c(char c){

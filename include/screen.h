@@ -27,6 +27,7 @@ namespace Screen {
     void move(int x,int y);
     void move(size_t pos);
     void setchar(char c);
+    void write_fmt(char * fmt,...);
     void write_c(char c);
     void write_s(const char * str);//FOR NOW ONLY THIS ONE SUPPORTS ANSI ESCAPE CODES
     void write_sn(const char * str,size_t n);
