@@ -384,25 +384,15 @@ namespace APIC {
         for(uint32_t i=0,n=0;i<MADT::entry_count&&n<ioapic_count;i++){
             if(MADT::entries[i]->type==MADT::Entry::IO_APIC){
                 MADT::IOAPICEntry * entry=reinterpret_cast<MADT::IOAPICEntry*>(MADT::entries[i]);
-                
                 ioapic_id id {.data=ioapic_get(entry->address,IOAPIC_ID)};
-                
-                //don't double check ID, since virtualbox gives wrong id in the MADT
-                /*
-                if(id!=entry->id){
-                    k_abort_fmt("invalid ID for IOAPIC #%u, expected %x got %x",n,entry->id,id);
-                }
-                */
-                
+                ioapic_ver ver {.data=ioapic_get(entry->address,IOAPIC_VER)};
                 auto &info=ioapics[n];
                 info.base=entry->address;
                 info.id=id.id;
-                ioapic_ver ver {.data=ioapic_get(entry->address,IOAPIC_VER)};
                 info.version=ver.ver;
                 info.max_irq=ver.max+1;
                 info.gsi_base=entry->global_system_interrupt_base;
                 #ifdef IOAPIC_DEBUG
-                    
                     Serial::write_s("\n>IOAPIC #");
                     Serial::write_i(n);
                     Serial::write_s(" found\n -base = ");
@@ -417,7 +407,6 @@ namespace APIC {
                     Serial::write_h(info.max_irq);
                     Serial::write_s("\n -gsi_base = ");
                     Serial::write_h(info.gsi_base);
-                    
                     #ifdef IOAPIC_DEBUG_DUMP_REDIR
                         #ifdef IOAPIC_DEBUG_DUMP_REDIR_COMPACT
                             Serial::write_s("\n-redir:\n");
