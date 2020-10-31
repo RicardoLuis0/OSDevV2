@@ -51,11 +51,11 @@ extern "C" {
         k_abort_s(msg);
     }
     
-    void * laihost_realloc(void * p, size_t n){
+    void * laihost_realloc(void * p, size_t n, size_t){
         return realloc(p,n);
     }
     
-    void laihost_free(void * p){
+    void laihost_free(void * p, size_t){
         free(p);
     }
     
