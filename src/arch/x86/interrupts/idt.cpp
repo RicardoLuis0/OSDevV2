@@ -256,7 +256,7 @@ void IDT::irq_disable(uint8_t irq){
 
 uint8_t IDT::irq_get_mapping(uint8_t irq){
     if(use_apic){
-        return APIC::get_mapping(irq);
+        return APIC::has_remapping(irq)?APIC::get_mapping(irq):irq;
     }else{
         return PIC::get_mapping(irq);
     }
