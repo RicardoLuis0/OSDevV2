@@ -25,7 +25,7 @@ namespace PIC {
     void init(){
         Screen::write_s("\n -Initializing PIC...");
         //remap PIC
-        reset(0x20,0x28);
+        reset(0xF0,0xF8);
         Screen::setfgcolor(Screen::LIGHT_GREEN);
         Screen::write_s("OK");
         Screen::setfgcolor(Screen::WHITE);
@@ -56,7 +56,7 @@ namespace PIC {
     }
     
     uint8_t get_mapping(uint8_t irq){
-        return (irq<16)?irq+32:irq;
+        return (irq<16)?irq+0xF0:irq;
     }
     
     //from https://wiki.osdev.org/8259_PIC#ISR_and_IRR

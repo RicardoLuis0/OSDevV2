@@ -5,16 +5,16 @@
 #include "util/iter.h"
 
 enum lapic_regs : uint32_t {
-    LAPIC_ID =            0x20U, // read-write, Local APIC ID Register
-    LAPIC_VER =           0x30U, // read-only, Local APIC Version Register
-    LAPIC_TPR =           0x80U, // read-write, Task Priority Register
-    LAPIC_APR =           0x90U, // read-only, Arbitration Priority Register
-    LAPIC_PPR =           0xA0U, // read-only, Processor Priority Register
-    LAPIC_EOI =           0xB0U, // write-only, EOI Register
-    LAPIC_RRD =           0xC0U, // read-only, Remote Read Register
-    LAPIC_LDR =           0xD0U, // read-write, Local Destination Register
-    LAPIC_DFR =           0xE0U, // read-write, Destination Format Register
-    LAPIC_SIV =           0xF0U, // read-write, Spurious Interrupt Vector Register
+    LAPIC_ID =           0x020U, // read-write, Local APIC ID Register
+    LAPIC_VER =          0x030U, // read-only, Local APIC Version Register
+    LAPIC_TPR =          0x080U, // read-write, Task Priority Register
+    LAPIC_APR =          0x090U, // read-only, Arbitration Priority Register
+    LAPIC_PPR =          0x0A0U, // read-only, Processor Priority Register
+    LAPIC_EOI =          0x0B0U, // write-only, EOI Register
+    LAPIC_RRD =          0x0C0U, // read-only, Remote Read Register
+    LAPIC_LDR =          0x0D0U, // read-write, Local Destination Register
+    LAPIC_DFR =          0x0E0U, // read-write, Destination Format Register
+    LAPIC_SIV =          0x0F0U, // read-write, Spurious Interrupt Vector Register
     LAPIC_ISR_0 =        0x100U, // read-only, In-Service Register bits 31:0
     LAPIC_ISR_1 =        0x110U, // read-only, In-Service Register bits 63:32
     LAPIC_ISR_2 =        0x120U, // read-only, In-Service Register bits 95:64
@@ -57,9 +57,10 @@ enum lapic_regs : uint32_t {
 //source IOAPIC spec
 
 enum ioapic_regs : uint32_t{
-    IOAPIC_ID  = 0x0U,
-    IOAPIC_VER = 0x1U,
-    IOAPIC_ARB = 0x2U,
+    IOAPIC_ID  = 0x00U,
+    IOAPIC_VER = 0x01U,
+    IOAPIC_ARB = 0x02U,
+    IOAPIC_RED = 0x10U,
 };
 
 union ioapic_id {
@@ -321,13 +322,13 @@ namespace APIC {
     
     [[maybe_unused]]
     static ioapic_redir ioapic_get_redirection_reg(uintptr_t base,uint8_t id){
-        const uint32_t reg=(id*2)+0x10;
+        const uint32_t reg=(id*2)+IOAPIC_RED;
         return {.lo=ioapic_get(base,reg),.hi=ioapic_get(base,reg+1)};
     }
     
     [[maybe_unused]]
     static void ioapic_set_redirection_reg(uintptr_t base,uint8_t id,ioapic_redir data){
-        const uint32_t reg=(id*2)+0x10;
+        const uint32_t reg=(id*2)+IOAPIC_RED;
         ioapic_set(base,reg,data.lo);
         ioapic_set(base,reg+1,data.hi);
     }
@@ -513,12 +514,12 @@ namespace APIC {
         Screen::write_s("OK");
         Screen::setfgcolor(Screen::WHITE);
         
-        Screen::write_s("\n  .x2APIC ");
-        Screen::write_s(CPUID::has(CPUID::FEAT_ECX_1_x2APIC,0)?"supported":"not supported");
-        
         Screen::write_s("\n  .Found ");
         Screen::write_i(ioapic_count);
-        Screen::write_s(" IOAPICs...");
+        Screen::write_s((ioapic_count==1)?" IOAPIC":" IOAPICs");
+        
+        Screen::write_s("\n  .x2APIC ");
+        Screen::write_s(CPUID::has(CPUID::FEAT_ECX_1_x2APIC,0)?"supported":"not supported");
     }
     
     bool supported(){

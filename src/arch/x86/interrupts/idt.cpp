@@ -214,8 +214,8 @@ void IDT::init(){
     }else{
         PIC::init();
     }
-    set_exception_handler(13,gpf_handler,IDT::G_32_INT,IDT::RING_0);
     
+    set_exception_handler(13,gpf_handler,IDT::G_32_INT,IDT::RING_0);
     set_irq_handler(247,spurious_irq,IDT::G_32_INT,IDT::RING_0);
     set_irq_handler(255,spurious_irq,IDT::G_32_INT,IDT::RING_0);
     

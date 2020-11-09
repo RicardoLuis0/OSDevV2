@@ -23,12 +23,14 @@ void pit_interrupt(){
 void PIT::init(){
     constexpr uint16_t freq=div_hz(ms_to_hz(timer_resolution));
     Screen::write_s("\n -Initializing PIT...");
-    uint8_t src=IDT::is_legacy_mode()?0x0:ACPI::MADT::resolve_irq_source(0x0);
-    if(IDT::irq_supports_remapping(src)){
-        IDT::irq_remap(src,0x20);
+    uint32_t src=0x0;
+    if(!IDT::is_legacy_mode()){
+        src=ACPI::MADT::resolve_irq_source(src);
+        if(IDT::irq_supports_remapping(src)){
+            IDT::irq_remap(src,0x20);
+        }
     }
-    uint8_t irq=IDT::irq_get_mapping(src);
-    IDT::set_irq_handler(irq,pit_interrupt,IDT::G_32_INT,IDT::RING_0);
+    IDT::set_irq_handler(IDT::irq_get_mapping(src),pit_interrupt,IDT::G_32_INT,IDT::RING_0);
     outb(0x43, 0x36);
     outb(0x40,freq&0xFF);
     outb(0x40,(freq>>8)&0xFF);
