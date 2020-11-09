@@ -211,7 +211,7 @@ void Screen::move(size_t pos){
     outb(0x3D5, static_cast<uint8_t>((pos >> 8) & 0xFF));
 }
 
-void Screen::write_fmt(char * fmt,...){
+void Screen::write_fmt(const char * fmt,...){
     va_list arg;
     va_start(arg,fmt);
     va_list a2;
