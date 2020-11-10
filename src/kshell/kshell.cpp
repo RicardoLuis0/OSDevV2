@@ -91,6 +91,20 @@ struct kshell_cmd{
     }
 };
 
+static void show_cmd_usage(char * cmd,Util::HashTable<kshell_cmd> * commands){
+    if(commands->has(cmd)){
+        kshell_cmd &h_cmd=commands->at(cmd);
+        Screen::write_c('\n');
+        Screen::write_s(h_cmd.name);
+        Screen::write_s(" - ");
+        Screen::write_s(h_cmd.description);
+        Screen::write_s("\nusage:\n");
+        Screen::write_s(h_cmd.usage);
+    }else{
+        cmd_invalid(cmd,commands);
+    }
+}
+
 static void cmd_cls(char * cmd,Util::HashTable<kshell_cmd> * commands){
     Screen::clear();
 }
@@ -120,17 +134,7 @@ static void cmd_help(char * cmd,Util::HashTable<kshell_cmd> * commands){
         if(end){
             *end='\0';
         }
-        if(commands->has(arg)){
-            kshell_cmd &h_cmd=commands->at(arg);
-            Screen::write_c('\n');
-            Screen::write_s(h_cmd.name);
-            Screen::write_s(" - ");
-            Screen::write_s(h_cmd.description);
-            Screen::write_s("\nusage:\n");
-            Screen::write_s(h_cmd.usage);
-        }else{
-            cmd_invalid(arg,commands);
-        }
+        show_cmd_usage(arg,commands);
     }else{
         commands->foreach_v([](kshell_cmd &h_cmd){
             Screen::write_c('\n');
@@ -258,6 +262,30 @@ void cmd_tedit(char * cmd,Util::HashTable<kshell_cmd> * commands){
     TEdit::tedit_main(args.size()-1,reinterpret_cast<char**>(args.get()));
 }
 
+void cmd_ioapic(char * cmd,Util::HashTable<kshell_cmd> * commands){
+    Util::Vector<Util::UniquePtr<char>> args;
+    cmd_parse(args,cmd);
+    if(args.size()>2){
+        if((strcmp("info",args[1])==0)||(strcmp("i",args[1])==0)){
+            if(args.size()>3&&is_int(args[2])){
+                uint32_t apic_num=parse_int(args[2]);
+                APIC::dump_apic_info(APIC::DUMP_APIC_INFO_IOAPIC_NUM,apic_num);
+            }else{
+                APIC::dump_apic_info(APIC::DUMP_APIC_INFO_IOAPIC_ALL,0);
+            }
+            return;
+        }else if((strcmp("redir",args[1])==0)||(strcmp("rd",args[1])==0)){
+            if(args.size()>3&&is_int(args[2])){
+                uint32_t apic_num=parse_int(args[2]);
+                bool compact=(args.size()>4&&((strcmp("c",args[3])==0)||(strcmp("compact",args[3])==0)));
+                APIC::dump_apic_info(compact?APIC::DUMP_APIC_INFO_IOAPIC_REDIR_COMPACT:APIC::DUMP_APIC_INFO_IOAPIC_REDIR,apic_num);
+                return;
+            }
+        }
+    }
+    show_cmd_usage(args[0],commands);
+}
+
 void kshell_init(){
     cmds=new Util::HashTable<kshell_cmd>();
     (*cmds)["cls"]={cmd_cls,"cls","clear the screen","- cls"};
@@ -274,6 +302,7 @@ void kshell_init(){
     (*cmds)["shutdown"]={cmd_shutdown,"shutdown","ACPI Shutdown","- shutdown"};
     (*cmds)["reset"]={cmd_reset,"reset","ACPI reset","- reset"};
     (*cmds)["tedit"]={cmd_tedit,"tedit","simple text editor","- tedit [file]"};
+    (*cmds)["ioapic"]={cmd_ioapic,"ioapic","display ioapic debug data","- ioapic info/i [#num]\n-ioapic redir/rd #num [compact/c]"};
 }
 
 void kshell(){

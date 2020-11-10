@@ -55,6 +55,10 @@ namespace Drivers::Keyboard::PS2 {
     static Util::Spinlock get_key_lock;
     
     keycode getKey(){
+        #ifdef KEYBOARD_NOINT
+        while(!(inb(0x64)&1))asm("pause");
+        return get_keycode();
+        #else
         Util::SpinlockGuard guard(get_key_lock);//only allow one call to getKey at a time
         if(key_queue->is_empty()){
             wait_for_key=true;
@@ -63,6 +67,7 @@ namespace Drivers::Keyboard::PS2 {
             }
         }
         return key_queue->pop();
+        #endif // KEYBOARD_NOINT
     }
     
     static bool left_shift_down=false;

@@ -272,7 +272,7 @@ namespace APIC {
     }
     
     [[maybe_unused]]
-    static void apic_info(){
+    static void lapic_info(){
         Screen::write_s("\n\nLAPIC BASE:");
         Screen::write_h(lapic_base());
         Screen::write_s("\n\n");
@@ -411,7 +411,6 @@ namespace APIC {
                     #ifdef IOAPIC_DEBUG_DUMP_REDIR
                         #ifdef IOAPIC_DEBUG_DUMP_REDIR_COMPACT
                             Serial::write_s("\n-redir:\n");
-                            if(n==0)
                             for(uint8_t j=0;j<info.max_irq;j++){
                                 ioapic_redir redir=ioapic_get_redirection_reg(info.base,j);
                                 if(j>0&&((j+1)%2))Serial::write_s("\n");
@@ -573,6 +572,171 @@ namespace APIC {
             Screen::write_i(i);
             Screen::write_s("]=");
             Screen::write_h(lapic_register_get(LAPIC_IRR_0+(0x10*i)));
+        }
+    }
+    
+    void dump_apic_info(dump_apic_info_mode mode,uint32_t num){
+        switch(mode){
+        case DUMP_APIC_INFO_LAPIC:
+            lapic_info();
+            break;
+        case DUMP_APIC_INFO_IOAPIC_ALL:
+            for(uint32_t i=0;i<ioapic_count;i++){
+                auto &info=ioapics[i];
+                Screen::write_s("\n>IOAPIC #");
+                Screen::write_i(i);
+                Screen::write_s("\n -base = ");
+                Screen::write_h(info.base);
+                Screen::write_s("\n -id = ");
+                Screen::write_h(info.id);
+                Screen::write_s("\n -version = ");
+                Screen::write_h(info.version);
+                Screen::write_s("\n -max_irq = ");
+                Screen::write_h(info.max_irq);
+                Screen::write_s("\n -gsi_base = ");
+                Screen::write_h(info.gsi_base);
+            }
+            break;
+        case DUMP_APIC_INFO_IOAPIC_NUM:
+            if(num<ioapic_count){
+                auto &info=ioapics[num];
+                Screen::write_s("\n>IOAPIC #");
+                Screen::write_i(num);
+                Screen::write_s("\n -base = ");
+                Screen::write_h(info.base);
+                Screen::write_s("\n -id = ");
+                Screen::write_h(info.id);
+                Screen::write_s("\n -version = ");
+                Screen::write_h(info.version);
+                Screen::write_s("\n -max_irq = ");
+                Screen::write_h(info.max_irq);
+                Screen::write_s("\n -gsi_base = ");
+                Screen::write_h(info.gsi_base);
+            }else{
+                Screen::write_s("\nIOAPIC #");
+                Screen::write_i(num);
+                Screen::write_s(" does not exist");
+            }
+            break;
+        case DUMP_APIC_INFO_IOAPIC_REDIR:
+            if(num<ioapic_count){
+                auto &info=ioapics[num];
+                Screen::write_s("\n>IOAPIC #");
+                Screen::write_i(num);
+                Screen::write_s("\n -redir:");
+                for(uint8_t j=0;j<info.max_irq;j++){
+                    ioapic_redir redir=ioapic_get_redirection_reg(info.base,j);
+                    Screen::write_s("\n:");
+                    Screen::write_i(info.gsi_base+j);
+                    Screen::write_s(" .vec=");
+                    Screen::write_i(redir.interrupt_vector);
+                    Screen::write_s(" .dv=");
+                    switch(redir.delivery_mode){
+                    case DELIVERY_FIXED:
+                        Screen::write_s("F");
+                        break;
+                    case DELIVERY_LOW:
+                        Screen::write_s("L");
+                        break;
+                    case DELIVERY_SMI:
+                        Screen::write_s("S");
+                        break;
+                    case DELIVERY_NMI:
+                        Screen::write_s("N");
+                        break;
+                    case DELIVERY_INIT:
+                        Screen::write_s("I");
+                        break;
+                    case DELIVERY_EXTINIT:
+                        Screen::write_s("E");
+                        break;
+                    default:
+                    case DELIVERY_RESERVED_1:
+                    case DELIVERY_RESERVED_2:
+                        Screen::write_s("?");
+                        break;
+                    }
+                    Screen::write_s(" .dm=");
+                    Screen::write_s(redir.destination_mode?"LG":"PH");
+                    Screen::write_s(" .pp=");
+                    Screen::write_s(redir.pin_polarity?"L":"H");
+                    Screen::write_s(" .tm=");
+                    Screen::write_s(redir.trigger_mode?"L":"E");
+                    Screen::write_s(" .m=");
+                    Screen::write_s(redir.mask?"T":"F");
+                    Screen::write_s(" .d=");
+                    Screen::write_h(redir.destination);
+                    if(j>0&&(j%24==0)){
+                        Screen::write_s("\npress any key to continue...");
+                        k_getch_extended();
+                    }
+                }
+            }else{
+                Screen::write_s("\nIOAPIC #");
+                Screen::write_i(num);
+                Screen::write_s(" does not exist");
+            }
+            break;
+        case DUMP_APIC_INFO_IOAPIC_REDIR_COMPACT:
+            if(num<ioapic_count){
+                auto &info=ioapics[num];
+                Screen::write_s("\nIOAPIC #");
+                Screen::write_i(num);
+                Screen::write_s("\n");
+                for(uint8_t j=0;j<info.max_irq;j++){
+                    ioapic_redir redir=ioapic_get_redirection_reg(info.base,j);
+                    Screen::write_s("\n");
+                    Screen::write_s(":");
+                    Screen::write_i(info.gsi_base+j);
+                    Screen::write_s(" i");
+                    Screen::write_i(redir.interrupt_vector);
+                    Screen::write_s(" v");
+                    switch(redir.delivery_mode){
+                    case DELIVERY_FIXED:
+                        Screen::write_s("F");
+                        break;
+                    case DELIVERY_LOW:
+                        Screen::write_s("L");
+                        break;
+                    case DELIVERY_SMI:
+                        Screen::write_s("S");
+                        break;
+                    case DELIVERY_NMI:
+                        Screen::write_s("N");
+                        break;
+                    case DELIVERY_INIT:
+                        Screen::write_s("I");
+                        break;
+                    case DELIVERY_EXTINIT:
+                        Screen::write_s("E");
+                        break;
+                    default:
+                    case DELIVERY_RESERVED_1:
+                    case DELIVERY_RESERVED_2:
+                        Screen::write_s("?");
+                        break;
+                    }
+                    Screen::write_s(" s");
+                    Screen::write_s(redir.destination_mode?"L":"P");
+                    Screen::write_s(" p");
+                    Screen::write_s(redir.pin_polarity?"L":"H");
+                    Screen::write_s(" t");
+                    Screen::write_s(redir.trigger_mode?"L":"E");
+                    Screen::write_s(" m");
+                    Screen::write_s(redir.mask?"T":"F");
+                    Screen::write_s(" d");
+                    Screen::write_i(redir.destination);
+                    if(j>0&&(j%24==0)){
+                        Screen::write_s("\npress any key to continue...");
+                        k_getch_extended();
+                    }
+                }
+            }else{
+                Screen::write_s("\nIOAPIC #");
+                Screen::write_i(num);
+                Screen::write_s(" does not exist");
+            }
+            break;
         }
     }
 }
