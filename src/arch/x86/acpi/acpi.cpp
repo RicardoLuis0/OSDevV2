@@ -217,8 +217,6 @@ void ACPI::init(){
     
     PCI::init();
     
-    //TODO handle ACPI STI interrupt
-    
     Screen::write_s("\n -Initializing ACPI...");
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_s("OK");
