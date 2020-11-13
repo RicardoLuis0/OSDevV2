@@ -59,7 +59,7 @@ class linker_ld_lld(linker): #llvm linker on windows, might need to use plain ld
         self.libs=libs #linker libraries, list
 
     def get_cmd(self,out): #get command to run
-        cmd="ld.lld" if not ar_path else "\""+ar_path+"ld.lld\""
+        cmd="ld.lld" if not ld_lld_path else "\""+ld_lld_path+"ld.lld\""
         args=(" ".join(self.flags))+" "+(" ".join(self.libs))+" -o \""+out+"\" "+(" ".join(self.start_files))+" "+(" ".join(self.files))+" "+(" ".join(self.end_files))
         return cmd+" "+args
 
@@ -192,7 +192,14 @@ def get_files(folder,out_folder,tmp_folder,compiler_exts,nolink,linker):#must be
                     nolink_b=split[0] in nolink
                     compiler=compiler_exts[ext];
                     src=path+"/"+file
-                    out=out_folder+"/"+(split[0] if nolink_b else file)+".o"
+                    out_dir=os.path.relpath(path,f)
+                    if out_dir == ".":
+                        out_dir=out_folder
+                    else:
+                        out_dir=out_folder+"/"+out_dir
+                    if not os.path.isdir(out_dir):
+                        os.makedirs(out_dir)
+                    out=(out_folder if nolink_b else out_dir)+"/"+(split[0] if nolink_b else file)+".o"
                     if compiler.needs_to_run(src,file,f,path,out,tmp_folder):#src,src_file,src_base,src_path,out,tmp
                         if verbose and not silent:print("preparing '"+ext+"' file "+file)
                         complist.add(compiler,linker,src,out,compiler.calc_extraflags(src,file,f,path,out,tmp_folder),nolink_b)

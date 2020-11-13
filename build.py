@@ -15,21 +15,21 @@ if "--verbose" in sys.argv or "-v" in sys.argv:
 lai_path="../lai/"
 
 defines_c_cpp=[
-    "-DDEBUG"
+    "-DDEBUG","-DLAI_HOST_IDENTITY_MAP","-D__OSDEV_V2__","-DSERIAL_CRLF","-DLAI_LOG"
 ]
 
 flags_c_cpp=[
     "-g","-Iinclude","-I\"include/stdc\"","-I\""+lai_path+"include\"",
     "--target=i686-pc-none-elf","-march=i686","-ffreestanding","-fno-builtin","-nostdlib",
-    "-nostdinc","-Wall","-Werror=implicit-function-declaration","-Werror=return-type"
+    "-nostdinc","-Wall","-Werror=implicit-function-declaration","-Werror=return-type","-mno-red-zone"
 ]
 
 flags_c=flags_c_cpp+[
-    "-std=c18","-Werror=implicit-function-declaration"
+    "-std=c11"
 ]
 
 flags_cpp=flags_c_cpp+[
-    "-std=c++20","-nostdinc++","-fno-rtti","-fno-exceptions","-Wshadow"
+    "-std=c++20","-nostdinc++","-fno-rtti","-fno-exceptions","-Wshadow","-Wold-style-cast"
 ]
 
 flags_asm=[
@@ -50,7 +50,7 @@ get_files(
         ".c":clang_c(defines_c_cpp,flags_c),
     },
     #files not to link automatically
-    ["crti","crtn","boot"],
+    ["crti","crtn","boot","IOLayerOsDevV2"],
     #linker
     linker_ld_lld(
         #flags

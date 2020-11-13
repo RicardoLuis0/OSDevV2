@@ -287,11 +287,22 @@ namespace APIC {
         Screen::write_s("\n\n");
     }
     
+    [[maybe_unused]]
+    static void set_logical_apic_id(uint8_t id){
+        lapic_register_set(LAPIC_LDR,id<<24);
+    }
+    
     static void init_lapic(){
         //enable LAPIC in case it isn't already enabled
         MSR::set(LAPIC_MSR,MSR::get(LAPIC_MSR)|LAPIC_MSR_ENABLE_BIT);
         
         init_x2apic();
+        
+        //clear out task priority register
+        lapic_register_set(LAPIC_TPR,0x0);
+        
+        //set DFR to flat model
+        lapic_register_set(LAPIC_DFR,0xFFFFFFFF);
         
         //enable LAPIC's SIV (spurious interrupt vector) in case it isn't already enabled
         lapic_register_or(LAPIC_SIV,0x1FF);
@@ -393,6 +404,15 @@ namespace APIC {
                 info.version=ver.ver;
                 info.max_irq=ver.max+1;
                 info.gsi_base=entry->global_system_interrupt_base;
+                for(uint32_t j=0;j<info.max_irq;j++){//clear out ioapic redirections
+                    ioapic_redir redir;
+                    redir.data=0x0;
+                    redir.interrupt_vector=j+info.gsi_base+0x40;
+                    redir.delivery_mode=DELIVERY_FIXED;
+                    redir.mask=true;
+                    redir.destination=lapic_register_get(LAPIC_ID);
+                    ioapic_set_redirection_reg(info.base,j,redir);
+                }
                 #ifdef IOAPIC_DEBUG
                     Serial::write_s("\n>IOAPIC #");
                     Serial::write_i(n);
