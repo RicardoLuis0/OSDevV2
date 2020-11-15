@@ -172,6 +172,11 @@ void IDT::disable_nmi(){
     nmi_en_count++;
 }
 
+static void gpf_handler(uint32_t err,regs * regs){
+    //APIC::isr_irr_dump();
+    k_abort_fmt("GPF, err=%x, a=%x, c=%x, d=%x, b=%x, sp=%x, bp=%x, si=%x, di=%x, ip=%x",err,regs->eax,regs->ecx,regs->edx,regs->ebx,regs->esp,regs->ebp,regs->esi,regs->edi,regs->eip);
+}
+
 void IDT::setup(){
     Screen::write_s("\n -Creating IDT...");
     IDT=reinterpret_cast<IDT_entry*>(Memory::Internal::alloc_phys_page(Memory::pages_to_fit(sizeof(IDT_entry)*256)));
@@ -193,29 +198,25 @@ void IDT::setup(){
     Screen::setfgcolor(Screen::LIGHT_GREEN);
     Screen::write_s("OK");
     Screen::setfgcolor(Screen::WHITE);
-}
-
-static void gpf_handler(uint32_t err,regs * regs){
-    //APIC::isr_irr_dump();
-    k_abort_fmt("GPF, err=%x, a=%x, c=%x, d=%x, b=%x, sp=%x, bp=%x, si=%x, di=%x, ip=%x",err,regs->eax,regs->ecx,regs->edx,regs->ebx,regs->esp,regs->ebp,regs->esi,regs->edi,regs->eip);
+    Screen::write_s("\n -Loading IDT...");
+    loadidt(reinterpret_cast<uint32_t>(IDT),sizeof(IDT_entry)*256);
+    Screen::setfgcolor(Screen::LIGHT_GREEN);
+    Screen::write_s("OK");
+    Screen::setfgcolor(Screen::WHITE);
+    set_exception_handler(13,gpf_handler,IDT::G_32_INT,IDT::RING_0);
 }
 
 static void spurious_irq(){
 }
 
 void IDT::init(){
-    Screen::write_s("\n -Loading IDT...");
-    loadidt(reinterpret_cast<uint32_t>(IDT),sizeof(IDT_entry)*256);
-    Screen::setfgcolor(Screen::LIGHT_GREEN);
-    Screen::write_s("OK");
-    Screen::setfgcolor(Screen::WHITE);
+    
     if((use_apic=APIC::supported())){
         APIC::init();
     }else{
         PIC::init();
     }
     
-    set_exception_handler(13,gpf_handler,IDT::G_32_INT,IDT::RING_0);
     set_irq_handler(247,spurious_irq,IDT::G_32_INT,IDT::RING_0);
     set_irq_handler(255,spurious_irq,IDT::G_32_INT,IDT::RING_0);
     
