@@ -1,0 +1,52 @@
+{
+	"working_folder":"../lai/build/",
+	"project_name":"LAI",
+	"noarch":true,
+	"project_binary":"liblai_i386",
+	"project_ext":".a",
+	"compiler_c":"clang",
+	"compiler_cpp":"clang",
+	"compiler_asm":"nasm",
+	"linker":"ar",
+	"targets":{
+		"debug":{
+			"binary_folder_override":"lib/",
+			"sources":[
+				"../lai/core",
+				"../lai/helpers"
+			],
+			"defines_c_cpp":[
+				"-DDEBUG"
+			],
+			"defines_c":[
+				
+			],
+			"defines_cpp":[
+				
+			],
+			"flags_c_cpp":[
+				"-Iinclude","-I\"include/stdc\"","-I\"../lai/include\"",
+				"--target=i686-pc-none-elf","-march=i686","-ffreestanding","-fno-builtin","-nostdlib",
+				"-nostdinc","-Wall","-Werror=implicit-function-declaration","-Werror=return-type","-mno-red-zone"
+			],
+			"flags_c":[
+				"-std=c11"
+			],
+			"flags_asm":[
+				"-f elf"
+			],
+			"linker_flags":[
+				"rc"
+			],
+			"linker_libs":[
+			],
+			"link_before":[
+			],
+			"link_after":[
+			],
+			"nolink":[
+			]
+		}
+	},
+	"default_target":"debug"
+}
