@@ -8,7 +8,6 @@
 *.exe
 obj/
 bin/
-*.bat
 *.lnk
 img/
 *.bxrc
