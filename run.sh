@@ -1,0 +1,1 @@
+qemu-system-x86_64 -curses -kernel build/kernel/release_x86/bin/kernel.bin

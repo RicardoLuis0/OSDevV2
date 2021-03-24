@@ -1,52 +1,83 @@
 {
-	"working_folder":"../lai/build/",
+	"working_folder":"build/lai",
+    "src_folder":"deps/lai",
 	"project_name":"LAI",
 	"noarch":true,
-	"project_binary":"liblai_i386",
+	"project_binary":"liblai_x86",
+    "binary_folder_override":"lib/",
 	"project_ext":".a",
 	"compiler_c":"clang",
 	"compiler_cpp":"clang",
 	"compiler_asm":"nasm",
 	"linker":"ar",
 	"targets":{
-		"debug":{
-			"binary_folder_override":"lib/",
-			"sources":[
-				"../lai/core",
-				"../lai/helpers"
-			],
+        "common":{
+            "sources":[
+                "core",
+                "helpers",
+            ],
+            "flags_c_cpp":[
+                "-Iinclude",
+                "-Iinclude/stdc",
+                "-Ideps/lai/include",
+				"-ffreestanding",
+                "-fno-builtin",
+                "-nostdlib",
+				"-nostdinc",
+                "-Wall",
+                "-Werror=implicit-function-declaration",
+                "-Werror=return-type",
+                "-mno-red-zone",
+            ],
+            "flags_c":[
+                "-std=c11",
+            ],
+            "linker_flags":[
+                "rc",
+            ],
+            "include_only":true,
+        },
+		"common_x86":{
+            "include":[
+                "common",
+            ],
 			"defines_c_cpp":[
-				"-DDEBUG"
-			],
-			"defines_c":[
-				
-			],
-			"defines_cpp":[
-				
+				"DEBUG",
 			],
 			"flags_c_cpp":[
-				"-Iinclude","-I\"include/stdc\"","-I\"../lai/include\"",
-				"--target=i686-pc-none-elf","-march=i686","-ffreestanding","-fno-builtin","-nostdlib",
-				"-nostdinc","-Wall","-Werror=implicit-function-declaration","-Werror=return-type","-mno-red-zone"
-			],
-			"flags_c":[
-				"-std=c11"
+				"--target=i686-pc-none-elf",
+                "-march=i686",
 			],
 			"flags_asm":[
-				"-f elf"
+				"-felf32",
 			],
 			"linker_flags":[
-				"rc"
+                "--target=elf32-i386",
 			],
-			"linker_libs":[
+		},
+        "debug_x86":{
+            "include":[
+                "common_x86",
+            ],
+            "project_binary_override":"liblai_x86_debug",
+            "defines_c_cpp":[
+                "DEBUG",
+            ],
+			"flags_c_cpp":[
+				"-g",
 			],
-			"link_before":[
+        },
+        "release_x86":{
+            "include":[
+                "common_x86",
+            ],
+            "project_binary_override":"liblai_x86_release",
+            "defines_c_cpp":[
+                "NDEBUG",
+            ],
+			"flags_c_cpp":[
+				"-O2",
 			],
-			"link_after":[
-			],
-			"nolink":[
-			]
-		}
+        },
 	},
-	"default_target":"debug"
 }

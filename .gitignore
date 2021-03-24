@@ -18,10 +18,12 @@ acpica_src/
 log.txt
 *.save_failed
 *.a
-__pycache__/
 VBoxSerialLog.txt
 BochsSerialLog.txt
-*.sh
 *init
 kernel.iso
+kernel.bin
 *.code-workspace
+deps/
+.RBuild
+.RBuild.exe
