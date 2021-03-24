@@ -1,34 +1,34 @@
 {
-	"working_folder":"build/kernel",
-	"project_name":"OSDevV2",
-	"noarch":true,
-	"project_binary":"kernel",
-	"project_ext":".bin",
-	"compiler_c":"clang",
-	"compiler_cpp":"clang",
-	"compiler_asm":"nasm",
-	"linker":"ld.lld",
-	"targets":{
-		"common":{
-			"sources":[
-				{
+    "working_folder":"build/kernel",
+    "project_name":"OSDevV2",
+    "noarch":true,
+    "project_binary":"kernel",
+    "project_ext":".bin",
+    "compiler_c":"clang",
+    "compiler_cpp":"clang",
+    "compiler_asm":"nasm",
+    "linker":"ld.lld",
+    "targets":{
+        "common":{
+            "sources":[
+                {
                     "name":"src",
                     "type":"exclude",
                     "exclude_list":[
                         "arch",
                     ],
                 },
-			],
+            ],
             "defines_all":[
                 "__OSDEV_V2__",
             ],
-			"defines_c_cpp":[
-				"LAI_HOST_IDENTITY_MAP",
+            "defines_c_cpp":[
+                "LAI_HOST_IDENTITY_MAP",
                 "SERIAL_CRLF",
                 "LAI_LOG",
-			],
-			"flags_c_cpp":[
-				"-Iinclude",
+            ],
+            "flags_c_cpp":[
+                "-Iinclude",
                 "-Iinclude/stdc",
                 "-Ideps/lai/include",
                 "-ffreestanding",
@@ -39,21 +39,21 @@
                 "-Werror=implicit-function-declaration",
                 "-Werror=return-type",
                 "-mno-red-zone",
-			],
-			"flags_c":[
-				"-std=c11",
-			],
-			"flags_cpp":[
-				"-std=c++20",
+            ],
+            "flags_c":[
+                "-std=c11",
+            ],
+            "flags_cpp":[
+                "-std=c++20",
                 "-nostdinc++",
                 "-fno-rtti",
                 "-fno-exceptions",
                 "-Wshadow",
                 "-Wold-style-cast",
-			],
-			"linker_flags":[
+            ],
+            "linker_flags":[
                 "-Llib",
-			],
+            ],
             "linker_order":[
                 {
                     "name":"crti.asm.o",
@@ -63,27 +63,27 @@
                     "weight":2,
                 },
             ],
-			"include_only":true,
-		},
+            "include_only":true,
+        },
         "common_x86":{
-			"include":[
-				"common",
-			],
+            "include":[
+                "common",
+            ],
             "sources":[
                 "src/arch/x86",
             ],
-			"flags_c_cpp":[
-				"--target=i686-pc-none-elf",
+            "flags_c_cpp":[
+                "--target=i686-pc-none-elf",
                 "-march=i686",
-			],
-			"flags_asm":[
-				"-felf32",
-			],
-			"linker_libs":[
-				"-lclang_builtins_i386",
-			],
+            ],
+            "flags_asm":[
+                "-felf32",
+            ],
+            "linker_libs":[
+                "-lclang_builtins_i386",
+            ],
             "linker_flags":[
-				"-Tlinker_x86.ld",
+                "-Tlinker_x86.ld",
             ],
             "linker_order":[
                 {
@@ -96,39 +96,39 @@
                     "type":"extra",
                 },
             ],
-			"include_only":true,
+            "include_only":true,
             
         },
-		"release_x86":{
-			"include":[
-				"common_x86",
-			],
+        "release_x86":{
+            "include":[
+                "common_x86",
+            ],
             "defines_all":[
                 "DEBUG",
             ],
-			"flags_c_cpp":[
-				"-O2",
-			],
-			"linker_flags":[
-				"-s",
-			],
+            "flags_c_cpp":[
+                "-O2",
+            ],
+            "linker_flags":[
+                "-s",
+            ],
             "linker_libs":[
                 "-llai_x86_release",
             ],
-		},
-		"debug_x86":{
-			"include":[
-				"common_x86",
-			],
+        },
+        "debug_x86":{
+            "include":[
+                "common_x86",
+            ],
             "defines_all":[
                 "NDEBUG",
             ],
-			"flags_c_cpp":[
-				"-g",
-			],
+            "flags_c_cpp":[
+                "-g",
+            ],
             "linker_libs":[
                 "-llai_x86_debug",
             ],
-		}
-	},
+        }
+    },
 }

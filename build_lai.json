@@ -1,16 +1,16 @@
 {
-	"working_folder":"build/lai",
+    "working_folder":"build/lai",
     "src_folder":"deps/lai",
-	"project_name":"LAI",
-	"noarch":true,
-	"project_binary":"liblai_x86",
+    "project_name":"LAI",
+    "noarch":true,
+    "project_binary":"liblai_x86",
     "binary_folder_override":"lib/",
-	"project_ext":".a",
-	"compiler_c":"clang",
-	"compiler_cpp":"clang",
-	"compiler_asm":"nasm",
-	"linker":"ar",
-	"targets":{
+    "project_ext":".a",
+    "compiler_c":"clang",
+    "compiler_cpp":"clang",
+    "compiler_asm":"nasm",
+    "linker":"ar",
+    "targets":{
         "common":{
             "sources":[
                 "core",
@@ -20,10 +20,10 @@
                 "-Iinclude",
                 "-Iinclude/stdc",
                 "-Ideps/lai/include",
-				"-ffreestanding",
+                "-ffreestanding",
                 "-fno-builtin",
                 "-nostdlib",
-				"-nostdinc",
+                "-nostdinc",
                 "-Wall",
                 "-Werror=implicit-function-declaration",
                 "-Werror=return-type",
@@ -37,24 +37,24 @@
             ],
             "include_only":true,
         },
-		"common_x86":{
+        "common_x86":{
             "include":[
                 "common",
             ],
-			"defines_c_cpp":[
-				"DEBUG",
-			],
-			"flags_c_cpp":[
-				"--target=i686-pc-none-elf",
+            "defines_c_cpp":[
+                "DEBUG",
+            ],
+            "flags_c_cpp":[
+                "--target=i686-pc-none-elf",
                 "-march=i686",
-			],
-			"flags_asm":[
-				"-felf32",
-			],
-			"linker_flags":[
+            ],
+            "flags_asm":[
+                "-felf32",
+            ],
+            "linker_flags":[
                 "--target=elf32-i386",
-			],
-		},
+            ],
+        },
         "debug_x86":{
             "include":[
                 "common_x86",
@@ -63,9 +63,9 @@
             "defines_c_cpp":[
                 "DEBUG",
             ],
-			"flags_c_cpp":[
-				"-g",
-			],
+            "flags_c_cpp":[
+                "-g",
+            ],
         },
         "release_x86":{
             "include":[
@@ -75,9 +75,9 @@
             "defines_c_cpp":[
                 "NDEBUG",
             ],
-			"flags_c_cpp":[
-				"-O2",
-			],
+            "flags_c_cpp":[
+                "-O2",
+            ],
         },
-	},
+    },
 }
