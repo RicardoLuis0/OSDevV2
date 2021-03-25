@@ -1,3 +1,4 @@
+#!/usr/bin/env RBuild
 {
     "working_folder":"build/lai",
     "src_folder":"deps/lai",
